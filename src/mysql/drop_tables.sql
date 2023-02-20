@@ -1,7 +1,7 @@
---------------------------------------------------------------------------------
--- Proyecto Software (2022/2023)                                              --
--- Fichero: drop_tables.sql                                                   --
---------------------------------------------------------------------------------
+--
+-- Proyecto Software (2022/2023)
+-- Fichero: drop_tables.sql
+--
 
 
 DROP TABLE IF EXISTS estaEnTorneo;

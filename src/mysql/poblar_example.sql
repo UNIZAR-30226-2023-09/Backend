@@ -1,7 +1,7 @@
---------------------------------------------------------------------------------
--- Proyecto Software (2022/2023)                                              --
--- Fichero: poblar_example.sql                                                --
---------------------------------------------------------------------------------
+--
+-- Proyecto Software (2022/2023)
+-- Fichero: poblar_example.sql
+--
 
 
 -- Skins
@@ -45,7 +45,7 @@ INSERT INTO estaEnTorneo (idTorneo, email) VALUES
 INSERT INTO Partida (ronda, bote, evento, economia, propiedad1, propiedad2, carta1, carta2, turno, nCasasProp1, nCasasProp2, enCurso, perteneceTorneo) VALUES
 (5, 2000, 'Compra', -100, 'pedro@example.com', 'laura@example.com', 'juan@example.com', 'sara@example.com', 'sara@example.com', 2, 1, true, 1);
 INSERT INTO Partida (ronda, bote, evento, economia, propiedad1, propiedad2, carta1, carta2, turno, nCasasProp1, nCasasProp2, enCurso, perteneceTorneo) VALUES
-(1, 1000, 'Inversión', 100, NULL, NULL, NULL, NULL, 'NULL', 0, 0, null, 1);
+(1, 1000, 'Inversión', 100, NULL, NULL, NULL, NULL, NULL, 0, 0, null, 1);
 
 
 -- Juegan

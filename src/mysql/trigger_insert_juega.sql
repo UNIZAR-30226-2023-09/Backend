@@ -1,10 +1,10 @@
---------------------------------------------------------------------------------
--- Proyecto Software (2022/2023)                                              --
--- Fichero: trigger_insert_juega.sql                                          --
---------------------------------------------------------------------------------
--- Descripción:                                                               --
---    Comprueba que un jugador no pueda jugar varias partidas en curso        --
---------------------------------------------------------------------------------
+--
+-- Proyecto Software (2022/2023)
+-- Fichero: trigger_insert_juega.sql
+--
+-- Descripción:
+--    Comprueba que un jugador no pueda jugar varias partidas en curso
+--
 
 DELIMITER $$
 CREATE TRIGGER trigger_juega_insert
