@@ -28,6 +28,8 @@ CREATE TABLE tieneSkins (
 
 
 CREATE TABLE Torneo (
+	nPartidas		INT NOT NULL,
+	estaActivo		BOOLEAN,
 	idTorneo        INT AUTO_INCREMENT PRIMARY KEY
 );
 
