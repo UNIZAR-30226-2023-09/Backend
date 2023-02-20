@@ -29,8 +29,8 @@ INSERT INTO tieneSkins (idSkin, email) VALUES ('skin4', 'sara@example.com');
 
 
 -- Torneos
-INSERT INTO Torneo (idTorneo) VALUES (DEFAULT);
-INSERT INTO Torneo (idTorneo) VALUES (DEFAULT);
+INSERT INTO Torneo (nPartidas, estaActivo, idTorneo) VALUES (2, true, DEFAULT);
+INSERT INTO Torneo (nPartidas, estaActivo, idTorneo) VALUES (4, null, DEFAULT);
 
 
 -- Jugador esta en Torneo
