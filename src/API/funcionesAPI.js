@@ -288,6 +288,56 @@ function pagarImpuestos(jugador, cantidad, idPartida){
 exports.pagarImpuestos = pagarImpuestos;
 
 
+/*
+===================OBTENER DINERO JUGADOR EN PARTIDA=========================================
+*/
+
+
+// Obtener el dinero actual de un jugador en cierta partida. Primero comprobamos que el jugador este en la 
+// partida y despues devolvemos el dinero. Sería conveniente hacer una funcion externa que devuleca true esi 
+//cierto usuario esta en cierta partida.
+function obtenerDinero(jugador, idPartida) {
+  return new Promise((resolve, reject) => {
+    // Conectar a la base de datos
+    con.connect((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        // Comprobar si el jugador existe en la tabla "juega" (si está en la partida)
+        const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+        con.query(query, (error, results) => {
+          if (error) {
+            // Si hay un error, rechazar la promesa y cerrar la conexión
+            reject(error);
+          } else if (results.length === 0) {
+            // Si el jugador no existe en la partida, resolver la promesa con -1 y cerrar la conexión
+            resolve(-1);
+          } else {
+            // Una vez comprobado que está en la partida, realizar una consulta para devolver el dinero del jugador
+            const query3 = `SELECT dinero FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+            con.query(query3, (error, results3) => {
+              if (error) {
+                // Si hay un error, rechazar la promesa y cerrar la conexión
+                reject(error);
+              } else {
+                // Si todo ha ido bien, resolver la promesa con el dinero y cerrar la conexión
+                let dinero = results3[0].dinero;
+                resolve(dinero);
+              }
+            });
+          }
+          // Cerrar la conexión a la base de datos
+          con.end();
+        });
+      }
+    });
+  });
+}
+
+
+exports.obtenerDinero = obtenerDinero;
+
+
 
 
 
