@@ -1,8 +1,8 @@
 /*
  ----------------------------------------------------------------------------
- * Fichero: --.js
- * Autor: ---
- * NIP: ---
+ * Fichero: API.js
+ * Autor: Jesus Lizama Moreno 
+ * NIP: 816473
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
  * Fecha: 21/02/2023
  ----------------------------------------------------------------------------
@@ -58,8 +58,8 @@ exports.insertarUsuario = insertarUsuario;
 */
 
 /*
-    borrarUsuario(email);
-    Dado un email, si existe lo borra y devuelve true, sino devuelve false.
+  borrarUsuario(email);
+  Dado un email, si existe lo borra y devuelve true, sino devuelve false.
 */
 
 function borrarUsuario(email) {
@@ -128,7 +128,8 @@ exports.borrarUsuario = borrarUsuario;
 */
 
 /*
-// Mover el jugador, número veces hacia delante 
+// Mover el jugador, número veces hacia delante , devolviendo la posicion acutal en la que se encuentra el usuario.
+// En caso de error devolera 0.
 // Ej: moverJugador(1, 5) -> mover el jugador 1, 5 casillas, es decir, su nueva posición // será la actual + 5
 moverJugador(jugador, numero);
 */
@@ -144,10 +145,9 @@ function moverJugador(jugador, posiciones, idPartida) {
               con.end();
               reject(error);
           } else if (results.length === 0) {
-              // Si el jugador no existe, devolver false
-              console.log("Esta vacio lenght");
+              // Si el jugador no existe, devolver 0.
               con.end();
-              resolve(false);
+              resolve(0);
           } else {
               // Si el jugador existe, actualizar su posición
               const partidaId = results[0].idPartida;
@@ -159,9 +159,9 @@ function moverJugador(jugador, posiciones, idPartida) {
                   con.end();
                   reject(error);
                   } else {
-                  // Devolver true si todo ha ido bien
+                  // Devolver la nueva posicion si todo ha ido bien.
                   con.end();
-                  resolve(true);
+                  resolve(nuevaPosicion);
                   }
               });
           }
@@ -220,3 +220,74 @@ function modificarDinero(jugador, cantidad) {
 }
 
 exports.modificarDinero = modificarDinero;
+
+
+/*
+===================PAGAR IMPUESTOS=========================================
+*/
+
+// Pagar impuestos a la banca de un cierto jugador en cierta partida. Eso significa, que el jugador se le resta
+// la cantidad de dinero y se le suma al bote de cierta partida con identificador idPartida.
+/*
+* 1º-> Comprobar que el usuario este en la partida.
+* 2-> Si esta en la partida, le quitamos el dinero, y se lo sumamos a la banca. Aunque se le quede dinero negativo, se le 
+* resta igualmente. devuleve true si todo ha ido bien, y false en caso contrario.
+*/
+function pagarImpuestos(jugador, cantidad, idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+    console.log(query);
+    con.query(query, (error, results) => {
+      if (error) {
+        console.log("ERROR!!");
+        con.end(); // Aquí se debe cerrar la conexión
+        reject(error);
+      } else if (results.length === 0) {
+        console.log("Esta vacio lenght");
+        con.end(); // Aquí se debe cerrar la conexión
+        resolve(false);
+      } else {
+        const query = `UPDATE juega SET dinero = ? WHERE email = ?`;
+        let dinero = results[0].dinero;
+        dinero -= cantidad;
+        const values = [dinero, jugador];
+        con.query(query, values, (error, results) => {
+          if (error) {
+            con.end(); // Aquí se debe cerrar la conexión
+            reject(error);
+          } else {
+            const query2 = `SELECT bote FROM Partida WHERE idPartida = '${idPartida}'`;
+            con.query(query2, (error, results2) => {
+              if (error) {
+                con.end(); // Aquí se debe cerrar la conexión
+                reject(error);
+              } else {
+                let banca = results2[0].bote;
+                banca += cantidad;
+                const query3 = `UPDATE Partida SET bote = '${banca}' WHERE idPartida = '${idPartida}'`;
+                con.query(query3, (error, results3) => {
+                  if (error) {
+                    con.end(); // Aquí se debe cerrar la conexión
+                    reject(error);
+                  } else {
+                    con.end(); // Aquí se debe cerrar la conexión
+                    resolve(true);
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  });
+}
+
+
+exports.pagarImpuestos = pagarImpuestos;
+
+
+
+
+

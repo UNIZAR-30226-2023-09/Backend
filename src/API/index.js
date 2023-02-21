@@ -65,6 +65,21 @@ async function obtenerResultadoDinero(email,dinero) {
   }
 }
 
+//funciona OKEY.
+async function obtenerResultadoImpuesto(email,dinero,idPartida) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.pagarImpuestos(email,dinero,idPartida);
+    console.log("Resultado de pagar impuestos:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 
 //obtenerResultadoInsertar('AE,1234,AE@gmail.com,11234');
 
@@ -73,4 +88,7 @@ async function obtenerResultadoDinero(email,dinero) {
 //obtenerResultadoMover('juan@example.com',9,1);
 
 //obtenerResultadoDinero('pedro@example.com',100);
+
+
+// obtenerResultadoImpuesto('pedro@example.com',50,1);
 
