@@ -341,3 +341,93 @@ exports.obtenerDinero = obtenerDinero;
 
 
 
+
+
+/*
+===================MOVER JUGADOR CARCEL=========================================
+*/
+
+
+
+// Enviar a un jugador a la cárcel(mover posición del jugador a la carcel(9) y poner numero de tiradas en carcel = 3).
+function enviarCarcel(jugador,idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+    console.log(query);
+    con.query(query, (error, results) => {
+      if (error) {
+        console.log("ERROR!!");
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        console.log("Esta vacio lenght");
+        con.end();
+        resolve(false);
+      } 
+      else {
+        //una vez comprobado que esta en la partida, realizaremos consulta para ver si se ecnuentra en la posicion 
+        //de carcel, si es asi devuelve true y no lo mueve de posicion, y en caso contrario lo mueve a la posicion de la carcel y actualiza 
+        //el numero de tiradas en carcel a 3.
+        const query2 = `SELECT posicion FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            reject(error);
+          } else {
+            //si ha ido bien devolvemos la posicion.
+            let posicion = results2[0].posicion;
+            if(posicion == POSICION_CARCEL){
+              //esta en la casilla de la carcel, devuelve true y no se le actualiza la posicion.
+              con.end();
+              resolve(true);
+            }
+            else{
+              //no esta en la casilla de la carcel, devuelve true cuando se le ha actualizado la posicion y el numero de tiradas 
+              //restringidas.
+              let vari = POSICION_CARCEL;
+              const query3 = `UPDATE juega SET posicion= '${vari}' WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+              con.query(query3, (error, results3) => {
+                if (error) {
+                  con.end();
+                  reject(error);
+                } 
+                else {
+                  //ha actualizado la posicion del jugador y ahora se encuentra en la carcel.
+                  //ahora actualizaremos el numero de tiradas en carcel.
+                  const query4 = `UPDATE juega SET posicion= '${vari}' WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+                  con.query(query4, (error, results4) => {
+                    if (error) {
+                      con.end();
+                      reject(error);
+                    } 
+                    else {
+                      //ha actualizado la posicion del jugador y ahora se encuentra en la carcel.
+                      //ahora actualizaremos el numero de tiradas en carcel. 
+                      const query5 = `UPDATE juega SET nTurnosCarcel= '${NUM_TURNOS_CARCEL}' WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+                      con.query(query5, (error, results5) => {
+                        if (error) {
+                          con.end();
+                          reject(error);
+                        } 
+                        else {
+                          //ha actualizado el numero de turnos en la carcel correctamente y devuelve true.
+                          con.end();
+                          resolve(true);       
+                        }
+                      });        
+                    }
+                  });
+                  
+                }
+              });
+              
+            }            
+          }
+        });
+      }
+    });
+  });
+}
+exports.enviarCarcel = enviarCarcel;

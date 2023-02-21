@@ -95,6 +95,21 @@ async function obtenerResultadoDineroJugador(email,idPartida) {
   }
 }
 
+//funciona OKEY.
+async function obtenerResultadoMoverCarcel(email,idPartida) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.enviarCarcel(email,idPartida);
+    console.log("Resultado de mover jugador carcel: ", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -107,3 +122,4 @@ async function obtenerResultadoDineroJugador(email,idPartida) {
 
 //obtenerResultadoDineroJugador('pedro@example.com',1);
 
+//obtenerResultadoMoverCarcel('juan@example.com',1);
