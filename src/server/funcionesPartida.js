@@ -13,6 +13,8 @@ function CrearPartida(ID_jugador, numJugadores) {
     socket.send("Partida creada con ID: ${id_partida}");
 }
 
+exports.CrearPartida = CrearPartida;
+
 function UnirsePartida(ID_partida, ID_jugador) {
     // Unimos al jugador a la partida 
     if (unirPartida(ID_jugador, ID_partida)) {
@@ -22,3 +24,4 @@ function UnirsePartida(ID_partida, ID_jugador) {
         socket.send("Jugador no unido correctamente");
     }
 }
+exports.UnirsePartida = UnirsePartida;

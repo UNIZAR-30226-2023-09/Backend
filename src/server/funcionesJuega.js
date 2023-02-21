@@ -20,9 +20,9 @@ function LanzarDados(ID_jugador, ID_partida) {
      *    - Casilla de propiedad -> si es de otro jugador -> pagar
      *                           -> si no es de nadie -> mostrar posibilidad de comprarla
      *                           -> si es del propio jugador -> no hacer nada
-     *    - Casilla de salida    -> Sumar 300$ al dinero al dinero del jugador
-     *    - Ha pasado por casilla de salida -> Sumar 200$ al dinero del jugador
-     * 
+     *    - Casilla de salida    -> Sumar 300$ al dinero al dinero del jugador (posicionNueva == casillaSalida)
+     *    - Ha pasado por casilla de salida -> Sumar 200$ al dinero del jugador (posicionNueva - sumaDados <= 0)
+     *    - Casilla de bote      -> sumarle el dinero del juego
      */
 
     // Comprobar si la nueva posición corresponde a la casilla de la cárcel
@@ -38,3 +38,4 @@ function LanzarDados(ID_jugador, ID_partida) {
     socket.send("El dado 2 es: ${dado2}");
     socket.send("La nueva posicion es: ${posicionNueva}");
 }
+exports.LanzarDados = LanzarDados;
