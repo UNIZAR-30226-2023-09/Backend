@@ -1,0 +1,48 @@
+AQUI PONDREMOS LAS FUNCIONES YA ACABADAS CON SUS EXPLICACIONES DE LO QUE HACEN Y LO QUE DEVUELVEN, ADEMAS DE LOS PARAMETROS QUE NECESITEN.
+
+// Si se puede registrar correctamente -> devuelve true
+// Si no se puede registrar -> devuelve false
+insertarUsuario(email,contraseña,nombre);
+
+
+// Mover el jugador, número veces hacia delante 
+// Ej: moverJugador(1, 5) -> mover el jugador 1, 5 casillas, es decir, su nueva posición // será la actual + 5
+// Que devuelve la nueva posición del jugador (ver si guardamos el tablero como 
+// matriz o como)
+moverJugador(jugador, numero);
+
+
+
+
+// Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
+// ser positiva o negativa)
+modificarDinero(jugador, cantidad);
+
+
+// Pagar impuestos a la banca
+pagarImpuestos(jugador, cantidad);
+
+
+// Obtener el dinero actual de un jugador
+obtenerDinero(jugador);
+
+
+
+// Obtener la posición actual de un jugador
+obtenerPosicion(jugador);
+
+
+
+// jugadorPaga paga el alquiler al jugadorRecibe por estar en propiedad si pertenece // al jugadorRecibe
+pagarAlquiler(jugadorPaga, jugadorRecibe, propiedad);
+
+
+
+// Verificar si un jugador está en la cárcel
+verificarCarcel(jugador);
+
+
+// Enviar a un jugador a la cárcel(mover posición de cárcel)
+enviarCarcel(jugador);
+
+
