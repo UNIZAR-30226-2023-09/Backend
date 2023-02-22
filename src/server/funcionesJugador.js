@@ -19,6 +19,7 @@ function Registrarse(email, contrasenya, nombre) {
         socket.send("Registro incorrecto");
     }
 }
+exports.Registrarse = Registrarse;
 
 function IniciarSesion(email, contrasenya) {
     // Llamar a la función de la api correspondiente para comprobar inicio de sesión
@@ -42,3 +43,4 @@ function IniciarSesion(email, contrasenya) {
         socket.send(`Inicio de sesion incorrecto`);
     }
 }
+exports.IniciarSesion = IniciarSesion;

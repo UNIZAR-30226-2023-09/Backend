@@ -7,6 +7,13 @@
  -----------------------------------------------------------------------
 */
 
+/* TODO: HACER IMPORTS
+ *       CONFIGURAR EL SEND
+*/
+const funcionesPartida = require('./funcionesPartida');
+const funcionesJugador = require('./funcionesJugador');
+const funcionesJuega = require('./funcionesJuega');
+
 const PUERTO = 8080 // Puerto a elegir
 const HOST = "88.5.17.25"
 
