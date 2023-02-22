@@ -355,7 +355,6 @@ function enviarCarcel(jugador,idPartida){
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
-    console.log(query);
     con.query(query, (error, results) => {
       if (error) {
         console.log("ERROR!!");
@@ -431,3 +430,56 @@ function enviarCarcel(jugador,idPartida){
   });
 }
 exports.enviarCarcel = enviarCarcel;
+
+
+/*
+===================VERIFICA JUGADOR EN CARCEL=========================================
+*/
+
+// Verificar si un jugador se encuentra en la posicion correspondiente a la carcel. Suponemos que la carcel 
+// es la posicion "POSICION_CARCEL".
+function verificarCarcel(jugador, idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+    console.log(query);
+    con.query(query, (error, results) => {
+      if (error) {
+        console.log("ERROR!!");
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        console.log("Esta vacio lenght");
+        con.end();
+        resolve(false);
+      } 
+      else {
+        //una vez comprobado que esta en la partida, realizaremos consulta para ver si se encuentra en la posicion 
+        //de carcel, si es asi devuelve true, y en caso contrario devuelve false.
+        const query2 = `SELECT posicion FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error);
+          } else {
+            //si ha ido bien devolvemos la posicion.
+            let posicion = results2[0].posicion;
+            if(posicion == POSICION_CARCEL){
+              //esta en la casilla de la carcel, devuelve true.
+              con.end();
+              resolve(true);
+            }
+            else{
+              //no esta en la casilla de la carcel, devuelve false.
+              con.end();
+              resolve(false);
+            }            
+          }
+        });
+      }
+    });
+  });
+}
+exports.verificarCarcel = verificarCarcel;
