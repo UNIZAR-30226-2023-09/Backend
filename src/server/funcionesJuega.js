@@ -17,14 +17,18 @@ function LanzarDados(ID_jugador, ID_partida) {
     // En función de la nueva casilla -> miramos que hacer
     /* Posibles casos al caer en una casilla:
      *    - Casilla de salida    -> Sumar 300$ al dinero al dinero del jugador (posicionNueva == casillaSalida)
-     *    - Ha pasado por casilla de salida -> Sumar 200$ al dinero del jugador (posicionNueva - sumaDados <= 0)
+     *    - Pasa casilla salida  -> Sumar 200$ al dinero del jugador (posicionNueva - sumaDados <= 0)
      *    - Casilla de la cárcel -> ir a la caŕcel
      *    - Casilla de propiedad -> si es de otro jugador -> pagar
      *                           -> si no es de nadie -> mostrar posibilidad de comprarla
      *                           -> si es del propio jugador -> no hacer nada
-     *    - Casilla de banco     -> sumarle el dinero del juego
+     *    - Casilla de bote      -> sumarle el dinero del juego
      *    - Casilla treasure     -> sumarle al jugador el dinero o restarselo y sumarselo al banco
-     *    - Casilla surprise     -> obtener carta
+     *    - Casilla Superpoder   -> obtener carta
+     *    - Casilla del banco    -> dar opcion de poder meter dinero para generar intereses cada ronda
+     *                           -> dar la opción de retirar el dinero en caso de que hubiera
+     *    - Casilla de casino    -> Dar la opcion de si quiere jugar 
+     *                           -> si quiere jugar num random para ganar/perder en funcion del dinero que meta
      */
 
     // Comprobar si ha pasado por la casilla de salida en este turno
@@ -45,21 +49,47 @@ exports.LanzarDados = LanzarDados;
 
 
 function comprobarCasilla(posicion, ID_jugador) {
-    let tablero = ["Salida","Monterrey","Guadalajara","Treasure","Tax","Estacion",
-        "Tokio","Kioto","Surprise","Osaka","Carcel","Roma","Milan","Treasure","Napoles",
-        "Estacion","Londres","Surprise","Manchester","Edimburgo","Banco","Madrid",
-        "Barcelona","Treasure","Valencia","Estacion","Paris","Surprise","Marsella",
-        "Lyon","VueltaCarcel","Toronto","Vancouver","Treasure","Ottawa","Estacion",
-        "Nueva York","Los Angeles","LuxuryTax","Chicago"];
+    let tablero = ["Salida","Monterrey","Guadalajara","Treasure","Tax","AeropuertoNarita",
+        "Tokio","Kioto","Superpoder","Osaka","Carcel","Roma","Milan","Casino","Napoles",
+        "Estacion","Londres","Superpoder","Manchester","Edimburgo","Bote","Madrid",
+        "Barcelona","Treasure","Zaragoza","AeropuertoOrly","Paris","Banco","Marsella",
+        "Lyon","IrCarcel","Toronto","Vancouver","Treasure","Ottawa","AeropuertoDeLosAngeles",
+        "NuevaYork","LosAngeles","LuxuryTax","Chicago"];
     
     // Comprobar si la nueva casilla es la de salida -> sumar 300$
     if (posicion == 1) {
         modificarDinero(ID_jugador, 300);
     }
 
-    // Comprobar si la nueva casilla es la del banco
+    // Comprobar si es la casilla del tax
+    if (posicion == 5) {
+        // 50€ + 20€ * número de propiedades
+        let numPropiedades = obtenerNumPropiedades(ID_jugador);
+        let cantidad = 50 + 20 * numPropiedades;
+        sumarDineroBote(cantidad);
+    }
+
+    // Comprobar si es la casilla del luxuryTax
+    if (posicion == 5) {
+        // 100€ + 50€ * número de propiedades
+        let numPropiedades = obtenerNumPropiedades(ID_jugador);
+        let cantidad = 100 + 50 * numPropiedades;
+        sumarDineroBote(cantidad);
+    }
+
+    // Comprobar si es casilla de casino
+    if (posicion == 14) {
+        
+    }
+
+    // Comprobar si la nueva casilla es la del bote
     if (posicion == 21) {
-        sumarDineroBanco(ID_jugador);
+        obtenerDineroBote(ID_jugador);
+    }
+
+    // Comprobar si es casilla de banco
+    if (posicion == 28) {
+
     }
 
     // Comprobar si la nueva casilla es la de ir a la cárcel
@@ -68,13 +98,17 @@ function comprobarCasilla(posicion, ID_jugador) {
     }
 
     // Comprobar si es casilla de treasure
-    if (posicion == 4 || posicion == 14 || posicion == 24 || posicion == 34) {
-        // Definir y hacer que hacemos en esta casilla
+    if (posicion == 4 || posicion == 24 || posicion == 34) {
+        // Obtener dinero aleatorio entre -250 y 250
+        // Generar un número aleatorio entre -250 y 250
+        let cantidad = Math.floor(Math.random() * 501) - 250;
+        modificarDinero(ID_jugador, cantidad)
     }
 
-    // Comprobar si es casilla de surprise
-    if (posicion == 9 || posicion == 18 || posicion == 28) {
-        // Definir y hacer que hacemos en esta casilla
+    // Comprobar si es casilla de superpoder
+    if (posicion == 9 || posicion == 18) {
+        // Obtener carta
+
     }
 
     // Si la nueva casilla es la de la cárcel (11) -> no hacer nada
