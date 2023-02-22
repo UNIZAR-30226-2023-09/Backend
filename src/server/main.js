@@ -7,16 +7,11 @@
  -----------------------------------------------------------------------
 */
 
-/* TODO: HACER IMPORTS
- *       CONFIGURAR EL SEND
-*/
-
-
 const PUERTO = 8080 // Puerto a elegir
-const HOST = "127.0.0.1"
+const HOST = "88.5.17.25"
 
-const WebSocket = require("ws");
-const server = new WebSocket.Server({ host: HOST, port: PUERTO });
+const WebSocket = require('ws');
+const server = new WebSocket.Server({ host: HOST, port: PUERTO });    
 
 // Nueva conexion de cliente
 server.on("connection", (socket) => {
@@ -25,13 +20,6 @@ server.on("connection", (socket) => {
     // Nuevo mensaje recibido
     socket.on("message", (message) => {
         console.log("Mensaje recibido: ${message}");
-        /*if (message === "lanzarDados") {
-            let tiradaDados1 = Math.floor(Math.random() % 6) + 1;
-            let tiradaDados2 = Math.floor(Math.random() % 6) + 1;
-            let sumaDados = tiradaDados1 + tiradaDados2;
-	        // enviar a la base de datos posicion jugador
-            socket.send("Has sacado un ${sumaDados}");
-        }*/
 
         // Obtenemos el mensaje solicitado
         let mensaje = message.split(',');
@@ -59,6 +47,11 @@ server.on("connection", (socket) => {
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
             funcionesJuega.LanzarDados(mensaje[1],mensaje[2]);
+        }
+
+        // Si el mensaje es que se quiere acabar el turno
+        if (mensaje[0] === "finTurno") {
+            funcionesJuega.finTurno(mensaje[1],mensaje[2]);
         }
 
     });
