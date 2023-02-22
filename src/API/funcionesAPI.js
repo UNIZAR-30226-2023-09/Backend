@@ -62,6 +62,7 @@ exports.insertarUsuario = insertarUsuario;
   Dado un email, si existe lo borra y devuelve true, sino devuelve false.
 */
 
+// FALTA REVISAR BIEN FUNCION DE BORRAR Y ANALIZAR EL CORRECTO ORDEN PARA BORRAR!!!
 function borrarUsuario(email) {
 
   return new Promise((resolve, reject) => {
