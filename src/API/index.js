@@ -1,10 +1,19 @@
+/*
+ ----------------------------------------------------------------------------
+ * Fichero: index.js
+ * Autor: Jesus Lizama Moreno 
+ * NIP: 816473
+ * Descripción: Fichero de funciones API para el acceso a la base de datos.
+ * Fecha Ultima Actualizacion: 23/02/2023
+ ----------------------------------------------------------------------------
+*/
+
+
 const test = require('./app')
 const con = require('./db');
 
 
-
-
-//FUNCIONA OKEY.
+//funciona OKEY.
 async function obtenerResultadoInsertar(userData) {
     try {
       // Hacemos la llamada a la función que devuelve una Promesa.
@@ -19,6 +28,8 @@ async function obtenerResultadoInsertar(userData) {
     }
 }
 
+
+//REVISAR FUNCIONAMIENTO BORRAR.
 async function obtenerResultadoBorrar(userData) {
     try {
       // Hacemos la llamada a la función que devuelve una Promesa.
@@ -125,6 +136,14 @@ async function obtenerResultadoEstaEnCarcel(email,idPartida) {
     return false;
   }
 }
+
+
+
+
+
+//PRUEBAS DE LAS FUNCIONES.
+
+
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 

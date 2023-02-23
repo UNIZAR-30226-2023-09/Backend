@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- * Fichero: API.js
+ * Fichero: funcionesAPI.js
  * Autor: Jesus Lizama Moreno 
  * NIP: 816473
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
@@ -12,6 +12,11 @@ const con = require('./db');
 
 /*
 ======================INSERTAR USUARIO=====================================
+*/
+
+/*
+  insertarUsuario(userData);
+  Dado un email, inserta un nuevo usuario al juego del Monopòly.
 */
 function insertarUsuario(userData) {
   return new Promise((resolve, reject) => {
