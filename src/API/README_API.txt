@@ -13,7 +13,6 @@ moverJugador(jugador, numero);
 
 
 
-
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
 // ser positiva o negativa)
 modificarDinero(jugador, cantidad);
