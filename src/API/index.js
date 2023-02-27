@@ -169,14 +169,23 @@ async function obtenerResultadoActualizarBote(cantidad,idPartida) {
 }
 
 
+//FUNCIONA OKEY.
+async function obtenerResultadoDineroBote(idJugador,idPartida) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.obtenerDineroBote(idJugador,idPartida);
+    console.log("El resultado obtenido de actualizar el dinero de un jugador dado el bote es :", resultado);
+    return resultado;
 
-
-//PRUEBAS DE LAS FUNCIONES.
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
 
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
-
-//obtenerResultadoComprobarUser('AEoooo@gmail.com',1234);
 
 //obtenerResultadoBorrar('sara@example.com');
 
@@ -190,6 +199,10 @@ async function obtenerResultadoActualizarBote(cantidad,idPartida) {
 
 //obtenerResultadoMoverCarcel('juan@example.com',1);
 
-//obtenerResultadoEstaEnCarcel('juan@example.com',1);
+//obtenerResultadoEstaEnCarcel('juan@example.com',2);
 
-//obtenerResultadoActualizarBote(2000,'1');
+//obtenerResultadoComprobarUser('AEoooo@gmail.com',1234);
+
+// obtenerResultadoActualizarBote(2000,'2');
+
+obtenerResultadoDineroBote('laura@example.com',1);

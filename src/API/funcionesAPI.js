@@ -610,3 +610,76 @@ function sumarDineroBote(cantidad,idPartida){
 
 
 exports.sumarDineroBote = sumarDineroBote;
+
+
+
+
+
+// Sumarle al jugador dado el dinero que hay en la casilla del bote (casilla 21).
+/*
+  Pasos: 
+    1. Primero verificaremos que el jugador este en la partida.
+    2. Verificaremos que el jugador este en la casilla 21.
+    3. Obtendremos el bote y se lo sumaremos al saldo del jugador
+  
+    Devolveremos el dinero que tiene el jugador una vez actualicemos su dinero. En caso de que haya ido algo mal, devolveremos -1.
+*/
+function obtenerDineroBote(id_jugador,id_partida){
+
+  return new Promise((resolve, reject) => {
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT bote from partida where idPartida = '${id_partida}'`;
+    console.log(query);
+    con.query(query, (error, results) => {
+      if (error) {
+        console.log("ERROR!!");
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        con.end();
+        resolve(-1);
+      } 
+      else {
+        //una vez comprobado que esta en la partida, realizaremos consulta para ver si se encuentra en la posicion 
+        //de bote, si es asi, se le añadira el bote a su cuenta. En caso contrario, devolveremos -1.
+        let bote = results[0].bote;
+        const query2 = `SELECT posicion, dinero FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error);
+          } else {
+            //si ha ido bien devolvemos la posicion y comprobamos.
+            let posicion = results2[0].posicion;
+            if(posicion == POSICION_BOTE){
+              //esta en la casilla de bote, actualizamos el dinero del jugador y devolvemos el dinero resultante.
+              const query3 = `UPDATE juega SET dinero = ? WHERE email = ? `;
+              let dinero = results2[0].dinero;
+              dinero +=bote;
+              const values = [dinero, id_jugador];
+              con.query(query3,values, (error, results3) => {
+                if (error) {
+                  con.end();
+                  reject(error);
+                } else {
+                  //ha ido todo bien, devolvemos el dinero actualizado del jugador.
+                    resolve(dinero);    
+                }
+              });
+              con.end();
+            }
+            else{
+              //no esta en la casilla de bote, devuelve -1.
+              con.end();
+              resolve(-1);
+            }            
+          }
+        });
+      }
+    });
+  });
+}
+
+exports.obtenerDineroBote = obtenerDineroBote;

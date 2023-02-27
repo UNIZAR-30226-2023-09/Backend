@@ -59,3 +59,8 @@ enviarCarcel(jugador);
 function sumarDineroBote(cantidad,idPartida);
 
 
+
+// Sumarle al jugador dado el dinero que hay en la casilla del bote (casilla 21).
+function obtenerDineroBote(id_jugador,id_partida);
+
+
