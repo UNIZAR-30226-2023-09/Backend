@@ -613,6 +613,9 @@ exports.sumarDineroBote = sumarDineroBote;
 
 
 
+/*
+===================SUMAR DINERO DEL BOTE A UN JUGADOR=========================================
+*/
 
 
 // Sumarle al jugador dado el dinero que hay en la casilla del bote (casilla 21).
