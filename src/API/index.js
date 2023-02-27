@@ -29,6 +29,22 @@ async function obtenerResultadoInsertar(userData) {
 }
 
 
+//FUNCIONA OKEY.
+async function obtenerResultadoComprobarUser(email,pass) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.comprobarInicioSesion(email,pass);
+    console.log("El resultado obtenido de la comprobarUsuario es :", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
 //REVISAR FUNCIONAMIENTO BORRAR.
 async function obtenerResultadoBorrar(userData) {
     try {
@@ -146,6 +162,8 @@ async function obtenerResultadoEstaEnCarcel(email,idPartida) {
 
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
+
+//obtenerResultadoComprobarUser('AEoooo@gmail.com',1234);
 
 //obtenerResultadoBorrar('sara@example.com');
 

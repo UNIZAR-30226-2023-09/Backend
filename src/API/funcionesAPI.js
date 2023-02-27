@@ -58,6 +58,72 @@ function insertarUsuario(userData) {
 
 exports.insertarUsuario = insertarUsuario;
 
+
+
+
+/*
+======================COMPROBAR EXISTE USUARIO=====================================
+*/
+
+
+// Comprueba si el jugador tiene una cuenta asociada con el email y contraseña 
+// correspondiente
+// Si es correcto -> devuelve el número de gemas que tiene el jugador
+// Si no es correcto -> devuelve -1 (no puede tener gemas negativas así que 
+// entendemos de que no existe un email/contraseña asociados
+
+/*
+
+  Pasos a seguir para que sea seguro:
+    1. Buscamos que el usuario exista y devolvemos la contraseña de la base.
+    2. Si la contraseña que devuelve la query es igual que la que nos pasan como parametro devolvemos las gemas. 
+       En caso contrario, devolvemos false.
+*/
+
+function comprobarInicioSesion(email, contrasenya){
+  return new Promise((resolve, reject) => {
+    con.connect(function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        const query = `SELECT pass,gemas FROM Jugador WHERE email = '${email}'`;
+        con.query(query, (error, results) => {
+          if (error) {
+            resolve(false);
+            con.end(); // Cerrar conexión
+          } 
+          else if (results.length === 0) {
+            // Si el jugador no existe, devolver false.
+            console.log("No existe el jugador. :(");
+            con.end();  // Cerrar conexión
+            resolve(-1);
+          } 
+          else {
+            let gemas, pass;
+            gemas = results[0].gemas; //guardamos las gemas para devolverlas si la contraseña coincide.
+            pass = results[0].pass;
+            if(pass == contrasenya){
+              //son iguales, devolvemos numero de gemas.
+              resolve(gemas);
+            }
+            else{
+              //no son iguales las contrasenyas, devolvemos false.
+              resolve(-1);
+            }
+            con.end(); // Cerrar conexión
+          }
+        });
+      }
+    });
+
+  });
+
+}
+
+exports.comprobarInicioSesion = comprobarInicioSesion;
+
+
+
 /*
 =====================BORRAR USUARIO DEL MONOPOLY===========================
 */

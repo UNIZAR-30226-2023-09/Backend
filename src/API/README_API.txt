@@ -5,6 +5,16 @@ AQUI PONDREMOS LAS FUNCIONES YA ACABADAS CON SUS EXPLICACIONES DE LO QUE HACEN Y
 insertarUsuario(email,contraseña,nombre);
 
 
+
+// Comprueba si el jugador tiene una cuenta asociada con el email y contraseña 
+// correspondiente
+// Si es correcto -> devuelve el número de gemas que tiene el jugador
+// Si no es correcto -> devuelve -1 (no puede tener gemas negativas así que 
+// entendemos de que no existe un email/contraseña asociados
+function comprobarInicioSesion(email, contrasenya);
+
+
+
 // Mover el jugador, número veces hacia delante 
 // Ej: moverJugador(1, 5) -> mover el jugador 1, 5 casillas, es decir, su nueva posición // será la actual + 5
 // Que devuelve la nueva posición del jugador (ver si guardamos el tablero como 
