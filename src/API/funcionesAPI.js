@@ -575,7 +575,7 @@ function sumarDineroBote(cantidad,idPartida){
 
   return new Promise((resolve, reject) => {
     con.connect();
-    // Comprobar si el jugador existe en la tabla "juega".
+    //Selecciona el bote de la partida.
     const query = `SELECT bote FROM partida WHERE idPartida = '${idPartida}'`;
     con.query(query, (error, results) => {
       if (error) {
@@ -698,3 +698,32 @@ function obtenerDineroBote(id_jugador,id_partida){
 
 exports.obtenerDineroBote = obtenerDineroBote;
 
+
+
+// Dado un jugador, devuelve la cantidad de dinero que tiene en el banco. Si existe en la partida devuelve el dinero, en caso
+// contrario, devuelve -1.
+function dineroBanco(idJugador,idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT dinero FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        con.end();
+        resolve(-1);
+      } 
+      else {
+        //una vez comprobado que esta en la partida, devuelve el dinero que tiene el jugador.
+        let dinero = results[0].dinero;
+        resolve(dinero);
+      }
+      con.end();
+    });
+  });
+}
+
+exports.dineroBanco = dineroBanco;
