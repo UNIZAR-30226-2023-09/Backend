@@ -10,6 +10,10 @@
 
 const con = require('./db');
 
+const POSICION_CARCEL = 11;
+const POSICION_BOTE = 21;
+const NUM_TURNOS_CARCEL = 3;
+
 /*
 ======================INSERTAR USUARIO=====================================
 */
