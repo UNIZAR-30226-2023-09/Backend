@@ -101,7 +101,7 @@ function comprobarInicioSesion(email, contrasenya){
           else {
             let gemas, pass;
             gemas = results[0].gemas; //guardamos las gemas para devolverlas si la contraseña coincide.
-            pass = results[0].pass;
+            pass = results[0].pass;   //guardamos la contrasenya para poder compararla y verificar si es correecta o no.
             if(pass == contrasenya){
               //son iguales, devolvemos numero de gemas.
               resolve(gemas);
@@ -555,3 +555,58 @@ function verificarCarcel(jugador, idPartida){
   });
 }
 exports.verificarCarcel = verificarCarcel;
+
+
+
+
+/*
+===================SUMAR DINERO AL BOTE DE UNA PARTIDA=========================================
+*/
+
+
+// Sumar el dinero dado al bote, dado el dinero que queremos añadir, y el identificador de la partida a la que queremos añadirlo.
+/*
+  Pasos:
+    1. Sacamos el bote de la partida. (no es necesario comprobar que la partida esta activa, ya que el idPartida que nos dan es el de la partida actual que se esta jugando).
+    2. Le sumamos la cantidad.
+    3. Actualizamos el bote de la partida. Devolvemos -1 si ha ido mal y devolvemos el dinero del bote si ha ido bien.
+*/
+function sumarDineroBote(cantidad,idPartida){
+
+  return new Promise((resolve, reject) => {
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".
+    const query = `SELECT bote FROM partida WHERE idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        console.log("ERROR!!");
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si la partida no existe, devolver false
+        con.end();
+        resolve(-1);
+      } 
+      else {
+        // Realizar la consulta para modificar el dinero del jugador
+        const query = `UPDATE partida SET bote = ? WHERE idPartida = ?`;
+        let bote = results[0].bote;
+        bote += cantidad;
+        const values = [bote, idPartida];
+        con.query(query, values, (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            //todo ha ido okey, devolvemos el bote actualizado de la partida.
+            resolve(bote);
+          }
+          con.end();
+        });
+      }
+    });
+  });
+
+}
+
+
+exports.sumarDineroBote = sumarDineroBote;

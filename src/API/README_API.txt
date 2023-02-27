@@ -55,3 +55,7 @@ verificarCarcel(jugador);
 enviarCarcel(jugador);
 
 
+// Sumar el dinero dado al bote, dado el dinero que queremos añadir, y el identificador de la partida a la que queremos añadirlo.
+function sumarDineroBote(cantidad,idPartida);
+
+
