@@ -667,11 +667,22 @@ function obtenerDineroBote(id_jugador,id_partida){
                   con.end();
                   reject(error);
                 } else {
-                  //ha ido todo bien, devolvemos el dinero actualizado del jugador.
-                    resolve(dinero);    
+                  //ha ido todo bien, actualizamos el bote a 0.
+                  const query4 = `UPDATE partida SET bote = ? WHERE idPartida = ?`;
+                  var dineroCero = 0;
+                  const values2 = [dineroCero, id_partida];
+                  con.query(query4,values2, (error, results3) => {
+                    if (error) {
+                      con.end();
+                      reject(error);
+                    } else {
+                      //ha ido todo bien, devolvemos el dinero actualizado del jugador.
+                      con.end();
+                      resolve(dinero);    
+                    }
+                  });
                 }
               });
-              con.end();
             }
             else{
               //no esta en la casilla de bote, devuelve -1.
@@ -686,3 +697,4 @@ function obtenerDineroBote(id_jugador,id_partida){
 }
 
 exports.obtenerDineroBote = obtenerDineroBote;
+
