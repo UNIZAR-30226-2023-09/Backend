@@ -811,5 +811,52 @@ function meterDineroBanco(idJugador, idPartida, cantidad) {
   });
 }
 
-
 exports.meterDineroBanco = meterDineroBanco;
+
+
+/*
+===================ID_PARTIDA DE UN JUGADOR=========================================
+*/
+
+// Devuelve el id de la partida ACTIVA en la que esta el usuario "email". 
+//En caso de que no tenga ninguna partida activa, devuelve -1.
+function jugadorEnPartida(email){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        con.end();
+        resolve(-1);
+      } else {
+        let activa = false;
+        for(let i = 0; i < results.length; i++){
+          let partida = results[i].idPartida;
+          const query2 = `SELECT * FROM partida WHERE idPartida = '${partida}' AND enCurso='1'`;
+          con.query(query2, (error, results2) => {
+            if (error) {
+              con.end();
+              reject(error);
+            } else if (results2.length != 0) {
+              activa = true;
+              resolve(partida);
+            }
+            if (i === results.length - 1 && !activa) {
+              con.end();
+              resolve(-1);
+            }
+          });
+        }
+        con.end(); // Cerrar la conexión después de terminar el bucle.
+      }
+    });
+  });
+}
+
+
+exports.jugadorEnPartida = jugadorEnPartida;
+
+
