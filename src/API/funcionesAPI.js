@@ -704,6 +704,10 @@ exports.obtenerDineroBote = obtenerDineroBote;
 
 
 
+/*
+===================DEVUELVE DINERO DE UN JUGADOR EN UNA PARTIDA=========================================
+*/
+
 // Dado un jugador, devuelve la cantidad de dinero que tiene en el banco. Si existe en la partida devuelve el dinero, en caso
 // contrario, devuelve -1.
 function dineroBanco(idJugador,idPartida){
@@ -731,3 +735,35 @@ function dineroBanco(idJugador,idPartida){
 }
 
 exports.dineroBanco = dineroBanco;
+
+
+
+/*
+===================NUMERO DE PROPIEDADES DE UN JUGADOR EN UNA PARTIDA=========================================
+*/
+
+// Obtener el número de propiedades dado un jugador y una partida.
+// Devuelve -1, si algo ha ido mal.
+function obtenerNumPropiedades(idJugador,idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT num_propiedades FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        con.end();
+        resolve(-1);
+      } 
+      else {
+        //una vez comprobado que esta en la partida, devuelve el numero de propiedades del jugador.
+        let numProp = results[0].num_propiedades;
+        resolve(numProp);
+      }
+      con.end();
+    });
+  });
+}
