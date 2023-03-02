@@ -199,6 +199,21 @@ async function obtenerResultadoDineroJugador(idJugador,idPartida) {
   }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoActualizarDinero(idJugador,idPartida,cantidad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.meterDineroBanco(idJugador,idPartida,cantidad);
+    console.log("El resultado obtenido de devolver el dinero de un jugador en la partida :", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -223,3 +238,5 @@ async function obtenerResultadoDineroJugador(idJugador,idPartida) {
 //obtenerResultadoDineroBote('laura@example.com',1);
 
 //obtenerResultadoDineroJugador('juan@example.com',1);
+
+//obtenerResultadoActualizarDinero('juan@example.com',1,300);
