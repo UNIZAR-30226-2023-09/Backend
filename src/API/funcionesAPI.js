@@ -10,6 +10,10 @@
 
 const con = require('./db');
 
+const POSICION_CARCEL = 11;
+const POSICION_BOTE = 21;
+const NUM_TURNOS_CARCEL = 3;
+
 /*
 ======================INSERTAR USUARIO=====================================
 */
@@ -575,7 +579,7 @@ function sumarDineroBote(cantidad,idPartida){
 
   return new Promise((resolve, reject) => {
     con.connect();
-    // Comprobar si el jugador existe en la tabla "juega".
+    //Selecciona el bote de la partida.
     const query = `SELECT bote FROM partida WHERE idPartida = '${idPartida}'`;
     con.query(query, (error, results) => {
       if (error) {
@@ -697,4 +701,162 @@ function obtenerDineroBote(id_jugador,id_partida){
 }
 
 exports.obtenerDineroBote = obtenerDineroBote;
+
+
+
+/*
+===================DEVUELVE DINERO DE UN JUGADOR EN UNA PARTIDA=========================================
+*/
+
+// Dado un jugador, devuelve la cantidad de dinero que tiene en el banco. Si existe en la partida devuelve el dinero, en caso
+// contrario, devuelve -1.
+function dineroBanco(idJugador,idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT dinero FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        con.end();
+        resolve(-1);
+      } 
+      else {
+        //una vez comprobado que esta en la partida, devuelve el dinero que tiene el jugador.
+        let dinero = results[0].dinero;
+        resolve(dinero);
+      }
+      con.end();
+    });
+  });
+}
+
+exports.dineroBanco = dineroBanco;
+
+
+
+/*
+===================NUMERO DE PROPIEDADES DE UN JUGADOR EN UNA PARTIDA=========================================
+*/
+
+// Obtener el número de propiedades dado un jugador y una partida.
+// Devuelve -1, si algo ha ido mal.
+function obtenerNumPropiedades(idJugador,idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT num_propiedades FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        con.end();
+        resolve(-1);
+      } 
+      else {
+        //una vez comprobado que esta en la partida, devuelve el numero de propiedades del jugador.
+        let numProp = results[0].num_propiedades;
+        resolve(numProp);
+      }
+      con.end();
+    });
+  });
+}
+
+exports.obtenerNumPropiedades = obtenerNumPropiedades;
+
+
+
+/*
+===================METER DINERO AL BANCO DE UN JUGADOR=========================================
+*/
+
+
+// Dado un jugador, una partida y una cantidad meter ese dinero al banco(variable dineroInvertido).
+// Devuelve la cantidad de dinero que tiene el jugador en el banco
+function meterDineroBanco(idJugador, idPartida, cantidad) {
+  return new Promise((resolve, reject) => {
+    con.connect();
+    //comprobando que está en la partida, obtenemos el dinero del banco del jugador.
+    const query = 'SELECT dineroInvertido FROM juega WHERE email = ? AND idPartida = ?';
+    const values = [idJugador, idPartida];
+    con.query(query, values, (error, results) => {
+      if (error) {
+        reject(error);
+      } else if (results.length === 0) {
+        // Si no existe en juega, devolver -1.
+        resolve(-1);
+      } else {
+        let dineroInver = results[0].dineroInvertido;
+        const query2 = 'UPDATE juega SET dineroInvertido = ? WHERE email = ? AND idPartida = ?';
+        dineroInver += cantidad;
+        const values2 = [dineroInver, idJugador, idPartida];        
+        con.query(query2, values2, (error, results2) => {
+          if (error) {
+            console.log(query2);
+            reject(error);
+          } else {
+            //todo ha ido okey, devolvemos la cantidad de dinero que tiene en el banco el usuario.
+            resolve(dineroInver);
+          }
+        });
+      }
+      con.end();
+    }); 
+  });
+}
+
+exports.meterDineroBanco = meterDineroBanco;
+
+
+/*
+===================ID_PARTIDA DE UN JUGADOR=========================================
+*/
+
+// Devuelve el id de la partida ACTIVA en la que esta el usuario "email". 
+//En caso de que no tenga ninguna partida activa, devuelve -1.
+function jugadorEnPartida(email){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        con.end();
+        resolve(-1);
+      } else {
+        let activa = false;
+        for(let i = 0; i < results.length; i++){
+          let partida = results[i].idPartida;
+          const query2 = `SELECT * FROM partida WHERE idPartida = '${partida}' AND enCurso='1'`;
+          con.query(query2, (error, results2) => {
+            if (error) {
+              con.end();
+              reject(error);
+            } else if (results2.length != 0) {
+              activa = true;
+              resolve(partida);
+            }
+            if (i === results.length - 1 && !activa) {
+              con.end();
+              resolve(-1);
+            }
+          });
+        }
+        con.end(); // Cerrar la conexión después de terminar el bucle.
+      }
+    });
+  });
+}
+
+
+exports.jugadorEnPartida = jugadorEnPartida;
+
 

@@ -10,7 +10,7 @@ insertarUsuario(email,contraseña,nombre);
 // correspondiente
 // Si es correcto -> devuelve el número de gemas que tiene el jugador
 // Si no es correcto -> devuelve -1 (no puede tener gemas negativas así que 
-// entendemos de que no existe un email/contraseña asociados
+// entendemos de que no existe un email/contraseña asociados)
 function comprobarInicioSesion(email, contrasenya);
 
 

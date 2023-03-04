@@ -4,7 +4,7 @@
  * Autor: Jesus Lizama Moreno 
  * NIP: 816473
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
- * Fecha Ultima Actualizacion: 23/02/2023
+ * Fecha Ultima Actualizacion: 27/02/2023
  ----------------------------------------------------------------------------
 */
 
@@ -184,6 +184,50 @@ async function obtenerResultadoDineroBote(idJugador,idPartida) {
   }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoDineroJugador(idJugador,idPartida) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.dineroBanco(idJugador,idPartida);
+    console.log("El resultado obtenido de devolver el dinero de un jugador en la partida :", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+//FUNCIONA OKEY.
+async function obtenerResultadoActualizarDinero(idJugador,idPartida,cantidad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.meterDineroBanco(idJugador,idPartida,cantidad);
+    console.log("El resultado obtenido de actualizar el dinero del banco es :", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+//FUNCIONA OKEY.
+async function obtenerResultadoJugadorEnPartida(idJugador) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.jugadorEnPartida(idJugador);
+    console.log("El resultado obtenido de devolver el id_partida es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -203,6 +247,12 @@ async function obtenerResultadoDineroBote(idJugador,idPartida) {
 
 //obtenerResultadoComprobarUser('AEoooo@gmail.com',1234);
 
-// obtenerResultadoActualizarBote(2000,'2');
+//obtenerResultadoActualizarBote(2000,'2');
 
-obtenerResultadoDineroBote('laura@example.com',1);
+//obtenerResultadoDineroBote('laura@example.com',1);
+
+//obtenerResultadoDineroJugador('juan@example.com',1);
+
+//obtenerResultadoActualizarDinero('juan@example.com',1,300);
+
+//obtenerResultadoJugadorEnPartida('juan@example.com');
