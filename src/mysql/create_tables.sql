@@ -141,6 +141,7 @@ CREATE TABLE Partida (
 
 
 CREATE TABLE juega (
+    numPropiedades  INT NOT NULL,
     dineroInvertido FLOAT NOT NULL,
     nTurnosCarcel   INT NOT NULL,
     posicion        INT NOT NULL,
