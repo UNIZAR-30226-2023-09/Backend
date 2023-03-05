@@ -3,7 +3,7 @@
 ################################################################################
 # Asignatura: Proyecto Software (2022/2023)                                    #
 # Fichero: ejecutarSQL.sh                                                      #
-# Autores: David Rivera Seves (NIP: 815124)                                    #
+# Autor: David Rivera Seves (NIP: 815124)                                      #
 # Ejecución: bash ejecutarSQL.sh                                               #
 ################################################################################
 

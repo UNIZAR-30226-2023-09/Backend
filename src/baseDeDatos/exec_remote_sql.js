@@ -1,7 +1,7 @@
 /******************************************************************************\
 * Asignatura: Proyecto Software (2022/2023)                                    *
 * Fichero: exec_remote_sql.js                                                  *
-* Autores: David Rivera Seves (NIP: 815124)                                    *
+* Autor: David Rivera Seves (NIP: 815124)                                      *
 * Ejecución: node exec_remote_sql 'SHOW TABLES'                                *
 \******************************************************************************/
 
