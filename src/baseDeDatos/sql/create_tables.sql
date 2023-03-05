@@ -1,6 +1,7 @@
 --
 -- Proyecto Software (2022/2023)
 -- Fichero: create_tables.sql
+-- Autor: David Rivera Seves (NIP: 815124)
 --
 
 
