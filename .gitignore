@@ -1,0 +1,16 @@
+# Carpeta node_modules
+src/server/node_modules/
+
+# Archivos de dependencias
+src/server/package-lock.json
+
+# Archivos de configuración
+.env
+
+# Archivos de registro
+logs/
+*.log
+
+# Otros archivos generados
+coverage/
+dist/
