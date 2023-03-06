@@ -14,10 +14,10 @@ var mysql = require('mysql');
 
 //valores para conectarse a la base.
 var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "xxx",
-  database: 'xxx'
+  host: '34.175.167.234',
+  user: 'root',
+  password: 'psbackend1234',
+  database: 'otterfortune_main_db',
 });
 
 module.exports = con;

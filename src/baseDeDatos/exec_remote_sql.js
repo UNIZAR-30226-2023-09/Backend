@@ -36,7 +36,7 @@ connection.query(sqlQuery, function (error, results, fields) {
     console.log('[');
     // Extrae los valores de los objetos y los imprime en la consola
     results.forEach((result) => {
-      console.log(Object.values(result)[0]);
+      console.log(Object.values(result));
     });
     console.log(']');
   } else {
