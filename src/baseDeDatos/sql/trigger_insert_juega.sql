@@ -1,6 +1,7 @@
 --
 -- Proyecto Software (2022/2023)
 -- Fichero: trigger_insert_juega.sql
+-- Autor: David Rivera Seves (NIP: 815124)
 --
 -- Descripción:
 --    Comprueba que un jugador no pueda jugar varias partidas en curso
