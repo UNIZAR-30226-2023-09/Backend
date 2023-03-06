@@ -10,15 +10,14 @@
 /* TODO: HACER IMPORTS
  *       CONFIGURAR EL SEND
 */
-const funcionesPartida = require('./funcionesPartida');
-const funcionesJugador = require('./funcionesJugador');
-const funcionesJuega = require('./funcionesJuega');
+// const funcionesPartida = require('./funcionesPartida');
+// const funcionesJugador = require('./funcionesJugador');
+// const funcionesJuega = require('./funcionesJuega');
 
 const PUERTO = 8080 // Puerto a elegir
-const HOST = "88.5.17.25"
 
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ host: HOST, port: PUERTO });    
+const server = new WebSocket.Server({ port: PUERTO });    
 
 // Nueva conexion de cliente
 server.on("connection", (socket) => {
@@ -26,40 +25,40 @@ server.on("connection", (socket) => {
     
     // Nuevo mensaje recibido
     socket.on("message", (message) => {
-        console.log("Mensaje recibido: ${message}");
+        console.log(`Mensaje recibido: ${message}`);
 
-        // Obtenemos el mensaje solicitado
-        let mensaje = message.split(',');
-        // TODO: Switch de diferentes mensajes recibidos
-        // Si se quiere registrar
-        if (mensaje[0] == "registrarse") {
-            funcionesJugador.Registrarse(mensaje[1],mensaje[2],mensaje[3]);
+        // // Obtenemos el mensaje solicitado
+        // let mensaje = message.split(',');
+        // // TODO: Switch de diferentes mensajes recibidos
+        // // Si se quiere registrar
+        if (message == "hola") {
+            socket.send("buenas");
         }
 
-        // Si se quiere registrar
-        if (mensaje[0] == "iniciarSesion") {
-            funcionesJugador.IniciarSesion(mensaje[1],mensaje[2]);
-        }
+        // // Si se quiere registrar
+        // if (mensaje[0] == "iniciarSesion") {
+        //     funcionesJugador.IniciarSesion(mensaje[1],mensaje[2]);
+        // }
 
-        // Si el mensaje es que se ha creado una partida
-        if (mensaje[0] == "crearPartida") {
-            funcionesPartida.CrearPartida(mensaje[1],mensaje[2]);
-        }
+        // // Si el mensaje es que se ha creado una partida
+        // if (mensaje[0] == "crearPartida") {
+        //     funcionesPartida.CrearPartida(mensaje[1],mensaje[2]);
+        // }
 
-        // Si el mensaje es que se ha unido a una partida
-        if (mensaje == "unirsePartida") {
-            funcionesPartida.UnirsePartida(mensaje[1],mensaje[2]);
-        }
+        // // Si el mensaje es que se ha unido a una partida
+        // if (mensaje == "unirsePartida") {
+        //     funcionesPartida.UnirsePartida(mensaje[1],mensaje[2]);
+        // }
 
-        // Si el mensaje es que se han lanzado los dados
-        if (mensaje[0] === "lanzarDados") {
-            funcionesJuega.LanzarDados(mensaje[1],mensaje[2]);
-        }
+        // // Si el mensaje es que se han lanzado los dados
+        // if (mensaje[0] === "lanzarDados") {
+        //     funcionesJuega.LanzarDados(mensaje[1],mensaje[2]);
+        // }
 
-        // Si el mensaje es que se quiere acabar el turno
-        if (mensaje[0] === "finTurno") {
-            funcionesJuega.finTurno(mensaje[1],mensaje[2]);
-        }
+        // // Si el mensaje es que se quiere acabar el turno
+        // if (mensaje[0] === "finTurno") {
+        //     funcionesJuega.finTurno(mensaje[1],mensaje[2]);
+        // }
 
     });
 
