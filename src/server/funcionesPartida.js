@@ -7,21 +7,41 @@
  ----------------------------------------------------------------------------
 */
 
+const con = require('../API/db');
+const API = require('../API/funcionesAPI');
+
+
 async function CrearPartida(ID_jugador, numJugadores) {
-    // Creamos la partida y guardamos su ID
-    let id_partida = crearPartida(numJugadores);
-    socket.send("Partida creada con ID: ${id_partida}");
+    try {
+        // Creamos la partida y guardamos su ID
+        let id_partida = await API.crearPartida(numJugadores);
+        socket.send(`Partida creada con ID: ${id_partida}`);
+    }
+
+    catch(error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
 }
 
 exports.CrearPartida = CrearPartida;
 
 async function UnirsePartida(ID_partida, ID_jugador) {
-    // Unimos al jugador a la partida 
-    if (unirPartida(ID_jugador, ID_partida)) {
-        socket.send("Jugador unido correctamente a la partida");
+    try {
+        // Unimos al jugador a la partida 
+        if (await API.unirPartida(ID_jugador, ID_partida)) {
+            socket.send("Jugador unido correctamente a la partida");
+        }
+        else { // TODO: ¿Motivo?
+            socket.send("Jugador no unido correctamente");
+        }
     }
-    else { // TODO: ¿Motivo?
-        socket.send("Jugador no unido correctamente");
+
+    catch(error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
 }
 exports.UnirsePartida = UnirsePartida;

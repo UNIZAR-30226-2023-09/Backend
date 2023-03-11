@@ -36,15 +36,15 @@ async function IniciarSesion(email, contrasenya) {
     try {
         // Llamar a la función de la api correspondiente para comprobar inicio de sesión
         // Obtenemos el valor devuelto por la función (el num de gemas de ese usuario)
-        let gemas = comprobarInicioSesion(email, contrasenya);
+        let gemas = await API.comprobarInicioSesion(email, contrasenya);
         // Si ha iniciado sesión correctamente
         if ( gemas >= 0) {
             // Comprobams si está en una partida existente
-            let id_partida = jugadorEnPartida(email);
+            let id_partida = await API.jugadorEnPartida(email);
             // Está en una partida
             if (id_partida >= 0) {
                 // TODO: Ver como devuelven los datos de la partida y mandárselos al cliente
-                obtenerDatosPartida(id_partida);
+                await API.obtenerDatosPartida(id_partida);
                 // Mandar los datos de la partida para mostrarlos
             }
             else {
