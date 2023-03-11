@@ -41,9 +41,9 @@ function LanzarDados(ID_jugador, ID_partida) {
     comprobarCasilla(posicionNueva, ID_jugador);
 
     // Enviar la nueva posición del jugador y el valor de los dados
-    socket.send("El dado 1 es: ${dado1}");
-    socket.send("El dado 2 es: ${dado2}");
-    socket.send("La nueva posicion es: ${posicionNueva}");
+    socket.send(`El dado 1 es: ${dado1}`);
+    socket.send(`El dado 2 es: ${dado2}`);
+    socket.send(`La nueva posicion es: ${posicionNueva}`);
 }
 exports.LanzarDados = LanzarDados;
 
@@ -130,5 +130,9 @@ function comprobarCasilla(posicion, ID_jugador) {
         pagarAlquiler(ID_jugador, IDjugador_propiedad, tablero[posicion - 1]);
     }
     // Si pertenece al propio jugador no se hace nada -> no hace falta comprobarlo
-
 }
+
+
+/* function finTurno() {
+
+} */

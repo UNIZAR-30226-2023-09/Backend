@@ -27,20 +27,21 @@ server.on("connection", (socket) => {
     socket.on("message", (message) => {
         console.log(`Mensaje recibido: ${message}`);
 
-        // Obtenemos el mensaje solicitado
-        let mensaje = message.split(",");
+        let mensaje = "";
+        // Obtenemos el mensaje solicitado comprobando si contiene una coma
+        // para dividirlo o no.
+        if (message.includes(",")) {
+            mensaje = message.toString().split(",");
+        }
+        else {
+            mensaje = [message];
+        }
         
         // // TODO: Switch de diferentes mensajes recibidos
         // Prueba de reenvio mensaje
-        if (message == "hola") {
-            socket.send("buenas");
-        }
-
-        /* if (message.includes(",")) {
-            mensajeDividido = message.split(",");
-        } else {
-            mensajeDividido = [message];
-        } */
+        // if (message == "hola") {
+           // socket.send("buenas");
+        //}
 
         // Si se quiere registrar
         if (mensaje[0] == "registrarse") {
@@ -67,11 +68,6 @@ server.on("connection", (socket) => {
             funcionesJuega.LanzarDados(mensaje[1],mensaje[2]);
         }
 
-        // Si el mensaje es que se quiere acabar el turno
-        if (mensaje[0] === "finTurno") {
-            funcionesJuega.finTurno(mensaje[1],mensaje[2]);
-        }
-
         // Si el mensaje es que se quiere comprar una propiedad
         if (mensaje[0] == "comprarPropiedad") {
 
@@ -87,6 +83,11 @@ server.on("connection", (socket) => {
             
         }   
 
+        // Si el mensaje es que se quiere acabar el turno
+        if (mensaje[0] === "finTurno") {
+            funcionesJuega.finTurno(mensaje[1],mensaje[2]);
+        }
+        
         // Si el mensaje es que se quiere crear un torneo
         if (mensaje[0] == "crearTorneo") {
             
