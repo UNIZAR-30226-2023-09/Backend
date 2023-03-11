@@ -11,7 +11,7 @@ const con = require('../API/db');
 const API = require('../API/funcionesAPI');
 
 
-async function CrearPartida(ID_jugador, numJugadores) {
+async function CrearPartida(socket, ID_jugador, numJugadores) {
     try {
         // Creamos la partida y guardamos su ID
         let id_partida = await API.crearPartida(numJugadores);
@@ -27,7 +27,7 @@ async function CrearPartida(ID_jugador, numJugadores) {
 
 exports.CrearPartida = CrearPartida;
 
-async function UnirsePartida(ID_partida, ID_jugador) {
+async function UnirsePartida(socket, ID_partida, ID_jugador) {
     try {
         // Unimos al jugador a la partida 
         if (await API.unirPartida(ID_jugador, ID_partida)) {

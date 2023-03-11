@@ -50,22 +50,22 @@ server.on("connection", (socket) => {
 
         // Si se quiere iniciar sesión
         if (mensaje[0] == "iniciarSesion") {
-            funcionesJugador.IniciarSesion(mensaje[1],mensaje[2]);
+            funcionesJugador.IniciarSesion(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se ha creado una partida
         if (mensaje[0] == "crearPartida") {
-            funcionesPartida.CrearPartida(mensaje[1],mensaje[2]);
+            funcionesPartida.CrearPartida(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se ha unido a una partida
         if (mensaje == "unirsePartida") {
-            funcionesPartida.UnirsePartida(mensaje[1],mensaje[2]);
+            funcionesPartida.UnirsePartida(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
-            funcionesJuega.LanzarDados(mensaje[1],mensaje[2]);
+            funcionesJuega.LanzarDados(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se quiere comprar una propiedad
@@ -85,7 +85,7 @@ server.on("connection", (socket) => {
 
         // Si el mensaje es que se quiere acabar el turno
         if (mensaje[0] === "finTurno") {
-            funcionesJuega.finTurno(mensaje[1],mensaje[2]);
+            funcionesJuega.finTurno(socket, mensaje[1],mensaje[2]);
         }
         
         // Si el mensaje es que se quiere crear un torneo

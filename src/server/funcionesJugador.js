@@ -32,7 +32,7 @@ async function Registrarse(socket, email, contrasenya, nombre) {
 exports.Registrarse = Registrarse;
 
 
-async function IniciarSesion(email, contrasenya) {
+async function IniciarSesion(socket, email, contrasenya) {
     try {
         // Llamar a la función de la api correspondiente para comprobar inicio de sesión
         // Obtenemos el valor devuelto por la función (el num de gemas de ese usuario)

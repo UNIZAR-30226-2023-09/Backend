@@ -10,7 +10,7 @@
 const con = require('../API/db');
 const API = require('../API/funcionesAPI');
 
-async function LanzarDados(ID_jugador, ID_partida) {
+async function LanzarDados(socket, ID_jugador, ID_partida) {
     try {
         // Calculamos el valor de los dados
         let dado1 = Math.floor(Math.random() % 6) + 1;
