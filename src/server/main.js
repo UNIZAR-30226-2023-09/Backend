@@ -45,7 +45,7 @@ server.on("connection", (socket) => {
 
         // Si se quiere registrar
         if (mensaje[0] == "registrarse") {
-            funcionesJugador.Registrarse(mensaje[1],mensaje[2]);
+            funcionesJugador.Registrarse(socket, mensaje[1],mensaje[2],mensaje[3]);
         }
 
         // Si se quiere iniciar sesión

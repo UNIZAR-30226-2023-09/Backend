@@ -11,10 +11,11 @@ const con = require('../API/db');
 const API = require('../API/funcionesAPI');
 
 
-async function Registrarse(email, contrasenya, nombre) {
+async function Registrarse(socket, email, contrasenya, nombre) {
     try {
         // Si se ha registrado correctamente
-        if (await API.registrarJugador(email,contrasenya,nombre)) {
+        let insert = nombre + "," + contrasenya + "," + email + "," + 0;
+        if (await API.insertarUsuario(insert)) {
             socket.send("Registro correcto");
         }
         else {
