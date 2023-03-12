@@ -45,9 +45,7 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
         await API.comprobarCasilla(posicionNueva, ID_jugador);
 
         // Enviar la nueva posición del jugador y el valor de los dados
-        socket.send(`El dado 1 es: ${dado1}`);
-        socket.send(`El dado 2 es: ${dado2}`);
-        socket.send(`La nueva posicion es: ${posicionNueva}`);
+        socket.send(`DADOS,${dado1},${dado2},${posicionNueva}`);
     }
     catch(error) {
         // Si hay un error en la Promesa, devolvemos false.
@@ -90,7 +88,11 @@ async function comprobarCasilla(posicion, ID_jugador) {
 
     // Comprobar si es casilla de casino
     if (posicion == 14) {
-        
+        // Mandar mensaje: Cuanto quieres apostar
+        // Recibir dinero: Cantidad
+        // Comprobar si cantidad es menor que dinero tiene jugador
+        // Generar num aleatorio entre 0-1, si es 0 sumar cantidad a su cuenta
+        //                                  si es 1 restar cantidad a su cuenta 
     }
 
     // Comprobar si la nueva casilla es la del bote
@@ -100,7 +102,8 @@ async function comprobarCasilla(posicion, ID_jugador) {
 
     // Comprobar si es casilla de banco
     if (posicion == 28) {
-
+        // Mandar mensaje: Banco,cantidadEnElBanco
+        // Responde con sacar/meter,cantidad
     }
 
     // Comprobar si la nueva casilla es la de ir a la cárcel
@@ -119,11 +122,10 @@ async function comprobarCasilla(posicion, ID_jugador) {
     // Comprobar si es casilla de superpoder
     if (posicion == 9 || posicion == 18) {
         // Obtener carta
-
     }
 
     // Si la nueva casilla es la de la cárcel (11) -> no hacer nada
-    if (posicion == 1) {
+    if (posicion == 11) {
         // No se hace nada, se pasa turno y ya
     }
 
@@ -133,6 +135,10 @@ async function comprobarCasilla(posicion, ID_jugador) {
     // Comprobamos si la propiedad no pertenece a ningún jugador
     if (IDjugador_propiedad == -1) {
         // TODO: Dar opción de comprarla
+        // Mandar mensaje: Comprar?
+        // Recibe mensaje: SI/NO
+        //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
+        //      Si el mensaje es NO -> muy bien jugado, no hacer nada
     }
     // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
     else if (IDjugador_propiedad != ID_jugador) {

@@ -16,11 +16,11 @@ async function Registrarse(socket, email, contrasenya, nombre) {
         // Si se ha registrado correctamente
         let insert = nombre + "," + contrasenya + "," + email + "," + 0;
         if (await API.insertarUsuario(insert)) {
-            socket.send("Registro correcto");
+            socket.send("REGISTRO_OK");
         }
         else {
             // TODO: Habría que ver como mirar el motivo de por qué ha ido mal el registro
-            socket.send("Registro incorrecto");
+            socket.send("REGISTRO_NO_OK");
         }
         
       } catch (error) {
@@ -48,11 +48,11 @@ async function IniciarSesion(socket, email, contrasenya) {
                 // Mandar los datos de la partida para mostrarlos
             }
             else {
-                socket.send(`El usuario tiene ${gemas} gemas`);
+                socket.send(`INICIO_OK,${email},${gemas}`);
             }
         }
         else {
-            socket.send(`Inicio de sesion incorrecto`);
+            socket.send(`INICIO_NO_OK`);
         }
 
     } catch(error) {

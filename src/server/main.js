@@ -37,45 +37,49 @@ server.on("connection", (socket) => {
             mensaje = [message];
         }
         
-        // // TODO: Switch de diferentes mensajes recibidos
-        // Prueba de reenvio mensaje
-        // if (message == "hola") {
-           // socket.send("buenas");
-        //}
+        // TODO: HACER TODOS LOS MENSAJES RECIBIDOS EN OTROS FICHEROS
 
         // Si se quiere registrar
         if (mensaje[0] == "registrarse") {
+            // socket, email, contrasenya, nombre
             funcionesJugador.Registrarse(socket, mensaje[1],mensaje[2],mensaje[3]);
         }
 
         // Si se quiere iniciar sesión
         if (mensaje[0] == "iniciarSesion") {
+            // socket, email, contrasenya
             funcionesJugador.IniciarSesion(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se ha creado una partida
         if (mensaje[0] == "crearPartida") {
-            funcionesPartida.CrearPartida(socket, mensaje[1],mensaje[2]);
+            // socket, ID_jugador
+            funcionesPartida.CrearPartida(socket, mensaje[1]);
         }
 
         // Si el mensaje es que se ha unido a una partida
         if (mensaje == "unirsePartida") {
+            // socket, ID_jugador, ID_partida
             funcionesPartida.UnirsePartida(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
+            // socket, ID_jugador, ID_partida
+            // TODO: ID_partida hace falta? no la uso en la función
             funcionesJuega.LanzarDados(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se quiere comprar una propiedad
         if (mensaje[0] == "comprarPropiedad") {
-
+            // Socket, jugador, propiedad
+            funcionesPartida.ComprarPropiedad(socket, mensaje[1],mensaje[2]);
         }      
 
         // Si el mensaje es que se quiere vender una propiedad
         if (mensaje[0] == "venderPropiedad") {
-            
+            // Socket, jugador, propiedad
+            funcionesPartida.VenderPropiedad(socket, mensaje[1],mensaje[2]);
         }   
 
         // Si el mensaje es que se quiere usar una carta

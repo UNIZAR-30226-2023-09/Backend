@@ -11,11 +11,11 @@ const con = require('../API/db');
 const API = require('../API/funcionesAPI');
 
 
-async function CrearPartida(socket, ID_jugador, numJugadores) {
+async function CrearPartida(socket, ID_jugador) {
     try {
         // Creamos la partida y guardamos su ID
-        let id_partida = await API.crearPartida(numJugadores);
-        socket.send(`Partida creada con ID: ${id_partida}`);
+        let id_partida = await API.crearPartida(ID_jugador);
+        socket.send(`CREADA_OK,${id_partida}`);
     }
 
     catch(error) {
@@ -27,14 +27,14 @@ async function CrearPartida(socket, ID_jugador, numJugadores) {
 
 exports.CrearPartida = CrearPartida;
 
-async function UnirsePartida(socket, ID_partida, ID_jugador) {
+async function UnirsePartida(socket, ID_jugador, ID_partida) {
     try {
         // Unimos al jugador a la partida 
         if (await API.unirPartida(ID_jugador, ID_partida)) {
-            socket.send("Jugador unido correctamente a la partida");
+            socket.send("UNIR_OK");
         }
         else { // TODO: ¿Motivo?
-            socket.send("Jugador no unido correctamente");
+            socket.send("UNIR_NO_OK");
         }
     }
 
@@ -45,3 +45,41 @@ async function UnirsePartida(socket, ID_partida, ID_jugador) {
     }
 }
 exports.UnirsePartida = UnirsePartida;
+
+async function ComprarPropiedad(socket, ID_jugador, propiedad) {
+    try {
+        let dinero = await API.comprarPropiedad(ID_jugador, propiedad);
+        if (dinero == -1) { // No se ha podido comprar
+            socket.send("COMPRAR_NO_ON")
+        }
+        else { // Se ha comprado la propiedad, devolvemos el dinero resultante del jugador
+            socket.send(`COMPRAR_OK, ${dinero}`);
+        }
+    }
+
+    catch(error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+}
+exports.ComprarPropiedad = ComprarPropiedad;
+
+async function VenderPropiedad(socket, ID_jugador, propiedad) {
+    try {
+        let dinero = await API.venderPropiedad(ID_jugador, propiedad);
+        if (dinero == -1) { // No se ha podido vender
+            socket.send("VENDER_NO_ON")
+        }
+        else { // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
+            socket.send(`VENDER_OK, ${dinero}`);
+        }
+    }
+
+    catch(error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+}
+exports.VenderPropiedad = VenderPropiedad;
