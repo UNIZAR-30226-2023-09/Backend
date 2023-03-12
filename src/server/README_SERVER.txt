@@ -33,12 +33,6 @@ NUEVO_DINERO_BOTE,dineroBote;
 // Cuando se cae en la casilla de BOTE -> te llevas su dinero
 OBTENER_BOTE,ID_jugador,dineroBote
 
-// Cuando un jugador no puede comprar una propiedad
-COMPRAR_NO_OK,ID_jugador,propiedad
-
-// Cuando un jugador compra correctamente una propiedad
-COMPRAR_OK,propiedad,dineroResultanteJugador
-
 // Cuando un jugador no puede vender una propiedad
 VENDER_NO_OK,ID_jugador,propiedad
 
@@ -57,3 +51,29 @@ APOSTAR_OK,ID_jugador,nuevoDinero,ID_partida
 
 // Si le toca ir a la carcel
 DENTRO_CARCEL,ID_jugador
+
+// Cuando un jugador le tiene que pagar el alquiler a otro
+NUEVO_DINERO_ALQUILER,dineroJugadorPaga,dineroJugadorRecibe
+
+// Cuando se cae en la casilla del banco
+// Espero recibir:  METER/SACAR,ID_jugador,ID_partida,cantidad  (en funcion de lo que quiera hacer el jugador)
+ACCION_BANCO,ID_jugador,ID_partida,cantidad
+
+// Si es meter dinero en el banco
+METER_DINERO_BANCO,ID_jugador,ID_partida,dineroJugadorBanco,dineroJugador
+
+// Si es sacar dinero del banco
+SACAR_DINERO_BANCO,ID_jugador,ID_partida,dineroJugadorBanco,dineroJugador
+
+// Cuando caes en una casilla de propiedad libre -> dar opción de comprarla
+// Espero recibir: SI/NO_COMPRAR_PROPIEDAD,ID_jugador,propiedad,ID_partida
+QUIERES_COMPRAR_PROPIEDAD,ID_jugador,propiedad,ID_partida
+
+// Cuando un jugador no puede comprar una propiedad
+COMPRAR_NO_OK,ID_jugador,propiedad,ID_partida
+
+// Cuando un jugador compra correctamente una propiedad
+COMPRAR_OK,ID_jugador,propiedad,dineroResultanteJugador,ID_partida
+
+// Cuando un jugador quiera vender propiedad espero recibir: venderPropiedad,ID_jugador,propiedad,ID_partida
+

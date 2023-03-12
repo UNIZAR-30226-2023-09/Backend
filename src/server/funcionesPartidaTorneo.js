@@ -1,6 +1,6 @@
 /*
  ----------------------------------------------------------------------------
- * Fichero: funcionesJugador.js
+ * Fichero: funcionesPartidaTorneo.js
  * Autor: César Moro Latorre, Alejandro Lalaguna Maza
  * NIP: 815078, 819860
  * Descripción: Fichero de funciones auxiliares correspondientes a la partida
@@ -45,44 +45,6 @@ async function UnirsePartida(socket, ID_jugador, ID_partida) {
     }
 }
 exports.UnirsePartida = UnirsePartida;
-
-async function ComprarPropiedad(socket, ID_jugador, propiedad) {
-    try {
-        let dinero = await API.comprarPropiedad(ID_jugador, propiedad);
-        if (dinero == -1) { // No se ha podido comprar
-            socket.send(`COMPRAR_NO_OK,${ID_jugador},${propiedad}`)
-        }
-        else { // Se ha comprado la propiedad, devolvemos el dinero resultante del jugador
-            socket.send(`COMPRAR_OK, ${propiedad},${dinero}`);
-        }
-    }
-
-    catch(error) {
-        // Si hay un error en la Promesa, devolvemos false.
-        console.error("Error en la Promesa: ", error);
-        return false;
-    }
-}
-exports.ComprarPropiedad = ComprarPropiedad;
-
-async function VenderPropiedad(socket, ID_jugador, propiedad) {
-    try {
-        let dinero = await API.venderPropiedad(ID_jugador, propiedad);
-        if (dinero == -1) { // No se ha podido vender
-            socket.send(`VENDER_NO_OK,${ID_jugador},${propiedad}`)
-        }
-        else { // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
-            socket.send(`VENDER_OK,${propiedad},${dinero}`);
-        }
-    }
-
-    catch(error) {
-        // Si hay un error en la Promesa, devolvemos false.
-        console.error("Error en la Promesa: ", error);
-        return false;
-    }
-}
-exports.VenderPropiedad = VenderPropiedad;
 
 async function CrearTorneo(socket, ID_jugador) {
     try {

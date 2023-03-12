@@ -10,9 +10,9 @@
 /* TODO: HACER IMPORTS
  *       CONFIGURAR EL SEND
 */
-const funcionesPartida = require('./funcionesPartida');
+const funcionesPartidaTorneo = require('./funcionesPartidaTorneo');
 const funcionesJugador = require('./funcionesJugador');
-const funcionesJuega = require('./funcionesJuega');
+const funcionesTablero = require('./funcionesTablero');
 
 const PUERTO = 8080 // Puerto a elegir
 
@@ -54,79 +54,96 @@ server.on("connection", (socket) => {
         // Si el mensaje es que se ha creado una partida
         if (mensaje[0] == "crearPartida") {
             // socket, ID_jugador
-            funcionesPartida.CrearPartida(socket, mensaje[1]);
+            funcionesPartidaTorneo.CrearPartida(socket, mensaje[1]);
         }
 
         // Si el mensaje es que se ha unido a una partida
         if (mensaje == "unirsePartida") {
             // socket, ID_jugador, ID_partida
-            funcionesPartida.UnirsePartida(socket, mensaje[1],mensaje[2]);
+            funcionesPartidaTorneo.UnirsePartida(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
             // socket, ID_jugador, ID_partida
-            funcionesJuega.LanzarDados(socket, mensaje[1],mensaje[2]);
+            funcionesTablero.LanzarDados(socket, mensaje[1],mensaje[2]);
         }
 
         // En caso de que el jugador haya apostado
         if (mensaje[0] == "APOSTAR") {
             // socket, ID_jugador, ID_partida, cantidad
-            funcionesJuega.Apostar(socket, mensaje[1],mensaje[2]);
+            funcionesTablero.Apostar(socket, mensaje[1],mensaje[2]);
+        }
+
+        // En caso de caer en la casilla del banco, realizar la acción oportuna
+        //METER/SACAR,ID_jugador,ID_partida,cantidad
+        if (mensaje[0] == "METER") {
+            funcionesTablero.MeterBanco(socket, mensaje[1], mensaje[2], mensaje[3]);
+        }
+
+        if (mensaje[0] == "SACAR") {
+            funcionesTablero.SacarBanco(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
 
         // Si el mensaje es que se quiere comprar una propiedad
-        if (mensaje[0] == "comprarPropiedad") {
-            // Socket, jugador, propiedad
-            funcionesPartida.ComprarPropiedad(socket, mensaje[1],mensaje[2]);
+        if (mensaje[0] == "SI_COMPRAR_PROPIEDAD") {
+            // Socket, ID_jugador,propiedad,ID_partida
+            funcionesTablero.ComprarPropiedad(socket, mensaje[1],mensaje[2], mensaje[3]);
+        }      
+
+        // Si el mensaje es que no se quiere comprar una propiedad -> no hacer nada y pasar turno
+        if (mensaje[0] == "NO_COMPRAR_PROPIEDAD") {
+            // Pasar turno
+            // TODO:
         }      
 
         // Si el mensaje es que se quiere vender una propiedad
         if (mensaje[0] == "venderPropiedad") {
             // Socket, jugador, propiedad
-            funcionesPartida.VenderPropiedad(socket, mensaje[1],mensaje[2]);
+            funcionesTablero.VenderPropiedad(socket, mensaje[1],mensaje[2]);
         }   
 
         // Si el mensaje es que se quiere usar una carta
         if (mensaje[0] == "usarCarta") {
-            
+            // TODO:
         }   
 
         // Si el mensaje es que se quiere acabar el turno
         if (mensaje[0] === "finTurno") {
-            funcionesJuega.finTurno(socket, mensaje[1],mensaje[2]);
+            // TODO: MIRAR ESTA 
+            funcionesTablero.finTurno(socket, mensaje[1],mensaje[2]);
         }
         
         // Si el mensaje es que se quiere crear un torneo
         if (mensaje[0] == "crearTorneo") {
             // socket, ID_jugador
-            funcionesPartida.CrearTorneo(socket, mensaje[1]);
+            funcionesPartidaTorneo.CrearTorneo(socket, mensaje[1]);
         }   
         
         // Si el mensaje es que se quiere unir a un torneo
         if (mensaje[0] == "unirseTorneo") {
             // socket, ID_jugador, ID_Torneo
-            funcionesPartida.UnirseTorneo(socket, mensaje[1],mensaje[2]);
+            funcionesPartidaTorneo.UnirseTorneo(socket, mensaje[1],mensaje[2]);
         }   
         
         // Se solicita hacer un intercambio
         if (mensaje[0] == "intercambio") {
-            
+            // TODO:
         }   
         
         // Se inicia una subasta
         if (mensaje[0] == "iniciarSubasta") {
-            
+            // TODO:
         }   
 
         // Se quiere comprar una skin
         if (mensaje[0] == "comprarSkin") {
-            
+            // TODO:
         }   
 
         // Se quiere ver las skins disponibles de un jugador
         if (mensaje[0] == "verSkins") {
-            
+            // TODO:
         }   
 
     });
