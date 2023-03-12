@@ -66,8 +66,13 @@ server.on("connection", (socket) => {
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
             // socket, ID_jugador, ID_partida
-            // TODO: ID_partida hace falta? no la uso en la función
             funcionesJuega.LanzarDados(socket, mensaje[1],mensaje[2]);
+        }
+
+        // En caso de que el jugador haya apostado
+        if (mensaje[0] == "APOSTAR") {
+            // socket, ID_jugador, ID_partida, cantidad
+            funcionesJuega.Apostar(socket, mensaje[1],mensaje[2]);
         }
 
         // Si el mensaje es que se quiere comprar una propiedad
@@ -94,12 +99,14 @@ server.on("connection", (socket) => {
         
         // Si el mensaje es que se quiere crear un torneo
         if (mensaje[0] == "crearTorneo") {
-            
+            // socket, ID_jugador
+            funcionesPartida.CrearTorneo(socket, mensaje[1]);
         }   
         
         // Si el mensaje es que se quiere unir a un torneo
         if (mensaje[0] == "unirseTorneo") {
-            
+            // socket, ID_jugador, ID_Torneo
+            funcionesPartida.UnirseTorneo(socket, mensaje[1],mensaje[2]);
         }   
         
         // Se solicita hacer un intercambio
