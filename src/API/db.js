@@ -17,7 +17,7 @@ var con = mysql.createConnection({
   host: '34.175.167.234',
   user: 'root',
   password: 'psbackend1234',
-  database: 'otterfortune_main_db',
+  database: 'otterfortune_main_db'
 });
 
 module.exports = con;
