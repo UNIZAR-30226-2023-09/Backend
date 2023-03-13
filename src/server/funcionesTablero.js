@@ -9,8 +9,6 @@
 
 const ECONOMIA = 1;
 
-const WebSocketServer = require('ws/lib/websocket-server');
-const con = require('../API/db');
 const API = require('../API/funcionesAPI');
 
 async function LanzarDados(socket, ID_jugador, ID_partida) {
