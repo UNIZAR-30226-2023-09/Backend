@@ -90,8 +90,9 @@ Servidor genera una lista con las propiedades que puede edificar -> EDIFICAR,ID_
 Servidor comprueba que tenga dinero suficiente para edificar y en ese caso mando EDIFICAR_OK,propiedad,nuevoDineroJugador
                                                                     si no tiene  EDIFICAR_NOOK,propiedad
 
-// Cuando es finTurno
-// Si es un jugador mando: TURNO,ID_jugador,ID_partida
+// Cuando es finTurno espero recibir: finTurno,ID_jugador,ID_partida  (el jugador que ha acabado el turno)
+Si es un jugador mando: TURNO,ID_jugador,ID_partida
+Si es un bot no mando nada
 
 -------------------------------------------------------------------------------------------------------------------------------------
 LOS DE LA BASE TIENEN QUE HACER UNA FUNCION QUE DEVUELVA DADO UN JUGADOR, TODAS LAS PROPIEDADES QUE PUEDE EDIFICAR JUNTO A SU PRECIO DE EDIFICAR

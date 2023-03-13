@@ -75,12 +75,11 @@ server.on("connection", (socket) => {
             funcionesTablero.Apostar(socket, mensaje[1],mensaje[2]);
         }
 
-        // En caso de caer en la casilla del banco, realizar la acción oportuna
-        //METER/SACAR,ID_jugador,ID_partida,cantidad
+        // En caso de caer en la casilla del banco, realizar la acción oportuna si se desea
+        //METER/SACAR, ID_jugador, ID_partida, cantidad
         if (mensaje[0] == "METER") {
             funcionesTablero.MeterBanco(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
-
         if (mensaje[0] == "SACAR") {
             funcionesTablero.SacarBanco(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
@@ -125,11 +124,12 @@ server.on("connection", (socket) => {
             // TODO: MIRAR ESTA 
             // Función de la API que diga si el siguiente jugador es un bot o no
             //      Si no es un bot devuelve el correo del jugador que le toca
-            //      Si es un bot, que devuelva bot@bot.com
+            //      Si es un bot, que devuelva TurnoBot
             // Comprobar si es fin de ronda para lo de los eventos, para actualizar saldos bancos
             //                      actualizar economía
             // Si es un jugador mando: TURNO,ID_jugador,ID_partida
-            funcionesTablero.finTurno(socket, mensaje[1],mensaje[2]);
+            // socket, ID_jugador, ID_partida
+            funcionesJugador.FinTurno(socket, mensaje[1],mensaje[2]);
         }
         
         // Si el mensaje es que se quiere crear un torneo
@@ -144,6 +144,7 @@ server.on("connection", (socket) => {
             funcionesPartidaTorneo.UnirseTorneo(socket, mensaje[1],mensaje[2]);
         }   
         
+        /*------------------------------------------------------*/
         // Se solicita hacer un intercambio
         if (mensaje[0] == "intercambio") {
             // TODO:

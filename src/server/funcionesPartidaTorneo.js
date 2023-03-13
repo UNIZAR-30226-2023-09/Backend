@@ -10,7 +10,7 @@
 const con = require('../API/db');
 const API = require('../API/funcionesAPI');
 
-
+// El jugador dado crea una partida
 async function CrearPartida(socket, ID_jugador) {
     try {
         // Creamos la partida y guardamos su ID
@@ -32,6 +32,7 @@ async function CrearPartida(socket, ID_jugador) {
 
 exports.CrearPartida = CrearPartida;
 
+// Unir al jugador dado a la partida solicitada
 async function UnirsePartida(socket, ID_jugador, ID_partida) {
     try {
         // Unimos al jugador a la partida 
@@ -51,6 +52,7 @@ async function UnirsePartida(socket, ID_jugador, ID_partida) {
 }
 exports.UnirsePartida = UnirsePartida;
 
+// El jugador dado crea un nuevo torneo
 async function CrearTorneo(socket, ID_jugador) {
     try {
         // Creamos el torneo y guardamos su ID
@@ -69,9 +71,9 @@ async function CrearTorneo(socket, ID_jugador) {
         return false;
     }
 }
-
 exports.CrearTorneo = CrearTorneo;
 
+// Unir al jugador dado al torneo solicitado
 async function UnirseTorneo(socket, ID_jugador, ID_Torneo) {
     try {
         // Unimos al jugador al torneo 
@@ -90,3 +92,4 @@ async function UnirseTorneo(socket, ID_jugador, ID_Torneo) {
     }
 }
 exports.UnirseTorneo = UnirseTorneo;
+

@@ -10,7 +10,7 @@
 const con = require('../API/db');
 const API = require('../API/funcionesAPI');
 
-
+// Registra al jugador dado si es posible
 async function Registrarse(socket, email, contrasenya, nombre) {
     try {
         // Si se ha registrado correctamente
@@ -31,7 +31,7 @@ async function Registrarse(socket, email, contrasenya, nombre) {
 }
 exports.Registrarse = Registrarse;
 
-
+// Inicia sesión del jugador dado si es posible
 async function IniciarSesion(socket, email, contrasenya) {
     try {
         // Llamar a la función de la api correspondiente para comprobar inicio de sesión
@@ -44,8 +44,9 @@ async function IniciarSesion(socket, email, contrasenya) {
             // Está en una partida
             if (id_partida >= 0) {
                 // TODO: Ver como devuelven los datos de la partida y mandárselos al cliente
-                await API.obtenerDatosPartida(id_partida);
+                let datosPartida = await API.obtenerDatosPartida(id_partida);
                 // Mandar los datos de la partida para mostrarlos
+                socket.send();
             }
             else {
                 socket.send(`INICIO_OK,${email},${gemas}`);
@@ -62,3 +63,33 @@ async function IniciarSesion(socket, email, contrasenya) {
     }
 }
 exports.IniciarSesion = IniciarSesion;
+
+async function FinTurno (socket, ID_jugador, ID_partida) {
+    // Función de la API que diga si el siguiente jugador es un bot o no
+    //      Si no es un bot devuelve el correo del jugador que le toca
+    //      Si es un bot, que devuelva TurnoBot
+    // Comprobar si es fin de ronda para lo de los eventos, para actualizar saldos bancos
+    //                      actualizar economía
+    // Si es un jugador mando: TURNO,ID_jugador,ID_partida
+    
+    // Llamar a la función de la api para obtener el siguiente jugador
+    let resultadoFunc = await API.obtenerSiguienteJugador(ID_jugador, ID_partida);
+    let resultado = resultadoFunc.split(",");
+    let siguienteJugador = resultado[0];
+    let finRonda = resultado[1];
+    // Si le toca a un bot
+    if (siguienteJugador == "TurnoBot") {
+        // Hacer lo necesario del bot
+        // TODO:
+
+    }
+    else {   // Es un jugador
+        socket.send(`TURNO,${siguienteJugador},${ID_partida}`);
+    }
+
+    // Comprobar si es fin de ronda y realizar lo oportuno con esta
+    if (finRonda == 1) {
+        // TODO: Hacer lo necesario con los eventos, actualizar saldos de los bancos, economía
+    }
+}
+exports.FinTurno = FinTurno;

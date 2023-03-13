@@ -1,10 +1,10 @@
 /*
- ----------------------------------------------------------------------------
+ -------------------------------------------------------------------------------
  * Fichero: funcionesJugador.js
  * Autor: César Moro Latorre, Alejandro Lalaguna Maza
  * NIP: 815078, 819860
- * Descripción: Fichero de funciones auxiliares correspondientes al juego
- ----------------------------------------------------------------------------
+ * Descripción: Fichero de funciones auxiliares correspondientes al juego/tablero
+ --------------------------------------------------------------------------------
 */
 
 const ECONOMIA = 1;
@@ -232,7 +232,10 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
             return false;
         }
     }
-    // Si pertenece al propio jugador no se hace nada -> no hace falta comprobarlo
+    else {
+        // Pertenece al propio jugador, no habría que hacer nada especial
+        // TODO: Hace falta mandar algo aquí?
+    }
 }
 
 // Realiza la acción de apostar dinero
@@ -372,7 +375,3 @@ async function EdificarPropiedad(socket,ID_jugador,ID_partida,propiedadPrecio) {
 }
 exports.EdificarPropiedad = EdificarPropiedad;
 
-
-/* function finTurno() {
-
-} */
