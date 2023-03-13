@@ -6,7 +6,7 @@
 \******************************************************************************/
 
 const mysql = require('mysql');
-const connection = require('./db');
+const connection = require('../API/db');
 
 // Lee la consulta SQL desde la línea de comandos
 const args = process.argv.slice(2);
