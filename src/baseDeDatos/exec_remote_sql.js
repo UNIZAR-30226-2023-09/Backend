@@ -6,6 +6,7 @@
 \******************************************************************************/
 
 const mysql = require('mysql');
+const connection = require('./db');
 
 // Lee la consulta SQL desde la línea de comandos
 const args = process.argv.slice(2);
@@ -16,14 +17,6 @@ if (!sqlQuery) {
   console.error('Debes especificar la consulta SQL a ejecutar');
   process.exit(1);
 }
-
-// Establece los detalles de conexión a la base de datos
-const connection = mysql.createConnection({
-  host: '34.175.167.234',
-  user: 'root',
-  password: 'psbackend1234',
-  database: 'otterfortune_main_db',
-});
 
 // Conéctate a la base de datos
 connection.connect();
