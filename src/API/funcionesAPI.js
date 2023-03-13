@@ -860,4 +860,3 @@ function jugadorEnPartida(email){
 exports.jugadorEnPartida = jugadorEnPartida;
 
 
-//hola
