@@ -7,6 +7,9 @@
  ----------------------------------------------------------------------------
 */
 
+const ECONOMIA = 1;
+
+const WebSocketServer = require('ws/lib/websocket-server');
 const con = require('../API/db');
 const API = require('../API/funcionesAPI');
 
@@ -209,7 +212,14 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
         try {
             // Pagar al jugador que posee la propiedad
             // pagarAlquiler(jugadorPaga, jugadorRecibe, propiedad)
-            let dineroResultante = await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, propiedad);
+            // obtenerPrecioPropiedad(propiedad, ID_partida)
+            // multiplicarlo por ECONOMIA
+            // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
+            let precioPagar = await API.obtenerPrecioPropiedad(propiedad, ID_partida);
+            // Multiplicamos el precio a pagar por la economía
+            let precio = precioPagar * ECONOMIA;
+            // Pagamos el alquiler con el nuevo precio
+            let dineroResultante = await API.pagarAlquiler(jugadorPaga, jugadorRecibe, precio);
             let dinero = dineroResultante.split(",");
             let dineroJugadorPaga = dinero[0];
             let dineroJugadorRecibe = dinero[1];
@@ -311,6 +321,7 @@ async function ComprarPropiedad(socket, ID_jugador, propiedad, ID_partida) {
 }
 exports.ComprarPropiedad = ComprarPropiedad;
 
+// Cuando se quiere vender una propiedad
 async function VenderPropiedad(socket, ID_jugador, propiedad) {
     try {
         let dinero = await API.venderPropiedad(ID_jugador, propiedad);
@@ -329,6 +340,38 @@ async function VenderPropiedad(socket, ID_jugador, propiedad) {
     }
 }
 exports.VenderPropiedad = VenderPropiedad;
+
+// Se obtiene la lista de posibles casas a edificar con su precio y se devuelve al cliente
+async function PropiedadesDispEdificar(socket,ID_jugador,ID_partida) {
+    let propiedadesDisponibles = await API.propiedadesEdificar(ID_jugador, ID_partida);
+    // PropiedadesDisponibles en un string de propiedad1-precio1,propiedad2-precio2...
+    // Lo mandamos tal cual lo recibimos
+    socket.send(`EDIFICAR,${ID_jugador},${propiedadesDisponibles}`);
+
+}
+exports.PropiedadesDispEdificar = PropiedadesDispEdificar;
+
+// Edifica, si se tiene dinero suficiente, la propiedad dada
+async function EdificarPropiedad(socket,ID_jugador,ID_partida,propiedadPrecio) {
+    // Servidor comprueba que tenga dinero suficiente para edificar y en ese caso mando EDIFICAR_OK,propiedad,nuevoDineroJugador
+    let dineroJugador = obtenerDinero(ID_jugador);
+    let lista = propiedadPrecio.split('-');
+    let propiedad = lista[0];
+    let precioProp = lista[1];
+    // Comprobamos si el jugador tiene suficiente dinero para edificar
+    if (dineroJugador < precioProp) {
+        // No tiene suficiente dinero -> no se edifica
+        socket.send(`EDIFICAR_NOOK,${propiedad}`);
+    }
+    else {
+        // Tiene dinero -> edificamos y devolvemos el nuevo dinero disponible
+        let dineroResultante = await API.edificarPropiedad(ID_jugador, ID_partida, propiedad);
+        socket.send(`EDIFICAR_OK,${propiedad},${dineroResultante}`);
+    }
+
+}
+exports.EdificarPropiedad = EdificarPropiedad;
+
 
 /* function finTurno() {
 

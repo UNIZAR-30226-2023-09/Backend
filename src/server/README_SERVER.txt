@@ -2,9 +2,12 @@ METER SOCKET EN TODAS LAS FUNCIONES
 Registrarse funciona OK -> si registra un usuario que ya existe peta
 
 
--------FORMATO MENSAJES-------
+-------FORMATO MENSAJES-----------------------------------------
 // Cuando creo un torneo
 CREADOT_OK,id_torneo
+
+// Si no se puede crear el torneo
+CREADOT_NOOK,ID_jugador
 
 // Unirse OK a un torneo
 UNIRSET_OK,ID_Torneo,ID_jugador
@@ -14,6 +17,9 @@ UNIRSET_NO_OK,ID_Torneo,ID_jugador
 
 // Cuando creo una partida
 CREADAP_OK,id_partida
+
+// Cuando no se puede crear una partida (por si acaso)
+CREADAP_NOOK,ID_jugador
 
 // Unirse ok a una partida
 UNIRP_OK,ID_partida,ID_jugador
@@ -77,3 +83,18 @@ COMPRAR_OK,ID_jugador,propiedad,dineroResultanteJugador,ID_partida
 
 // Cuando un jugador quiera vender propiedad espero recibir: venderPropiedad,ID_jugador,propiedad,ID_partida
 
+
+// Espero recibir QUIERO_EDIFICAR,ID_jugador,ID_partida
+Servidor genera una lista con las propiedades que puede edificar -> EDIFICAR,ID_jugador,propiedad1-precio1,propiedad2-precio2,..
+// Espero recibir EDIFICAR,ID_jugador,ID_partida,propiedad-precio
+Servidor comprueba que tenga dinero suficiente para edificar y en ese caso mando EDIFICAR_OK,propiedad,nuevoDineroJugador
+                                                                    si no tiene  EDIFICAR_NOOK,propiedad
+
+// Cuando es finTurno
+// Si es un jugador mando: TURNO,ID_jugador,ID_partida
+
+-------------------------------------------------------------------------------------------------------------------------------------
+LOS DE LA BASE TIENEN QUE HACER UNA FUNCION QUE DEVUELVA DADO UN JUGADOR, TODAS LAS PROPIEDADES QUE PUEDE EDIFICAR JUNTO A SU PRECIO DE EDIFICAR
+(propiedad1-precio1,propiedad2-precio2,...), ES DECIR, ESTE JUGADOR TIENE TODAS LAS PROPIEDAS DEL MISMO COLOR.
+
+modificarDinero -> QUE DEVUELVA EL DINERO RESULTANTE

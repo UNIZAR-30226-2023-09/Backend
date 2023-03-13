@@ -88,20 +88,32 @@ server.on("connection", (socket) => {
         // Si el mensaje es que se quiere comprar una propiedad
         if (mensaje[0] == "SI_COMPRAR_PROPIEDAD") {
             // Socket, ID_jugador,propiedad,ID_partida
-            funcionesTablero.ComprarPropiedad(socket, mensaje[1],mensaje[2], mensaje[3]);
+            funcionesTablero.ComprarPropiedad(socket, mensaje[1], mensaje[2], mensaje[3]);
         }      
 
         // Si el mensaje es que no se quiere comprar una propiedad -> no hacer nada y pasar turno
         if (mensaje[0] == "NO_COMPRAR_PROPIEDAD") {
-            // Pasar turno
+            // No hacer nada
             // TODO:
         }      
 
         // Si el mensaje es que se quiere vender una propiedad
         if (mensaje[0] == "venderPropiedad") {
             // Socket, jugador, propiedad
-            funcionesTablero.VenderPropiedad(socket, mensaje[1],mensaje[2]);
+            funcionesTablero.VenderPropiedad(socket, mensaje[1], mensaje[2]);
         }   
+
+        // Cuando se quiere edificar
+        if (mensaje[0] == "QUIERO_EDIFICAR") {
+            // socket,ID_jugador,ID_partida
+            funcionesTablero.PropiedadesDispEdificar(socket, mensaje[1], mensaje[2])
+        }
+
+        // Nos dicen la propiedad a edificar
+        if (mensaje[0] == "EDIFICAR") {
+            // socket,ID_jugador,ID_partida,propiedad-precio
+            funcionesTablero.EdificarPropiedad(socket, mensaje[1], mensaje[2], mensaje[3])
+        }
 
         // Si el mensaje es que se quiere usar una carta
         if (mensaje[0] == "usarCarta") {
@@ -111,6 +123,12 @@ server.on("connection", (socket) => {
         // Si el mensaje es que se quiere acabar el turno
         if (mensaje[0] === "finTurno") {
             // TODO: MIRAR ESTA 
+            // Función de la API que diga si el siguiente jugador es un bot o no
+            //      Si no es un bot devuelve el correo del jugador que le toca
+            //      Si es un bot, que devuelva bot@bot.com
+            // Comprobar si es fin de ronda para lo de los eventos, para actualizar saldos bancos
+            //                      actualizar economía
+            // Si es un jugador mando: TURNO,ID_jugador,ID_partida
             funcionesTablero.finTurno(socket, mensaje[1],mensaje[2]);
         }
         

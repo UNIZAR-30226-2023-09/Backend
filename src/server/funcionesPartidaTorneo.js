@@ -15,7 +15,12 @@ async function CrearPartida(socket, ID_jugador) {
     try {
         // Creamos la partida y guardamos su ID
         let id_partida = await API.crearPartida(ID_jugador);
-        socket.send(`CREADAP_OK,${id_partida}`);
+        if (id_partida == -1) {
+            socket.send(`CREADAP_NOOK,${ID_jugador}`);
+        }
+        else {
+            socket.send(`CREADAP_OK,${id_partida}`);
+        }
     }
 
     catch(error) {
@@ -50,7 +55,12 @@ async function CrearTorneo(socket, ID_jugador) {
     try {
         // Creamos el torneo y guardamos su ID
         let id_torneo = await API.crearTorneo(ID_jugador);
-        socket.send(`CREADOT_OK,${id_torneo}`);
+        if (id_torneo == -1) {
+            socket.send(`CREADOT_NOOK,${ID_jugador}`);
+        }
+        else {
+            socket.send(`CREADOT_OK,${id_torneo}`);
+        }
     }
 
     catch(error) {
