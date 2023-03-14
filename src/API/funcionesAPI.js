@@ -1,8 +1,8 @@
 /*
  ----------------------------------------------------------------------------
  * Fichero: funcionesAPI.js
- * Autor: Jesus Lizama Moreno 
- * NIP: 816473
+ * Autor: Jesus Lizama Moreno y Cesar Vela Martínez
+ * NIP: 816473, 816590
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
  * Fecha: 21/02/2023
  ----------------------------------------------------------------------------
@@ -927,3 +927,68 @@ function crearTorneo(idJugador, nPartidas){
 exports.crearTorneo = crearTorneo;
 
 
+
+
+
+/*
+===================AÑADIR JUGADOR CON ID_JUGADOR A TORNEO CON ID_TORNEO =========================================
+*/
+
+// Devuelve el true si se ha añadido al jugador id_jugador, al torneo con id_torneo
+//En caso de que no exista el torneo o el jugador devuelve false o ya se haya metido al jugador en ese torneo.
+function unirseTorneo(idJugador, idTorneo){
+    return new Promise((resolve, reject) => {
+      con.connect();
+      const query = `SELECT * FROM Jugador WHERE email = '${idJugador}'`;       // Vemos si existe el jugador
+      con.query(query, (error, results) => {
+        if (error) {                                    // Caso -- ERROR
+          con.end();
+          reject(error);
+        } else if (results.length === 0) {              // Caso -- No existe JUGADOR
+          con.end();
+          resolve(false);
+        } else {                                        // Caso -- Existe JUGADOR
+
+          const query2 = `SELECT * FROM Torneo WHERE idTorneo = '${idTorneo}';`;
+          con.query(query2, (error, results2) => {
+            if (error) {                                // Caso -- ERROR
+              con.end();
+              reject(error);
+            } else if (results2.length === 0) {         // Caso -- No existe TORNEO
+              con.end();
+              resolve(false); 
+            } else {                                    // Caso -- Existe TORNEO
+
+              const query3 = `SELECT * FROM estaEnTorneo WHERE idTorneo = '${idTorneo}' AND email = '${idJugador}';`;
+              con.query(query3, (error, results3) => {
+                if (error) {                            // Caso -- ERROR
+                  con.end();
+                  reject(error);
+                } else if (results3.length === 0) {     // Caso -- No existe una entrada ya en estaEnTorneo -> SE AÑADE
+
+                  const sql = `INSERT INTO estaEnTorneo (idTorneo, email) VALUES ('${idTorneo}', '${idJugador}');`;
+                  con.query(sql, (error, results) => {
+                    if (error) {                        // Caso -- ERROR
+                    con.end();
+                    reject(error);
+                    } else {                            // Caso -- Se asocio el jugador al torneo correctamente
+                    con.end();
+                    resolve(true);
+                    }
+                  });
+
+                } else {                                // Caso --  Existe una entrada ya en estaEnTorneo
+                  con.end();
+                  resolve(false);
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+  }
+  
+  
+  exports.unirseTorneo = unirseTorneo;
+  
