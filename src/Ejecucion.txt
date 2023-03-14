@@ -1,0 +1,5 @@
+Para poder ejecutar el servidor backend hay que entrar en este directorio y ejecutar:
+    npm install #Este comando instala todas las dependencias
+
+Una vez instalado se puede ejecutar el main entrando en la carpeta server y ejecutando:
+node main.js

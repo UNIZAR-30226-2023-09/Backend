@@ -19,6 +19,11 @@ const PUERTO = 8080 // Puerto a elegir
 const WebSocket = require('ws');
 const server = new WebSocket.Server({ port: PUERTO });    
 
+// Cuando se lance el servidor que notifique que esta activo
+server.on('listening', () => {
+    console.log(`Servidor activo y escuchando en el puerto ${PUERTO}`);
+});
+
 // Nueva conexion de cliente
 server.on("connection", (socket) => {
     console.log("Cliente conectado");

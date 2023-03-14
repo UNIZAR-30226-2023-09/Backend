@@ -1,8 +1,8 @@
 # Carpeta node_modules
-src/server/node_modules/
+src/node_modules/
 
 # Archivos de dependencias
-src/server/package-lock.json
+src/package-lock.json
 
 # Archivos de configuración
 .env
