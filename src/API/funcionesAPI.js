@@ -1,14 +1,14 @@
 /*
  ----------------------------------------------------------------------------
  * Fichero: funcionesAPI.js
- * Autor: Jesus Lizama Moreno y Cesar Vela Martínez
- * NIP: 816473, 816590
+ * Autores: Jesus Lizama Moreno y Cesar Vela Martínez
+ * NIPs: 816473, 816590
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
- * Fecha: 21/02/2023
+ * Fecha: 14/03/2023
  ----------------------------------------------------------------------------
 */
 
-const con = require('./db');
+const db = require('./db');
 
 const POSICION_CARCEL = 11;
 const POSICION_BOTE = 21;
@@ -24,6 +24,7 @@ const NUM_TURNOS_CARCEL = 3;
 */
 function insertarUsuario(userData) {
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect(function(err) {
       if (err) {
         reject(err);
@@ -86,6 +87,7 @@ exports.insertarUsuario = insertarUsuario;
 
 function comprobarInicioSesion(email, contrasenya){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect(function(err) {
       if (err) {
         reject(err);
@@ -141,6 +143,7 @@ exports.comprobarInicioSesion = comprobarInicioSesion;
 function borrarUsuario(email) {
 
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     // Verifica si el usuario existe
     con.query(`SELECT * FROM Jugador WHERE email='${email}'`, (error, results) => {
@@ -213,6 +216,7 @@ moverJugador(jugador, numero);
 
 function moverJugador(jugador, posiciones, idPartida) {
     return new Promise((resolve, reject) => {
+      var con = db.crearConexion();
       con.connect();
       // Comprobar si el jugador existe en la tabla "juega".
       const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
@@ -261,6 +265,7 @@ modificarDinero(jugador, cantidad);
 */
 function modificarDinero(jugador, cantidad) {
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".
     const query = `SELECT dinero FROM juega WHERE email = '${jugador}'`;
@@ -312,15 +317,14 @@ exports.modificarDinero = modificarDinero;
 function pagarImpuestos(jugador, cantidad, idPartida){
   return new Promise((resolve, reject) => {
     con.connect();
+    var con = db.crearConexion();
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
     console.log(query);
     con.query(query, (error, results) => {
       if (error) {
-        console.log("ERROR!!");
         con.end(); // Aquí se debe cerrar la conexión
         reject(error);
       } else if (results.length === 0) {
-        console.log("Esta vacio lenght");
         con.end(); // Aquí se debe cerrar la conexión
         resolve(false);
       } else {
@@ -374,6 +378,7 @@ exports.pagarImpuestos = pagarImpuestos;
 //cierto usuario esta en cierta partida.
 function obtenerDinero(jugador, idPartida) {
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     // Conectar a la base de datos
     con.connect((err) => {
       if (err) {
@@ -428,6 +433,7 @@ exports.obtenerDinero = obtenerDinero;
 // Enviar a un jugador a la cárcel(mover posición del jugador a la carcel(9) y poner numero de tiradas en carcel = 3).
 function enviarCarcel(jugador,idPartida){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
@@ -516,6 +522,7 @@ exports.enviarCarcel = enviarCarcel;
 // es la posicion "POSICION_CARCEL".
 function verificarCarcel(jugador, idPartida){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
@@ -578,6 +585,7 @@ exports.verificarCarcel = verificarCarcel;
 function sumarDineroBote(cantidad,idPartida){
 
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     //Selecciona el bote de la partida.
     const query = `SELECT bote FROM partida WHERE idPartida = '${idPartida}'`;
@@ -634,6 +642,7 @@ exports.sumarDineroBote = sumarDineroBote;
 function obtenerDineroBote(id_jugador,id_partida){
 
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
     const query = `SELECT bote from partida where idPartida = '${id_partida}'`;
@@ -712,6 +721,7 @@ exports.obtenerDineroBote = obtenerDineroBote;
 // contrario, devuelve -1.
 function dineroBanco(idJugador,idPartida){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
     const query = `SELECT dinero FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
@@ -746,6 +756,7 @@ exports.dineroBanco = dineroBanco;
 // Devuelve -1, si algo ha ido mal.
 function obtenerNumPropiedades(idJugador,idPartida){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
     const query = `SELECT num_propiedades FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
@@ -781,6 +792,7 @@ exports.obtenerNumPropiedades = obtenerNumPropiedades;
 // Devuelve la cantidad de dinero que tiene el jugador en el banco
 function meterDineroBanco(idJugador, idPartida, cantidad) {
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     //comprobando que está en la partida, obtenemos el dinero del banco del jugador.
     const query = 'SELECT dineroInvertido FROM juega WHERE email = ? AND idPartida = ?';
@@ -822,6 +834,7 @@ exports.meterDineroBanco = meterDineroBanco;
 //En caso de que no tenga ninguna partida activa, devuelve -1.
 function jugadorEnPartida(email){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
     con.query(query, (error, results) => {
@@ -862,6 +875,43 @@ exports.jugadorEnPartida = jugadorEnPartida;
 
 
 /*
+===================OBTENER INFORMACION DE UN JUGADOR =========================================
+*/
+
+// Obtener información básica sobre un jugador (nombre, gemas, email, pass)
+//devuelve una cadena de la siguiente forma: " email,gemas,nombre,pass".
+
+function obtenerInformacionJugador(id_jugador){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    const query1 = `SELECT * FROM jugador WHERE email = '${id_jugador}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos en un vector los valores del usuario.
+        let vector = [];
+        vector[0] = results1[0].email;
+        vector[1] = results1[0].gemas;
+        vector[2] = results1[0].nombre;
+        vector[3] = results1[0].pass;
+        let cadena = vector.join(",");
+        resolve(cadena);
+      }
+      con.end();
+    });
+  });
+}
+
+exports.obtenerInformacionJugador = obtenerInformacionJugador;
+                              
+
+
+
+/*
 ===================CREAR TORNEO CON ID_JUGADOR Y NPARTIDAS =========================================
 */
 
@@ -869,6 +919,7 @@ exports.jugadorEnPartida = jugadorEnPartida;
 //En caso de que no pueda crearse el torneo, o el jugador idJugador no exista devuelve -1.
 function crearTorneo(idJugador, nPartidas){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     const query = `SELECT * FROM Jugador WHERE email = '${idJugador}'`;       // Vemos si existe el jugador
     con.query(query, (error, results) => {
@@ -938,6 +989,7 @@ exports.crearTorneo = crearTorneo;
 //En caso de que no exista el torneo o el jugador devuelve false o ya se haya metido al jugador en ese torneo.
 function unirseTorneo(idJugador, idTorneo){
     return new Promise((resolve, reject) => {
+      var con = db.crearConexion();
       con.connect();
       const query = `SELECT * FROM Jugador WHERE email = '${idJugador}'`;       // Vemos si existe el jugador
       con.query(query, (error, results) => {
@@ -992,3 +1044,6 @@ function unirseTorneo(idJugador, idTorneo){
   
   exports.unirseTorneo = unirseTorneo;
   
+
+
+

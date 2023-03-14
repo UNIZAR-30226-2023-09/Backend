@@ -9,7 +9,7 @@
 */
 
 
-const test = require('./app')
+const test = require('./funcionesAPI')
 const con = require('./db');
 
 
@@ -261,6 +261,25 @@ async function obtenerResultadoUnirseTorneo(idJugador, idTorneo) {
   }
 }
 
+
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerInformacionJugador(id_jugador) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.obtenerInformacionJugador(id_jugador);
+    console.log("El resultado obtenido de Obtener Informacion Jugador es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -292,3 +311,6 @@ async function obtenerResultadoUnirseTorneo(idJugador, idTorneo) {
 //obtenerResultadoCrearTorneo('AEoooo@gmail.com', 3);
 
 //obtenerResultadoUnirseTorneo('pedro@example.com', 2);
+
+
+//obtenerResultadoObtenerInformacionJugador('pedroSANCHEZ@example.com');
