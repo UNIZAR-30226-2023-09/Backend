@@ -13,13 +13,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
-      - name: Ir al directorio src
-        run: cd Backend/src
       - name: Instalar dependencias
+        working-directory: ./src
         run: npm install
-      - name: Ir al directorio server
-        run: cd server
       - name: Ejecutar main.js
+        working-directory: ./server
         run: node main.js
       - name: Verificar si la ejecución se completó correctamente
         run: |
