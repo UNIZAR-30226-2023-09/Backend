@@ -229,6 +229,38 @@ async function obtenerResultadoJugadorEnPartida(idJugador) {
   }
 }
 
+
+//FUNCIONA OKEY.
+async function obtenerResultadoCrearTorneo(idJugador, nPartidas) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.crearTorneo(idJugador, nPartidas);
+    console.log("El resultado obtenido de devolver el id_Torneo es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoUnirseTorneo(idJugador, idTorneo) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.unirseTorneo(idJugador, idTorneo);
+    console.log("El resultado obtenido de devolver el id_Torneo es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -256,3 +288,7 @@ async function obtenerResultadoJugadorEnPartida(idJugador) {
 //obtenerResultadoActualizarDinero('juan@example.com',1,300);
 
 //obtenerResultadoJugadorEnPartida('juan@example.com');
+
+//obtenerResultadoCrearTorneo('AEoooo@gmail.com', 3);
+
+//obtenerResultadoUnirseTorneo('pedro@example.com', 2);
