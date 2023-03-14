@@ -18,10 +18,8 @@ jobs:
         run: npm install
       - name: Ejecutar main.js
         working-directory: ./src/server
-        run: node main.js
-      - name: Verificar si la ejecución se completó correctamente
-        run: |
-          if [ $? -ne 0 ]; then
-            echo "La ejecución falló"
-            exit 1
-          fi
+        run: node main.js &
+      - name: Esperar 5 segundos
+        run: sleep 5
+      - name: Detener main.js
+        run: pkill -f "node main.js"
