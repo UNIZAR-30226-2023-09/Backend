@@ -1,4 +1,4 @@
-name: Comprobar compilación de JavaScript
+name: Comprobar compilación y ejecución de JavaScript
 on:
   push:
     branches:
@@ -19,7 +19,18 @@ jobs:
       - name: Ejecutar main.js
         working-directory: ./src/server
         run: node main.js &
-      - name: Esperar 5 segundos
-        run: sleep 5
+      - name: Esperar 3 segundos
+        run: sleep 3
+      - name: Comprobar si se ejecutó correctamente
+        run: curl -s -o /dev/null -w "%{http_code}" http://localhost:8080
+        id: curl
       - name: Detener main.js
         run: pkill -f "node main.js"
+      - name: Comprobar estado
+        run: |
+          if [ ${{ steps.curl.outputs.stdout }} -ne 200 ]; then
+            echo "Error: el servidor no se ha iniciado correctamente."
+            exit 1
+          else
+            echo "El servidor se ha iniciado correctamente."
+          fi
