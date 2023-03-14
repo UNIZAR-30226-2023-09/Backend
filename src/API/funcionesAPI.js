@@ -860,3 +860,70 @@ function jugadorEnPartida(email){
 exports.jugadorEnPartida = jugadorEnPartida;
 
 
+
+/*
+===================CREAR TORNEO CON ID_JUGADOR Y NPARTIDAS =========================================
+*/
+
+// Devuelve el id_torneo del torneo recien creado por el jugador idJugador
+//En caso de que no pueda crearse el torneo, o el jugador idJugador no exista devuelve -1.
+function crearTorneo(idJugador, nPartidas){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    const query = `SELECT * FROM Jugador WHERE email = '${idJugador}'`;       // Vemos si existe el jugador
+    con.query(query, (error, results) => {
+      if (error) {                            // Caso -- ERROR
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {      // Caso -- No existe
+        con.end();
+        resolve(-1);
+      } else {                                // Caso -- Existe
+        const query2 = `SELECT MAX(idTorneo) AS maxid FROM Torneo;`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error); 
+          } else {
+
+            let nuevoId = results2[0].maxid;
+            let devolver = 0;
+            let sql = ``;
+
+            if(nuevoId == null){            // Caso -- No hay ningun Torneo hasta la fecha
+              sql = `INSERT INTO Torneo (nPartidas, estaActivo, idTorneo) VALUES ('${nPartidas}', true, 1);`;
+              devolver = 1;
+            }
+            else{                           // Caso -- Cogemos idTorneo maximo +1 y lo asignamos al nuevo torneo
+              sql = `INSERT INTO Torneo (nPartidas, estaActivo, idTorneo) VALUES ('${nPartidas}', true, '${nuevoId+1}');`;
+              devolver = nuevoId+1;
+            }
+
+            con.query(sql, (error, results) => {
+              if (error) {                            // Caso -- ERROR
+                con.end();
+                reject(error);
+              } else {                                // Caso -- Se creo el Torneo correctamente
+                const sql2 = `INSERT INTO estaEnTorneo (idTorneo, email) VALUES ('${devolver}', '${idJugador}');`;
+                con.query(sql2, (error, results) => {
+                  if (error) {                        // Caso -- ERROR
+                    con.end();
+                    reject(error);
+                  } else {                            // Caso -- Se asocio el jugador al torneo correctamente
+                    con.end();
+                    resolve(devolver);
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  });
+}
+
+
+exports.crearTorneo = crearTorneo;
+
+
