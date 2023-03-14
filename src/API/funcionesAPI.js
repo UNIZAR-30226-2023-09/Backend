@@ -875,6 +875,43 @@ exports.jugadorEnPartida = jugadorEnPartida;
 
 
 /*
+===================OBTENER INFORMACION DE UN JUGADOR =========================================
+*/
+
+// Obtener información básica sobre un jugador (nombre, gemas, email, pass)
+//devuelve una cadena de la siguiente forma: " email,gemas,nombre,pass".
+
+function obtenerInformacionJugador(id_jugador){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    const query1 = `SELECT * FROM jugador WHERE email = '${id_jugador}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos en un vector los valores del usuario.
+        let vector = [];
+        vector[0] = results1[0].email;
+        vector[1] = results1[0].gemas;
+        vector[2] = results1[0].nombre;
+        vector[3] = results1[0].pass;
+        let cadena = vector.join(",");
+        resolve(cadena);
+      }
+      con.end();
+    });
+  });
+}
+
+exports.obtenerInformacionJugador = obtenerInformacionJugador;
+                              
+
+
+
+/*
 ===================CREAR TORNEO CON ID_JUGADOR Y NPARTIDAS =========================================
 */
 
@@ -1007,3 +1044,6 @@ function unirseTorneo(idJugador, idTorneo){
   
   exports.unirseTorneo = unirseTorneo;
   
+
+
+

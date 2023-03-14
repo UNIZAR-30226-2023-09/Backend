@@ -76,6 +76,12 @@ function meterDineroBanco(idJugador, idPartida, cantidad);
 function jugadorEnPartida(email);
 
 
+// Obtener información básica sobre un jugador (nombre, gemas, email, pass)
+//devuelve una cadena de la siguiente forma: " email,gemas,nombre,pass".
+
+function obtenerInformacionJugador(id_jugador)
+
+
 // Devuelve el id_torneo del torneo recien creado por el jugador idJugador
 //En caso de que no pueda crearse el torneo, o el jugador idJugador no exista devuelve -1.
 function crearTorneo(idJugador, nPartidas);
