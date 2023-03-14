@@ -322,11 +322,9 @@ function pagarImpuestos(jugador, cantidad, idPartida){
     console.log(query);
     con.query(query, (error, results) => {
       if (error) {
-        console.log("ERROR!!");
         con.end(); // Aquí se debe cerrar la conexión
         reject(error);
       } else if (results.length === 0) {
-        console.log("Esta vacio lenght");
         con.end(); // Aquí se debe cerrar la conexión
         resolve(false);
       } else {
