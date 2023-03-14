@@ -8,16 +8,19 @@
  ----------------------------------------------------------------------------
 */
 
-
-
 var mysql = require('mysql');
 
 //valores para conectarse a la base.
-var con = mysql.createConnection({
+const config = {
   host: '34.175.167.234',
   user: 'root',
   password: 'psbackend1234',
   database: 'otterfortune_main_db'
-});
+};
 
-module.exports = con;
+function crearConexion(){
+  var conexion = mysql.createConnection(config);
+  return conexion;
+};
+exports.crearConexion=crearConexion;
+

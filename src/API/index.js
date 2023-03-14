@@ -9,7 +9,7 @@
 */
 
 
-const test = require('./app')
+const test = require('./funcionesAPI')
 const con = require('./db');
 
 
