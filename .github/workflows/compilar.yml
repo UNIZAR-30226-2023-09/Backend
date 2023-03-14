@@ -1,0 +1,27 @@
+name: Comprobar compilación de JavaScript
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v2
+      - name: Configurar Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+      - name: Instalar dependencias
+        working-directory: ./src
+        run: npm install
+      - name: Ejecutar main.js
+        working-directory: ./server
+        run: node main.js
+      - name: Verificar si la ejecución se completó correctamente
+        run: |
+          if [ $? -ne 0 ]; then
+            echo "La ejecución falló"
+            exit 1
+          fi
