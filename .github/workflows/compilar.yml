@@ -17,7 +17,7 @@ jobs:
         working-directory: ./src
         run: npm install
       - name: Ejecutar main.js
-        working-directory: ./server
+        working-directory: ./src/server
         run: node main.js
       - name: Verificar si la ejecución se completó correctamente
         run: |
