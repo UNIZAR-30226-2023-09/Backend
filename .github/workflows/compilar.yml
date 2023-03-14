@@ -7,19 +7,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Clonar repositorio
         uses: actions/checkout@v2
-      - name: Setup Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
-      - name: Install dependencies
+      - name: Ir al directorio src
+        run: cd src
+      - name: Instalar dependencias
         run: npm install
-      - name: Build
-        run: npm run build
-      - name: Check if build succeeded
+      - name: Ir al directorio server
+        run: cd server
+      - name: Ejecutar main.js
+        run: node main.js
+      - name: Verificar si la ejecución se completó correctamente
         run: |
           if [ $? -ne 0 ]; then
-            echo "Build failed"
+            echo "La ejecución falló"
             exit 1
           fi
