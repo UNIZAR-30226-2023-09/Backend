@@ -914,6 +914,7 @@ exports.obtenerInformacionJugador = obtenerInformacionJugador;
 */
 
 // Obtener la posición actual de un jugador en una partida dada.
+
 function obtenerPosicion(id_jugador, id_partida){
   return new Promise((resolve, reject) => {
     var con = db.crearConexion();
