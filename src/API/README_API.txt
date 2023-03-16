@@ -78,7 +78,6 @@ function jugadorEnPartida(email);
 
 // Obtener información básica sobre un jugador (nombre, gemas, email, pass)
 //devuelve una cadena de la siguiente forma: " email,gemas,nombre,pass".
-
 function obtenerInformacionJugador(id_jugador)
 
 
@@ -90,3 +89,7 @@ function crearTorneo(idJugador, nPartidas);
 // Devuelve el true si se ha añadido al jugador id_jugador, al torneo con id_torneo
 //En caso de que no exista el torneo o el jugador devuelve false o ya se haya metido al jugador en ese torneo.
 function unirseTorneo(idJugador, idTorneo);
+
+
+// Obtener la posición actual de un jugador en una partida dada.
+function obtenerPosicion(id_jugador, id_partida);

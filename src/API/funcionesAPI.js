@@ -910,6 +910,33 @@ exports.obtenerInformacionJugador = obtenerInformacionJugador;
                               
 
 
+/*
+===================OBTENER POSICION DE UN JUGADOR =========================================
+*/
+
+// Obtener la posición actual de un jugador en una partida dada.
+function obtenerPosicion(id_jugador, id_partida){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    const query1 = `SELECT posicion FROM JUEGA WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos en un vector los valores del usuario.
+        let pos = results[0].posicion;
+        resolve(pos);
+      }
+      con.end();
+    });
+  });
+}
+exports.obtenerPosicion=obtenerPosicion;
+
+
 
 /*
 ===================CREAR TORNEO CON ID_JUGADOR Y NPARTIDAS =========================================
