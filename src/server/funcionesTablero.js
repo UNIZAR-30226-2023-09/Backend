@@ -39,8 +39,10 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
         // Comprobar si ha pasado por la casilla de salida en este turno
         if ((posicionNueva - sumaDados) <= 0) {
             // Si ha pasado, le sumamos 200$ al jugador
-            let nuevoDinero = await API.modificarDinero(ID_jugador, 200);
-            socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            if(await API.modificarDinero(ID_jugador, 200)) {
+                let nuevoDinero = await API.obtenerDinero(ID_jugador, idPartida);
+                socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            }
         }
 
         // Comprobar la casilla y realizar la acción oportuna
@@ -70,8 +72,10 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
     // Comprobar si la nueva casilla es la de salida -> sumar 300$
     if (posicion == 1) {
         try {
-            let nuevoDinero = await API.modificarDinero(ID_jugador, 300);
-            socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            if(await API.modificarDinero(ID_jugador, 300)) {
+                let nuevoDinero = await API.obtenerDinero(ID_jugador, idPartida);
+                socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            }
         }
         catch(error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -87,9 +91,11 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
             let numPropiedades = await API.obtenerNumPropiedades(ID_jugador);
             let cantidad = 50 + 20 * numPropiedades;
             let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
-            let nuevoDinero = await API.modificarDinero(-cantidad);
+            if(await API.modificarDinero(ID_jugador, -cantidad)) {
+                let nuevoDinero = await API.obtenerDinero(ID_jugador, idPartida);
+                socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            }
             socket.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
-            socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
         }
 
         catch(error) {
@@ -168,8 +174,10 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
             // Obtener dinero aleatorio entre -250 y 250
             // Generar un número aleatorio entre -250 y 250
             let cantidad = Math.floor(Math.random() * 501) - 250;
-            let nuevoDinero = await API.modificarDinero(ID_jugador, cantidad);
-            socket.send(`NUEVO_DINERO,${ID_jugador},${nuevoDinero}`);
+            if(await API.modificarDinero(ID_jugador, cantidad)) {
+                let nuevoDinero = await API.obtenerDinero(ID_jugador, idPartida);
+                socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            }
         }
 
         catch(error) {

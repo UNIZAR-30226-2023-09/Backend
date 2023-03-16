@@ -279,29 +279,17 @@ async function obtenerResultadoObtenerInformacionJugador(id_jugador) {
   }
 }
 
-//FUNCIONA OKEY.
-async function obtenerResultadoCrearPartida(idJugador, id_torneo = null) {
-  try {
-    // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.crearPartida(idJugador, id_torneo);
-    console.log("El resultado obtenido de devolver el id_Partida es:", resultado);
-    return resultado;
-    
-  } catch (error) {
-    // Si hay un error en la Promesa, devolvemos false.
-    console.error("Error en la Promesa: ", error);
-    return false;
-  }
-}
 
 //FUNCIONA OKEY.
-async function obtenerResultadoUnirsePartida(idJugador, id_partida) {
+async function obtenerResultadoObtenerPosicion(id_jugador, id_partida) {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.unirsePartida(idJugador, id_partida);
-    console.log("El resultado obtenido de devolver el id_Partida es:", resultado);
+    let resultado;
+    resultado = await test.obtenerPosicion(id_jugador,id_partida);
+    console.log("El resultado obtenido de Obtener Informacion Jugador es :", resultado);
+
     return resultado;
-    
+
   } catch (error) {
     // Si hay un error en la Promesa, devolvemos false.
     console.error("Error en la Promesa: ", error);
@@ -342,10 +330,7 @@ async function obtenerResultadoUnirsePartida(idJugador, id_partida) {
 
 //obtenerResultadoUnirseTorneo('pedro@example.com', 2);
 
-
 //obtenerResultadoObtenerInformacionJugador('pedroSANCHEZ@example.com');
 
-// obtenerResultadoCrearPartida('david@gmail.com');     // partida rapida
-// obtenerResultadoCrearPartida('david@gmail.com', 1);  // partida de torneo 1
+//obtenerResultadoObtenerPosicion('pedroSANCHEZ@example.com',1);
 
-//obtenerResultadoUnirsePartida('david@gmail.com', 1)

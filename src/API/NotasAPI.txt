@@ -8,14 +8,22 @@
 	Además de eso hay que comprobar que la partida este activa, enCurso=true (simplemente un JOIN juega y Partida con WHERE enCurso = true)
 
 	o se puede usar la funcion jugadorEnPartida() para comprobar que esta
+	
+-->Se supone que ellos nos estan dado un identificador de partida correcto, con lo que no es necesario comprobarlo en la base. De todos modos, no costaria mucho cambiarlo.
 
 - borrarUsuario():
 		- Si se borra un usuario, el en historial tiene que seguir estando
 		- NO SE PUEDE BORRAR TODAS LAS PARTIDAS EN LAS QUE ESTABA
 		- No es necesario borrar jugadores, mejor que no este
+		
+-->borrarUsuario() dijimos al final que no se implementaria en el juego, con lo que no se va a utilizar. 
 
 
 - ¡Cuidado con SQL Inyection, en todas las funciones que meta texto el usuario!
 
 - En crearTorneo() y unirseTorneo() no meter 'idTorneo' manualmente, ya que es AUTOINCREMENT
+
+
+
+
 
