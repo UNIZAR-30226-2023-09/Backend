@@ -351,6 +351,23 @@ async function obtenerResultadoEmpezarPartida(id_partida, id_lider){
   }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoComprobarDinero(id_partida,id_jugador,cantidad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.comprobarDinero(id_partida,id_jugador,cantidad);
+    console.log("El resultado obtenido de comprobar dinero es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -387,6 +404,9 @@ async function obtenerResultadoEmpezarPartida(id_partida, id_lider){
 //obtenerResultadoObtenerInformacionJugador('pedroSANCHEZ@example.com');
 
 //obtenerResultadoObtenerPosicion('pedroSANCHEZ@example.com',1);
+
+//obtenerResultadoComprobarDinero(1,'laura@example.com',11000);
+
 
 // Probar partida rapida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');

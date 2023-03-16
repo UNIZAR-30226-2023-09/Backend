@@ -108,3 +108,8 @@ function unirsePartida(id_jugador, id_partida);
 // Devuelve true si se ha empezado la partida con éxito, false de lo contrario
 // Empezar una partida existente, solo la puede llamar el líder que ha creado la partida
 function empezarPartida(id_partida, id_lider);
+
+// Comprobar si el jugador dado tiene más dinero disponible que cantidad.
+// Si lo tiene, actualiza su dinero con esa nueva cantidad(puede ser negativa) y devuelve true.
+// Si no lo tiene que devuelva false.
+function comprobarDinero(id_partida,id_jugador, cantidad);

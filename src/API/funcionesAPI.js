@@ -919,7 +919,7 @@ function obtenerPosicion(id_jugador, id_partida){
   return new Promise((resolve, reject) => {
     var con = db.crearConexion();
     con.connect();
-    const query1 = `SELECT posicion FROM JUEGA WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+    const query1 = `SELECT posicion FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
     con.query(query1, (error, results1) => {
       if (error) {
         reject(error);
@@ -927,7 +927,7 @@ function obtenerPosicion(id_jugador, id_partida){
         resolve(-1);
       } else {
         //devolvemos en un vector los valores del usuario.
-        let pos = results[0].posicion;
+        let pos = results1[0].posicion;
         resolve(pos);
       }
       con.end();
@@ -935,6 +935,53 @@ function obtenerPosicion(id_jugador, id_partida){
   });
 }
 exports.obtenerPosicion=obtenerPosicion;
+
+
+/*
+===================COMPROBAR DINERO JUGADOR=========================================
+*/
+
+// Comprobar si el jugador dado tiene más dinero disponible que cantidad.
+// Si lo tiene, actualiza su dinero con esa nueva cantidad(puede ser negativa) y devuelve true.
+// Si no lo tiene que devuelva false.
+function comprobarDinero(id_partida,id_jugador, cantidad){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    const query1 = `SELECT dinero FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos el dinero del usuario.
+        let dinero = results1[0].dinero;
+        if(dinero >= cantidad){
+          dinero+= cantidad;
+          const query2 = `UPDATE juega SET dinero = '${dinero}' WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+          con.query(query2, (error, results2) => {
+            if (error) {
+              reject(error);
+            }
+            else {
+              //devolvemos true si ha ido todo bien, habiendo actualizado el dinero del jugador.
+              resolve(true);
+              
+            }
+          });
+        }
+        else{
+          //no tiene suficiente dinero, devuelve false;
+          resolve(false);
+        }
+      }
+      con.end();
+    });
+  });
+
+}
+exports.comprobarDinero=comprobarDinero;
 
 
 /*
