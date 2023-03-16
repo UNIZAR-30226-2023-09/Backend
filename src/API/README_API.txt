@@ -116,3 +116,7 @@ function comprobarDinero(id_partida,id_jugador, cantidad);
 
 // Obtener el número de propiedades dado un jugador. Devuelve -1 sino existe el jugador en la partida.
 function obtenerNumPropiedades(id_partida,id_jugador);
+
+// Compra una propiedad la cual tiene QUE ESTAR VACIA SI O SI. devuelve true, si ha ido correcto devuelve true
+// y false en caso de que no haya sido posible comprarla. 
+function comprarPropiedad(id_partida,id_jugador, n_propiedad,precio_propiedad);

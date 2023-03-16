@@ -1002,12 +1002,102 @@ function obtenerNumPropiedades(id_partida,id_jugador){
         let numProp = results1[0].numPropiedades;
         resolve(numProp);
       }
-      con.end();
     });
+    con.end();
   });
 
 }
 exports.obtenerNumPropiedades=obtenerNumPropiedades;
+
+
+/*
+===================COMPRAR PROPIEDAD =========================================
+*/
+
+// Compra una propiedad la cual tiene QUE ESTAR VACIA SI O SI. devuelve true, si ha ido correcto devuelve true
+// y false en caso de que no haya sido posible comprarla. 
+function comprarPropiedad(id_partida,id_jugador, n_propiedad,precio_propiedad){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    var concat = 'propiedad' + n_propiedad;
+    const query1 = `SELECT ${concat} AS duenyo FROM Partida WHERE idPartida = '${id_partida}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos el dinero del usuario.
+        let propiet = results1[0].duenyo;
+        if(propiet != null){
+          //tiene dueño, con lo que devolvemos false
+          resolve(false);
+        }
+        else{
+          //esta vacia, con lo que comprobamos que tenga saldo suficiente, y si es asi se lo resta al id_jugador y la compra.
+          const query2 = `SELECT dinero, numPropiedades FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+          con.query(query2, (error, results2) => {
+            if (error) {
+              reject(error);
+            } else if (results2.length === 0) {
+              resolve(-1);
+            } else {
+              //devolvemos el dinero del usuario.
+              let moneyJugador = results2[0].dinero;
+              if(moneyJugador >= precio_propiedad){
+                //tiene suficiente dinero, con lo que la compra y se le descuenta el dinero.
+                moneyJugador-= precio_propiedad;
+                const query3 = `UPDATE juega SET dinero = ${moneyJugador} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+                con.query(query3, (error, results3) => {
+                  if (error) {
+                    reject(error);
+                  } else if (results3.affectedRows === 0) {
+                    resolve(false);
+                  } else {
+                    //una vez actualizado el dinero, actualizamos para que la propiedad sea del jugador y el numPropiedades del jugador ++.
+                    let prop = results2[0].numPropiedades;
+                    prop++;
+                    const query4 = `UPDATE juega SET numPropiedades = ${prop} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+                    con.query(query4, (error, results4) => {
+                      if (error) {
+                        reject(error);
+                      } else if (results4.affectedRows === 0) {
+                        resolve(false);
+                      } else {
+                        //nos queda solamente actualizar la propieda con el nuevo propietario.
+                        const query5 = `UPDATE Partida SET ${concat} = ${id_jugador} WHERE idPartida = '${id_partida}'`;
+                        con.query(query5, (error, results5) => {
+                          if (error) {
+                            reject(error);
+                          } else if (results5.affectedRows === 0) {
+                            resolve(false);
+                          } else {
+                            //todo ha ido bien, asi que devolvemos true;
+                            resolve(true);
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+              } else {
+                //si no tiene suficiente dinero, devolvemos false.
+                resolve(false);
+              }
+            }
+          });
+        }
+      }
+    });
+    con.end();
+  });
+}
+
+
+exports.comprarPropiedad = comprarPropiedad;
+
+
 
 
 /*

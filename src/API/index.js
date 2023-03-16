@@ -386,6 +386,24 @@ async function obtenerResultadoObtenerNumPropiedades(id_partida,id_jugador) {
 }
 
 
+//FUNCIONA OKEY.
+async function obtenerResultadoComprarPropiedad(id_partida,id_jugador, n_propiedad,precio_propiedad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.comprarPropiedad(id_partida,id_jugador, n_propiedad,precio_propiedad);
+    console.log("El resultado obtenido de obtener numero de propiedades es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -425,6 +443,9 @@ async function obtenerResultadoObtenerNumPropiedades(id_partida,id_jugador) {
 //obtenerResultadoComprobarDinero(1,'laura@example.com',11000);
 
 //obtenerResultadoObtenerNumPropiedades(1,'laura@example.com');
+
+//obtenerResultadoComprarPropiedad(1,'laura@example.com',1,3700);
+
 
 
 // Probar partida rapida
