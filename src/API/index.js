@@ -407,4 +407,4 @@ async function obtenerResultadoEmpezarPartida(id_partida, id_lider){
 // Probar empezar partida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');
 //obtenerResultadoCrearPartida('david@gmail.com');
-obtenerResultadoEmpezarPartida(1, 'david@gmail.com')
+//obtenerResultadoEmpezarPartida(1, 'david@gmail.com')
