@@ -43,7 +43,7 @@ function insertarUsuario(userData) {
               const sql = `INSERT INTO Jugador (gemas, nombre, pass, email) VALUES (?, ?, ?, ?)`;
               const gemasInt = parseInt(gemas, 10);
               const values = [gemasInt, username.trim(), password.trim(), email.trim()];
-              con.query(sql, values, (error, results, fields) => {
+              con.query(sql, values, (error, results2, fields) => {
                 if (error) {
                   con.end(); // Cerrar conexión
                   resolve(false);
@@ -909,7 +909,6 @@ function obtenerInformacionJugador(id_jugador){
 exports.obtenerInformacionJugador = obtenerInformacionJugador;
                               
 
-
 /*
 ===================OBTENER POSICION DE UN JUGADOR =========================================
 */
@@ -935,7 +934,6 @@ function obtenerPosicion(id_jugador, id_partida){
   });
 }
 exports.obtenerPosicion=obtenerPosicion;
-
 
 
 /*
@@ -1073,8 +1071,7 @@ function unirseTorneo(idJugador, idTorneo){
   
 
 
-
-/*
+-/*
 =================== CREAR PARTIDA =========================================
 */
 
