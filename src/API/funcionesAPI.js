@@ -1077,58 +1077,58 @@ function unirseTorneo(idJugador, idTorneo){
 */
 
 // Se crea una partida
-function crearPartida(id_jugador, id_torneo = null) {
-  return new Promise((resolve, reject) => {
-    const con = db.crearConexion();
-    con.connect();
-    const query1 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
-    con.query(query1, (error, results1) => {
-      if (error) {
-        reject(error);
-        con.end();
-        return;
-      }
-      if (results1.length === 0) {
-        resolve(-1); // Si no existe jugador
-        con.end();
-        return;
-      }
-      const jugador_id = results1[0].email;
-      const perteneceTorneo = (id_torneo === null) ? "NULL" : parseInt(id_torneo);
-      const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioBase, enCurso, perteneceTorneo) VALUES (0, 0, 0, 0, 0, NULL, ${perteneceTorneo})`;
-      con.query(query2, (error, results2) => {
-        if (error) {
-          reject(error);
-          con.end();
-          return;
-        }
-        const partida_id = results2.insertId;
-        const query3 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
-        con.query(query3, (error, results3) => {
-          if (error) {
-            reject(error);
-            con.end();
-            return;
-          }
-          // Unir al jugador a la partida
-          const partida_id = results2.insertId;
-          const query3 = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES (0, 0, 0, 0, 0, 'default', '${id_jugador}', ${partida_id})`;
-          con.query(query3, (error, results3) => {
-            if (error) {
-              reject(error);
-              con.end();
-              return;
-            }
-            resolve(partida_id);
-            con.end();
-          });
-        });
-      });
-    });
-  });
-}
+// function crearPartida(id_jugador, id_torneo = null) {
+//   return new Promise((resolve, reject) => {
+//     const con = db.crearConexion();
+//     con.connect();
+//     const query1 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
+//     con.query(query1, (error, results1) => {
+//       if (error) {
+//         reject(error);
+//         con.end();
+//         return;
+//       }
+//       if (results1.length === 0) {
+//         resolve(-1); // Si no existe jugador
+//         con.end();
+//         return;
+//       }
+//       const jugador_id = results1[0].email;
+//       const perteneceTorneo = (id_torneo === null) ? "NULL" : parseInt(id_torneo);
+//       const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioBase, enCurso, perteneceTorneo) VALUES (0, 0, 0, 0, 0, NULL, ${perteneceTorneo})`;
+//       con.query(query2, (error, results2) => {
+//         if (error) {
+//           reject(error);
+//           con.end();
+//           return;
+//         }
+//         const partida_id = results2.insertId;
+//         const query3 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
+//         con.query(query3, (error, results3) => {
+//           if (error) {
+//             reject(error);
+//             con.end();
+//             return;
+//           }
+//           // Unir al jugador a la partida
+//           const partida_id = results2.insertId;
+//           const query3 = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES (0, 0, 0, 0, 0, 'default', '${id_jugador}', ${partida_id})`;
+//           con.query(query3, (error, results3) => {
+//             if (error) {
+//               reject(error);
+//               con.end();
+//               return;
+//             }
+//             resolve(partida_id);
+//             con.end();
+//           });
+//         });
+//       });
+//     });
+//   });
+// }
 
-  exports.crearPartida = crearPartida;
+//   exports.crearPartida = crearPartida;
 
 
 
