@@ -966,8 +966,7 @@ function comprobarDinero(id_partida,id_jugador, cantidad){
             }
             else {
               //devolvemos true si ha ido todo bien, habiendo actualizado el dinero del jugador.
-              resolve(true);
-              
+              resolve(true);     
             }
           });
         }
@@ -979,9 +978,36 @@ function comprobarDinero(id_partida,id_jugador, cantidad){
       con.end();
     });
   });
-
 }
 exports.comprobarDinero=comprobarDinero;
+
+
+/*
+===================OBTENER NUMERO DE PROPIEDADES JUGADOR EN PARTIDA =========================================
+*/
+
+// Obtener el número de propiedades dado un jugador. Devuelve -1 sino existe el jugador en la partida.
+function obtenerNumPropiedades(id_partida,id_jugador){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    const query1 = `SELECT numPropiedades FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos el dinero del usuario.
+        let numProp = results1[0].numPropiedades;
+        resolve(numProp);
+      }
+      con.end();
+    });
+  });
+
+}
+exports.obtenerNumPropiedades=obtenerNumPropiedades;
 
 
 /*

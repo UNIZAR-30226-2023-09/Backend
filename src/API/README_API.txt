@@ -113,3 +113,6 @@ function empezarPartida(id_partida, id_lider);
 // Si lo tiene, actualiza su dinero con esa nueva cantidad(puede ser negativa) y devuelve true.
 // Si no lo tiene que devuelva false.
 function comprobarDinero(id_partida,id_jugador, cantidad);
+
+// Obtener el número de propiedades dado un jugador. Devuelve -1 sino existe el jugador en la partida.
+function obtenerNumPropiedades(id_partida,id_jugador);
