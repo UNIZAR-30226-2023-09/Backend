@@ -1,0 +1,21 @@
+
+	     Notas sobre las funciones API
+=================================================
+
+
+- En todas las funciones que se comprueba si el jugador está en la partida:
+	Ahora se esta comprobando con: const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+	Además de eso hay que comprobar que la partida este activa, enCurso=true (simplemente un JOIN juega y Partida con WHERE enCurso = true)
+
+	o se puede usar la funcion jugadorEnPartida() para comprobar que esta
+
+- borrarUsuario():
+		- Si se borra un usuario, el en historial tiene que seguir estando
+		- NO SE PUEDE BORRAR TODAS LAS PARTIDAS EN LAS QUE ESTABA
+		- No es necesario borrar jugadores, mejor que no este
+
+
+- ¡Cuidado con SQL Inyection, en todas las funciones que meta texto el usuario!
+
+- En crearTorneo() y unirseTorneo() no meter 'idTorneo' manualmente, ya que es AUTOINCREMENT
+

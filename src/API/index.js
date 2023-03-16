@@ -279,22 +279,6 @@ async function obtenerResultadoObtenerInformacionJugador(id_jugador) {
   }
 }
 
-//FUNCIONA OKEY.
-async function obtenerResultadoObtenerPosicion(id_jugador, id_partida) {
-  try {
-    // Hacemos la llamada a la función que devuelve una Promesa.
-    let resultado;
-    resultado = await test.obtenerInformacionJugador(id_jugador,id_partida);
-    console.log("El resultado obtenido de Obtener posicion Jugador es :", resultado);
-
-    return resultado;
-
-  } catch (error) {
-    // Si hay un error en la Promesa, devolvemos false.
-    console.error("Error en la Promesa: ", error);
-    return false;
-  }
-}
 
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');

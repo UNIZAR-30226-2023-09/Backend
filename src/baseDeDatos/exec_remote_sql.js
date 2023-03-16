@@ -6,7 +6,7 @@
 \******************************************************************************/
 
 const mysql = require('mysql');
-const connection = require('../API/db');
+const conexion = require('../API/db');
 
 // Lee la consulta SQL desde la línea de comandos
 const args = process.argv.slice(2);
@@ -17,6 +17,9 @@ if (!sqlQuery) {
   console.error('Debes especificar la consulta SQL a ejecutar');
   process.exit(1);
 }
+
+// Crear la conexion
+connection = conexion.crearConexion();
 
 // Conéctate a la base de datos
 connection.connect();
