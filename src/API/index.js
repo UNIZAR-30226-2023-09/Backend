@@ -1,10 +1,10 @@
 /*
  ----------------------------------------------------------------------------
  * Fichero: index.js
- * Autor: Jesus Lizama Moreno 
- * NIP: 816473
+ * Autores: Jesus Lizama Moreno, Cesar Vela Martínez y David Rivera Seves
+ * NIPs: 816473, 816590, 815124
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
- * Fecha Ultima Actualizacion: 27/02/2023
+ * Fecha ultima actualizacion: 16/03/2023
  ----------------------------------------------------------------------------
 */
 

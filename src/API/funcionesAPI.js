@@ -1,10 +1,10 @@
 /*
  ----------------------------------------------------------------------------
  * Fichero: funcionesAPI.js
- * Autores: Jesus Lizama Moreno y Cesar Vela Martínez
- * NIPs: 816473, 816590
+ * Autores: Jesus Lizama Moreno, Cesar Vela Martínez y David Rivera Seves
+ * NIPs: 816473, 816590, 815124
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
- * Fecha: 14/03/2023
+ * Fecha ultima actualizacion: 16/03/2023
  ----------------------------------------------------------------------------
 */
 
@@ -1076,7 +1076,9 @@ function unirseTorneo(idJugador, idTorneo){
 =================== CREAR PARTIDA =========================================
 */
 
-// Se crea una partida
+// Devuelve el id de la partida creada
+// crearPartida(id_jugador) crea partida rapida
+// crearPartida(id_jugador, id_torneo) crea partida asociada a un torneo
 function crearPartida(id_jugador, id_torneo = null) {
   return new Promise((resolve, reject) => {
     const con = db.crearConexion();
@@ -1136,7 +1138,7 @@ function crearPartida(id_jugador, id_torneo = null) {
 =================== UNIRSE A PARTIDA =========================================
 */
 
-// Unirse a una partida existente
+// Devuelve true si se ha unido con éxito, false de lo contrario
 function unirsePartida(id_jugador, id_partida) {
   return new Promise((resolve, reject) => {
     const con = db.crearConexion();
@@ -1149,7 +1151,7 @@ function unirsePartida(id_jugador, id_partida) {
         return;
       }
       if (results1.length === 0) {
-        resolve(-1); // Si no existe jugador
+        resolve(false); // Si no existe jugador
         con.end();
         return;
       }
@@ -1162,7 +1164,7 @@ function unirsePartida(id_jugador, id_partida) {
           return;
         }
         if (results2.length === 0) {
-          resolve(-2); // Si no existe partida
+          resolve(false); // Si no existe partida
           con.end();
           return;
         }
@@ -1173,7 +1175,7 @@ function unirsePartida(id_jugador, id_partida) {
             con.end();
             return;
           }
-          resolve(id_partida);
+          resolve(true); // Devolver true si todo ha ido bien
           con.end();
         });
       });
@@ -1189,8 +1191,8 @@ exports.unirsePartida = unirsePartida;
 =================== EMPEZAR LA PARTIDA =========================================
 */
 
-// Empezar una partida existente, solo la puede llamar el lider que ha creado la partida
-// Devuelve true si todo va bien, sino false
+// Devuelve true si se ha empezado la partida con éxito, false de lo contrario
+// Empezar una partida existente, solo la puede llamar el líder que ha creado la partida
 function empezarPartida(id_partida, id_lider) {
   return new Promise((resolve, reject) => {
     const con = db.crearConexion();

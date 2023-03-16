@@ -93,3 +93,18 @@ function unirseTorneo(idJugador, idTorneo);
 
 // Obtener la posición actual de un jugador en una partida dada.
 function obtenerPosicion(id_jugador, id_partida);
+
+
+// Devuelve el id de la partida creada
+// crearPartida(id_jugador) crea partida rapida
+// crearPartida(id_jugador, id_torneo) crea partida asociada a un torneo
+function crearPartida(id_jugador, id_torneo = null);
+
+
+// Devuelve true si se ha unido con éxito, false de lo contrario
+function unirsePartida(id_jugador, id_partida);
+
+
+// Devuelve true si se ha empezado la partida con éxito, false de lo contrario
+// Empezar una partida existente, solo la puede llamar el líder que ha creado la partida
+function empezarPartida(id_partida, id_lider);
