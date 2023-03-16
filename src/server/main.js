@@ -68,6 +68,11 @@ server.on("connection", (socket) => {
             funcionesPartidaTorneo.UnirsePartida(socket, mensaje[1],mensaje[2]);
         }
 
+        // empezarPartida, ID_Partida, ID_Lider
+        if (mensaje[0] == "empezarPartida") {
+            funcionesPartidaTorneo.EmpezarPartida(socket, mensaje[1], mensaje[2]);
+        }
+
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
             // socket, ID_jugador, ID_partida

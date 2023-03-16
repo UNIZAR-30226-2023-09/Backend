@@ -21,6 +21,12 @@ CREADAP_OK,id_partida
 // Cuando no se puede crear una partida (por si acaso)
 CREADAP_NOOK,ID_jugador
 
+// Cuando empieza una partida bien
+EMPEZAR_OK,ID_partida
+
+// Cuando no empieza una partida bien
+EMPEZAR_NO_OK,ID_partida
+
 // Unirse ok a una partida
 UNIRP_OK,ID_partida,ID_jugador
 

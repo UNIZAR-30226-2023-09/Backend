@@ -93,3 +93,22 @@ async function UnirseTorneo(socket, ID_jugador, ID_Torneo) {
 }
 exports.UnirseTorneo = UnirseTorneo;
 
+async function EmpezarPartida(socket, ID_partida, ID_jugador) {
+    try {
+        // Empezamos la partida 
+        if (await API.empezarPartida(ID_partida, ID_jugador)) {
+            socket.send(`EMPEZAR_OK,${ID_partida}`);
+            // TODO: Mandar al jugador que le toca empezar que es su turno 
+        }
+        else { // TODO: ¿Motivo?
+            socket.send(`EMPEZAR_NO_OK,${ID_partida}`);
+        }
+    }
+
+    catch(error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false; 
+    }
+}
+exports.EmpezarPartida = EmpezarPartida;
