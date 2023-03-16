@@ -14,7 +14,7 @@ const API = require('../API/funcionesAPI');
 async function CrearPartida(socket, ID_jugador) {
     try {
         // Creamos la partida y guardamos su ID
-        let id_partida = await API.crearPartida(ID_jugador);
+        let id_partida = await API.crearPartida(ID_jugador,0);
         if (id_partida == -1) {
             socket.send(`CREADAP_NOOK,${ID_jugador}`);
         }

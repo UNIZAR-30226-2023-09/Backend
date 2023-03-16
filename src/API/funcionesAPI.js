@@ -1128,7 +1128,7 @@ function crearPartida(id_jugador, id_torneo = null) {
   });
 }
 
-exports.crearPartida = crearPartida;
+  exports.crearPartida = crearPartida;
 
 
 
