@@ -1184,12 +1184,56 @@ function unirsePartida(id_jugador, id_partida) {
 exports.unirsePartida = unirsePartida;
 
 
+
 /*
-=================== FINALIZAR PARTIDA =========================================
+=================== EMPEZAR LA PARTIDA =========================================
 */
 
-// Finalizar una partida
-function finalizarPartida(id_partida, ganador_id = null) {
+// Empezar una partida existente, solo la puede llamar el lider que ha creado la partida
+// Devuelve true si todo va bien, sino false
+function empezarPartida(id_partida, id_lider) {
+  return new Promise((resolve, reject) => {
+    const con = db.crearConexion();
+    con.connect();
+    const query1 = `SELECT * FROM Jugador WHERE email = '${id_lider}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+        con.end();
+        return;
+      }
+      if (results1.length === 0) {
+        resolve(false); // Si no existe jugador
+        con.end();
+        return;
+      }
+      const jugador_id = results1[0].email;
+      const query2 = `SELECT * FROM juega WHERE idPartida = ${id_partida} AND email = '${id_lider}'`;
+      con.query(query2, (error, results2) => {
+        if (error) {
+          reject(error);
+          con.end();
+          return;
+        }
+        if (results2.length === 0) {
+          resolve(false); // Si el jugador no participa en esta partida
+          con.end();
+          return;
+        }
+        const query3 = `UPDATE Partida SET enCurso = true WHERE idPartida = ${id_partida}`;
+        con.query(query3, (error, results3) => {
+          if (error) {
+            reject(error);
+            con.end();
+            return;
+          }
+          resolve(true);
+          con.end();
+        });
+      });
+    });
+  });
 }
 
-exports.finalizarPartida = finalizarPartida;
+exports.empezarPartida = empezarPartida;
+

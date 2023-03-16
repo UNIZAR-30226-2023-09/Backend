@@ -298,6 +298,60 @@ async function obtenerResultadoObtenerPosicion(id_jugador, id_partida) {
 }
 
 
+//FUNCIONA OKEY.
+async function obtenerResultadoCrearPartida(id_jugador, id_torneo = null){
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.crearPartida(id_jugador, id_torneo);
+    console.log("El resultado obtenido de crear partida Jugador es :", resultado);
+    
+    return resultado;
+    
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoUnirsePartida(id_jugador, id_partida){
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.unirsePartida(id_jugador, id_partida);
+    console.log("El resultado obtenido de crear partida Jugador es :", resultado);
+    
+    return resultado;
+    
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoEmpezarPartida(id_partida, id_lider){
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.empezarPartida(id_partida, id_lider);
+    console.log("El resultado obtenido de empezar partida es :", resultado);
+    
+    return resultado;
+    
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -334,3 +388,23 @@ async function obtenerResultadoObtenerPosicion(id_jugador, id_partida) {
 
 //obtenerResultadoObtenerPosicion('pedroSANCHEZ@example.com',1);
 
+// Probar partida rapida
+//obtenerResultadoInsertar('david,1234,david@gmail.com,10');
+//obtenerResultadoCrearPartida('david@gmail.com');
+
+// Probar partida en torneo
+//obtenerResultadoInsertar('david,1234,david@gmail.com,10');
+//obtenerResultadoCrearTorneo('david@gmail.com', 1);
+//obtenerResultadoCrearPartida('david@gmail.com', 1);
+
+// Probar unirse a una partida
+//obtenerResultadoInsertar('david,1234,david@gmail.com,10');
+//obtenerResultadoInsertar('jesus,1234,jesus@gmail.com,10');
+//obtenerResultadoCrearTorneo('david@gmail.com', 1);
+//obtenerResultadoCrearPartida('david@gmail.com', 1);
+//obtenerResultadoUnirsePartida('jesus@gmail.com', 1)
+
+// Probar empezar partida
+//obtenerResultadoInsertar('david,1234,david@gmail.com,10');
+//obtenerResultadoCrearPartida('david@gmail.com');
+obtenerResultadoEmpezarPartida(1, 'david@gmail.com')
