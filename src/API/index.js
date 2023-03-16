@@ -279,6 +279,36 @@ async function obtenerResultadoObtenerInformacionJugador(id_jugador) {
   }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoCrearPartida(idJugador, id_torneo = null) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.crearPartida(idJugador, id_torneo);
+    console.log("El resultado obtenido de devolver el id_Partida es:", resultado);
+    return resultado;
+    
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+//FUNCIONA OKEY.
+async function obtenerResultadoUnirsePartida(idJugador, id_partida) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.unirsePartida(idJugador, id_partida);
+    console.log("El resultado obtenido de devolver el id_Partida es:", resultado);
+    return resultado;
+    
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -314,3 +344,8 @@ async function obtenerResultadoObtenerInformacionJugador(id_jugador) {
 
 
 //obtenerResultadoObtenerInformacionJugador('pedroSANCHEZ@example.com');
+
+// obtenerResultadoCrearPartida('david@gmail.com');     // partida rapida
+// obtenerResultadoCrearPartida('david@gmail.com', 1);  // partida de torneo 1
+
+//obtenerResultadoUnirsePartida('david@gmail.com', 1)
