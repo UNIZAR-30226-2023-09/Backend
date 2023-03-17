@@ -13,6 +13,8 @@ const db = require('./db');
 const POSICION_CARCEL = 11;
 const POSICION_BOTE = 21;
 const NUM_TURNOS_CARCEL = 3;
+const NUM_MINIMO_PROPIEDAD = 1;
+const NUM_MAX_PROPIEDAD = 40;
 
 /*
 ======================INSERTAR USUARIO=====================================
