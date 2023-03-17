@@ -233,8 +233,8 @@ then
 	(0, 0.0, "Inicial", 0.0, 0.0)
 	'''
 	node exec_remote_sql '''
-	INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, email, idPartida) VALUES
-	(0, 0.0, 0, 0, 0.0, "default", "jugador1@example.com", 1),  -- Realemnte no puede usar dos skins iguales, pero para probar sirve
+	INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES
+	(0, 0.0, 0, 0, 0.0, "default", "jugador1@example.com", 1),
 	(0, 0.0, 0, 0, 0.0, "default", "jugador2@example.com", 1)
 	'''
 	node exec_remote_sql '''
@@ -252,8 +252,8 @@ then
 	(0, 0.0, "Inicial", 0.0, 0.0, 1)
 	'''
 	node exec_remote_sql '''
-	INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, email, idPartida) VALUES
-	(0, 0.0, 0, 0, 0.0, "default", "jugador2@example.com", 2),  -- Realemnte no puede usar dos skins iguales, pero para probar sirve
+	INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES
+	(0, 0.0, 0, 0, 0.0, "default", "jugador2@example.com", 2),
 	(0, 0.0, 0, 0, 0.0, "default", "jugador3@example.com", 2)
 	'''
 
