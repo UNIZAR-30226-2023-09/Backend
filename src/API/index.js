@@ -9,7 +9,9 @@
 */
 
 
-const test = require('./partidaAPI')  //habria que cambiar este require por cada uno de los ficheros nuevos creados.
+const testPartida = require('./partidaAPI');  //habria que cambiar este require por cada uno de los ficheros nuevos creados.
+const testTorneo = require('./torneoAPI');
+const testJugador = require('./jugadorAPI');
 const con = require('./db');
 
 
@@ -17,7 +19,7 @@ const con = require('./db');
 async function obtenerResultadoInsertar(userData) {
     try {
       // Hacemos la llamada a la función que devuelve una Promesa.
-      const resultado = await test.insertarUsuario(userData);
+      const resultado = await testJugador.insertarUsuario(userData);
       console.log("El resultado obtenido de la consulta es:", resultado);
       return resultado;
   
@@ -33,7 +35,7 @@ async function obtenerResultadoInsertar(userData) {
 async function obtenerResultadoComprobarUser(email,pass) {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.comprobarInicioSesion(email,pass);
+    const resultado = await testJugador.comprobarInicioSesion(email,pass);
     console.log("El resultado obtenido de la comprobarUsuario es :", resultado);
     return resultado;
 
@@ -49,7 +51,7 @@ async function obtenerResultadoComprobarUser(email,pass) {
 async function obtenerResultadoBorrar(userData) {
     try {
       // Hacemos la llamada a la función que devuelve una Promesa.
-      const resultado = await test.borrarUsuario(userData);
+      const resultado = await testJugador.borrarUsuario(userData);
       console.log("Resultado de borrar:", resultado);
       return resultado;
   
@@ -81,7 +83,7 @@ async function obtenerResultadoMover(a,b,c) {
 async function obtenerResultadoDinero(email,dinero) {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.modificarDinero(email,dinero);
+    const resultado = await testPartida.modificarDinero(email,dinero);
     console.log("Resultado de mover:", resultado);
     return resultado;
 
@@ -234,7 +236,7 @@ async function obtenerResultadoJugadorEnPartida(idJugador) {
 async function obtenerResultadoCrearTorneo(idJugador, nPartidas) {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.crearTorneo(idJugador, nPartidas);
+    const resultado = await testTorneo.crearTorneo(idJugador, nPartidas);
     console.log("El resultado obtenido de devolver el id_Torneo es:", resultado);
     return resultado;
 
@@ -250,7 +252,7 @@ async function obtenerResultadoCrearTorneo(idJugador, nPartidas) {
 async function obtenerResultadoUnirseTorneo(idJugador, idTorneo) {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.unirseTorneo(idJugador, idTorneo);
+    const resultado = await testTorneo.unirseTorneo(idJugador, idTorneo);
     console.log("El resultado obtenido de devolver el id_Torneo es:", resultado);
     return resultado;
 
