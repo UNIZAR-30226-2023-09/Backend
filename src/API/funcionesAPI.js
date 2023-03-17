@@ -907,7 +907,43 @@ function obtenerInformacionJugador(id_jugador){
 }
 
 exports.obtenerInformacionJugador = obtenerInformacionJugador;
-                              
+
+
+/*
+===================OBTENER DUEÑO DE UNA PROPIEDAD =========================================
+*/
+
+// Devuelve el ID_jugador al que pertenezca la propiedad dada (-1 si no pertenece a nadie)
+// Propiedad es un (integer) con el numero de propiedad.
+function obtenerJugadorPropiedad(n_propiedad, id_partida){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    var concat = 'propiedad' + n_propiedad;
+    const query1 = `SELECT ${concat} as nombre_propietario FROM Partida WHERE idPartida = ${id_partida}`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        let propietario = results1[0].nombre_propietario;
+        if(propietario == null){
+          //no tiene propietario, con lo que devolvemos -1.
+          resolve(-1);
+        }
+        else{
+          //tiene propietario, con lo que devolvemos el id_jugador(email).
+          resolve(propietario);
+        }
+      }
+    });
+    con.end();
+  });
+}
+
+exports.obtenerJugadorPropiedad = obtenerJugadorPropiedad;
+
 
 /*
 ===================OBTENER POSICION DE UN JUGADOR =========================================
