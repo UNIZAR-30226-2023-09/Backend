@@ -4,12 +4,12 @@
  * Autores: Jesus Lizama Moreno, Cesar Vela Martínez y David Rivera Seves
  * NIPs: 816473, 816590, 815124
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
- * Fecha ultima actualizacion: 16/03/2023
+ * Fecha ultima actualizacion: 17/03/2023
  ----------------------------------------------------------------------------
 */
 
 
-const test = require('./funcionesAPI')
+const test = require('./partidaAPI')  //habria que cambiar este require por cada uno de los ficheros nuevos creados.
 const con = require('./db');
 
 

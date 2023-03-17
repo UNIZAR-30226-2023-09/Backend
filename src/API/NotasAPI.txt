@@ -24,6 +24,14 @@
 - En crearTorneo() y unirseTorneo() no meter 'idTorneo' manualmente, ya que es AUTOINCREMENT
 
 
+- Se ha dividido en 4 ficheros los cuales son:
+					1.) torneoAPI.js 
+					2.) jugadorAPI.js
+					3.) partidaAPI.js
+					4.) skinsAPI.js
+					
+
+
 
 
 

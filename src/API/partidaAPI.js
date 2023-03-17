@@ -16,193 +16,6 @@ const NUM_TURNOS_CARCEL = 3;
 const NUM_MINIMO_PROPIEDAD = 1;
 const NUM_MAX_PROPIEDAD = 40;
 
-/*
-======================INSERTAR USUARIO=====================================
-*/
-
-/*
-  insertarUsuario(userData);
-  Dado un email, inserta un nuevo usuario al juego del Monopòly.
-*/
-function insertarUsuario(userData) {
-  return new Promise((resolve, reject) => {
-    var con = db.crearConexion();
-    con.connect(function(err) {
-      if (err) {
-        reject(err);
-      } else {
-        const [username, password, email, gemas] = userData.split(',');
-        const query = `SELECT * FROM Jugador WHERE email = '${email}'`;
-        con.query(query, (error, results) => {
-          if (error) {
-            resolve(false);
-            con.end(); // Cerrar conexión
-          } else {
-            if (results.length > 0) {
-              resolve(false);
-              con.end(); // Cerrar conexión
-            } else {
-              const sql = `INSERT INTO Jugador (gemas, nombre, pass, email) VALUES (?, ?, ?, ?)`;
-              const gemasInt = parseInt(gemas, 10);
-              const values = [gemasInt, username.trim(), password.trim(), email.trim()];
-              con.query(sql, values, (error, results2, fields) => {
-                if (error) {
-                  con.end(); // Cerrar conexión
-                  resolve(false);
-                } else {
-                  con.end(); // Cerrar conexión
-                  resolve(true);
-                }
-              });
-            }
-          }
-        });
-      }
-    });
-
-  });
-}
-
-exports.insertarUsuario = insertarUsuario;
-
-
-
-
-/*
-======================COMPROBAR EXISTE USUARIO=====================================
-*/
-
-
-// Comprueba si el jugador tiene una cuenta asociada con el email y contraseña 
-// correspondiente
-// Si es correcto -> devuelve el número de gemas que tiene el jugador
-// Si no es correcto -> devuelve -1 (no puede tener gemas negativas así que 
-// entendemos de que no existe un email/contraseña asociados
-
-/*
-
-  Pasos a seguir para que sea seguro:
-    1. Buscamos que el usuario exista y devolvemos la contraseña de la base.
-    2. Si la contraseña que devuelve la query es igual que la que nos pasan como parametro devolvemos las gemas. 
-       En caso contrario, devolvemos false.
-*/
-
-function comprobarInicioSesion(email, contrasenya){
-  return new Promise((resolve, reject) => {
-    var con = db.crearConexion();
-    con.connect(function(err) {
-      if (err) {
-        reject(err);
-      } else {
-        const query = `SELECT pass,gemas FROM Jugador WHERE email = '${email}'`;
-        con.query(query, (error, results) => {
-          if (error) {
-            resolve(false);
-            con.end(); // Cerrar conexión
-          } 
-          else if (results.length === 0) {
-            // Si el jugador no existe, devolver false.
-            console.log("No existe el jugador. :(");
-            con.end();  // Cerrar conexión
-            resolve(-1);
-          } 
-          else {
-            let gemas, pass;
-            gemas = results[0].gemas; //guardamos las gemas para devolverlas si la contraseña coincide.
-            pass = results[0].pass;   //guardamos la contrasenya para poder compararla y verificar si es correecta o no.
-            if(pass == contrasenya){
-              //son iguales, devolvemos numero de gemas.
-              resolve(gemas);
-            }
-            else{
-              //no son iguales las contrasenyas, devolvemos false.
-              resolve(-1);
-            }
-            con.end(); // Cerrar conexión
-          }
-        });
-      }
-    });
-
-  });
-
-}
-
-exports.comprobarInicioSesion = comprobarInicioSesion;
-
-
-
-/*
-=====================BORRAR USUARIO DEL MONOPOLY===========================
-*/
-
-/*
-  borrarUsuario(email);
-  Dado un email, si existe lo borra y devuelve true, sino devuelve false.
-*/
-
-// FALTA REVISAR BIEN FUNCION DE BORRAR Y ANALIZAR EL CORRECTO ORDEN PARA BORRAR!!!
-function borrarUsuario(email) {
-
-  return new Promise((resolve, reject) => {
-    var con = db.crearConexion();
-    con.connect();
-    // Verifica si el usuario existe
-    con.query(`SELECT * FROM Jugador WHERE email='${email}'`, (error, results) => {
-      if (error) {
-        con.end();
-        reject(error);
-      } else if (results.length === 0) {
-        // Si el usuario no existe, devuelve false
-        con.end();
-        resolve(false);
-      } else {
-        // Si el usuario existe, borra el registro de todas las tablas relacionadas
-        con.query(`DELETE FROM juega WHERE email='${email}'`, (error) => {
-          if (error) {
-            con.end();
-            reject(error);
-          } else {
-            con.query(`DELETE FROM Partida WHERE carta1='${email}' OR carta2='${email}'`, (error) => {
-              if (error) {
-                con.end();
-                reject(error);
-              } else {
-                con.query(`DELETE FROM tieneSkins WHERE email='${email}'`, (error) => {
-                  if (error) {
-                    con.end();
-                    reject(error);
-                  } else {
-                    con.query(`DELETE FROM estaEnTorneo WHERE email='${email}'`, (error) => {
-                      if (error) {
-                        con.end();
-                        reject(error);
-                      }  else {
-                        con.query(`DELETE FROM Jugador WHERE email='${email}'`, (error) => {
-                          if (error) {
-                            con.end();
-                            reject(error);
-                          } else {
-                            // Si se pudo borrar el usuario, devuelve true
-                            con.end();
-                            resolve(true);
-                          }
-                        });
-                      }
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-  });
-}
-
-exports.borrarUsuario = borrarUsuario;
-
 
 /*
 =====================MOVER JUGADOR DEL MONOPOLY===========================
@@ -217,38 +30,39 @@ moverJugador(jugador, numero);
 
 
 function moverJugador(jugador, posiciones, idPartida) {
-    return new Promise((resolve, reject) => {
-      var con = db.crearConexion();
-      con.connect();
-      // Comprobar si el jugador existe en la tabla "juega".
-      const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
-      con.query(query, (error, results) => {
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".
+    const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+          con.end();
+          reject(error);
+      } else if (results.length === 0) {
+          // Si el jugador no existe, devolver 0.
+          con.end();
+          resolve(0);
+      } 
+      else {
+        // Si el jugador existe, actualizar su posición
+        const partidaId = results[0].idPartida;
+        const nuevaPosicion = results[0].posicion + posiciones;
+        const updateQuery = `UPDATE juega SET posicion = ? WHERE email = ? AND idPartida = ?`;
+        //si metes entre [] los valores, son los de la query que ponemos interrogantes.
+        con.query(updateQuery, [nuevaPosicion, jugador, partidaId], (error, results) => {
           if (error) {
-              con.end();
-              reject(error);
-          } else if (results.length === 0) {
-              // Si el jugador no existe, devolver 0.
-              con.end();
-              resolve(0);
+            con.end();
+            reject(error);
           } else {
-              // Si el jugador existe, actualizar su posición
-              const partidaId = results[0].idPartida;
-              const nuevaPosicion = results[0].posicion + posiciones;
-              const updateQuery = `UPDATE juega SET posicion = ? WHERE email = ? AND idPartida = ?`;
-              //si metes entre [] los valores, son los de la query que ponemos interrogantes.
-              con.query(updateQuery, [nuevaPosicion, jugador, partidaId], (error, results) => {
-                  if (error) {
-                  con.end();
-                  reject(error);
-                  } else {
-                  // Devolver la nueva posicion si todo ha ido bien.
-                  con.end();
-                  resolve(nuevaPosicion);
-                  }
-              });
+            // Devolver la nueva posicion si todo ha ido bien.
+            con.end();
+            resolve(nuevaPosicion);
           }
-      });
+        });
+      }
     });
+  });
 }
 
 exports.moverJugador = moverJugador;
@@ -258,13 +72,8 @@ exports.moverJugador = moverJugador;
 /*
 ===================MODIFICAR DINERO JUGADOR DEL MONOPOLY===================
 */
-
-
-/*
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
 // ser positiva o negativa)
-modificarDinero(jugador, cantidad);
-*/
 function modificarDinero(jugador, cantidad) {
   return new Promise((resolve, reject) => {
     var con = db.crearConexion();
@@ -366,7 +175,6 @@ function pagarImpuestos(jugador, cantidad, idPartida){
   });
 }
 
-
 exports.pagarImpuestos = pagarImpuestos;
 
 
@@ -417,21 +225,12 @@ function obtenerDinero(jugador, idPartida) {
   });
 }
 
-
 exports.obtenerDinero = obtenerDinero;
-
-
-
-
-
 
 
 /*
 ===================MOVER JUGADOR CARCEL=========================================
 */
-
-
-
 // Enviar a un jugador a la cárcel(mover posición del jugador a la carcel(9) y poner numero de tiradas en carcel = 3).
 function enviarCarcel(jugador,idPartida){
   return new Promise((resolve, reject) => {
@@ -441,12 +240,10 @@ function enviarCarcel(jugador,idPartida){
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
     con.query(query, (error, results) => {
       if (error) {
-        console.log("ERROR!!");
         con.end();
         reject(error);
       } else if (results.length === 0) {
         // Si el jugador no existe en la partida, devolver false.
-        console.log("Esta vacio lenght");
         con.end();
         resolve(false);
       } 
@@ -501,11 +298,9 @@ function enviarCarcel(jugador,idPartida){
                         }
                       });        
                     }
-                  });
-                  
+                  }); 
                 }
               });
-              
             }            
           }
         });
@@ -513,6 +308,7 @@ function enviarCarcel(jugador,idPartida){
     });
   });
 }
+
 exports.enviarCarcel = enviarCarcel;
 
 
@@ -528,7 +324,6 @@ function verificarCarcel(jugador, idPartida){
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
-    console.log(query);
     con.query(query, (error, results) => {
       if (error) {
         console.log("ERROR!!");
@@ -536,7 +331,6 @@ function verificarCarcel(jugador, idPartida){
         reject(error);
       } else if (results.length === 0) {
         // Si el jugador no existe en la partida, devolver false.
-        console.log("Esta vacio lenght");
         con.end();
         resolve(false);
       } 
@@ -567,6 +361,7 @@ function verificarCarcel(jugador, idPartida){
     });
   });
 }
+
 exports.verificarCarcel = verificarCarcel;
 
 
@@ -575,8 +370,6 @@ exports.verificarCarcel = verificarCarcel;
 /*
 ===================SUMAR DINERO AL BOTE DE UNA PARTIDA=========================================
 */
-
-
 // Sumar el dinero dado al bote, dado el dinero que queremos añadir, y el identificador de la partida a la que queremos añadirlo.
 /*
   Pasos:
@@ -619,9 +412,7 @@ function sumarDineroBote(cantidad,idPartida){
       }
     });
   });
-
 }
-
 
 exports.sumarDineroBote = sumarDineroBote;
 
@@ -630,8 +421,6 @@ exports.sumarDineroBote = sumarDineroBote;
 /*
 ===================SUMAR DINERO DEL BOTE A UN JUGADOR=========================================
 */
-
-
 // Sumarle al jugador dado el dinero que hay en la casilla del bote (casilla 21).
 /*
   Pasos: 
@@ -753,8 +542,6 @@ exports.dineroBanco = dineroBanco;
 /*
 ===================METER DINERO AL BANCO DE UN JUGADOR=========================================
 */
-
-
 // Dado un jugador, una partida y una cantidad meter ese dinero al banco(variable dineroInvertido).
 // Devuelve la cantidad de dinero que tiene el jugador en el banco
 function meterDineroBanco(idJugador, idPartida, cantidad) {
@@ -836,44 +623,8 @@ function jugadorEnPartida(email){
   });
 }
 
-
 exports.jugadorEnPartida = jugadorEnPartida;
 
-
-
-/*
-===================OBTENER INFORMACION DE UN JUGADOR =========================================
-*/
-
-// Obtener información básica sobre un jugador (nombre, gemas, email, pass)
-//devuelve una cadena de la siguiente forma: " email,gemas,nombre,pass".
-
-function obtenerInformacionJugador(id_jugador){
-  return new Promise((resolve, reject) => {
-    var con = db.crearConexion();
-    con.connect();
-    const query1 = `SELECT * FROM jugador WHERE email = '${id_jugador}'`;
-    con.query(query1, (error, results1) => {
-      if (error) {
-        reject(error);
-      } else if (results1.length === 0) {
-        resolve(-1);
-      } else {
-        //devolvemos en un vector los valores del usuario.
-        let vector = [];
-        vector[0] = results1[0].email;
-        vector[1] = results1[0].gemas;
-        vector[2] = results1[0].nombre;
-        vector[3] = results1[0].pass;
-        let cadena = vector.join(",");
-        resolve(cadena);
-      }
-      con.end();
-    });
-  });
-}
-
-exports.obtenerInformacionJugador = obtenerInformacionJugador;
 
 
 /*
@@ -915,7 +666,6 @@ exports.obtenerJugadorPropiedad = obtenerJugadorPropiedad;
 /*
 ===================OBTENER POSICION DE UN JUGADOR =========================================
 */
-
 // Obtener la posición actual de un jugador en una partida dada.
 
 function obtenerPosicion(id_jugador, id_partida){
@@ -937,13 +687,13 @@ function obtenerPosicion(id_jugador, id_partida){
     });
   });
 }
+
 exports.obtenerPosicion=obtenerPosicion;
 
 
 /*
 ===================COMPROBAR DINERO JUGADOR=========================================
 */
-
 // Comprobar si el jugador dado tiene más dinero disponible que cantidad.
 // Si lo tiene, actualiza su dinero con esa nueva cantidad(puede ser negativa) y devuelve true.
 // Si no lo tiene que devuelva false.
@@ -1016,7 +766,6 @@ exports.obtenerNumPropiedades=obtenerNumPropiedades;
 /*
 ===================COMPRAR PROPIEDAD =========================================
 */
-
 // Compra una propiedad la cual tiene QUE ESTAR VACIA SI O SI. devuelve true, si ha ido correcto devuelve true
 // y false en caso de que no haya sido posible comprarla. 
 function comprarPropiedad(id_partida,id_jugador, n_propiedad,precio_propiedad){
@@ -1151,139 +900,6 @@ exports.obtenerPropiedades=obtenerPropiedades;
 
 
 
-/*
-===================CREAR TORNEO CON ID_JUGADOR Y NPARTIDAS =========================================
-*/
-
-// Devuelve el id_torneo del torneo recien creado por el jugador idJugador
-//En caso de que no pueda crearse el torneo, o el jugador idJugador no exista devuelve -1.
-function crearTorneo(idJugador, nPartidas){
-  return new Promise((resolve, reject) => {
-    var con = db.crearConexion();
-    con.connect();
-    const query = `SELECT * FROM Jugador WHERE email = '${idJugador}'`;       // Vemos si existe el jugador
-    con.query(query, (error, results) => {
-      if (error) {                            // Caso -- ERROR
-        con.end();
-        reject(error);
-      } else if (results.length === 0) {      // Caso -- No existe
-        con.end();
-        resolve(-1);
-      } else {                                // Caso -- Existe
-        const query2 = `SELECT MAX(idTorneo) AS maxid FROM Torneo;`;
-        con.query(query2, (error, results2) => {
-          if (error) {
-            con.end();
-            reject(error); 
-          } else {
-
-            let nuevoId = results2[0].maxid;
-            let devolver = 0;
-            let sql = ``;
-
-            if(nuevoId == null){            // Caso -- No hay ningun Torneo hasta la fecha
-              sql = `INSERT INTO Torneo (nPartidas, estaActivo, idTorneo) VALUES ('${nPartidas}', true, 1);`;
-              devolver = 1;
-            }
-            else{                           // Caso -- Cogemos idTorneo maximo +1 y lo asignamos al nuevo torneo
-              sql = `INSERT INTO Torneo (nPartidas, estaActivo, idTorneo) VALUES ('${nPartidas}', true, '${nuevoId+1}');`;
-              devolver = nuevoId+1;
-            }
-
-            con.query(sql, (error, results) => {
-              if (error) {                            // Caso -- ERROR
-                con.end();
-                reject(error);
-              } else {                                // Caso -- Se creo el Torneo correctamente
-                const sql2 = `INSERT INTO estaEnTorneo (idTorneo, email) VALUES ('${devolver}', '${idJugador}');`;
-                con.query(sql2, (error, results) => {
-                  if (error) {                        // Caso -- ERROR
-                    con.end();
-                    reject(error);
-                  } else {                            // Caso -- Se asocio el jugador al torneo correctamente
-                    con.end();
-                    resolve(devolver);
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-  });
-}
-
-
-exports.crearTorneo = crearTorneo;
-
-
-
-
-
-/*
-===================AÑADIR JUGADOR CON ID_JUGADOR A TORNEO CON ID_TORNEO =========================================
-*/
-
-// Devuelve el true si se ha añadido al jugador id_jugador, al torneo con id_torneo
-//En caso de que no exista el torneo o el jugador devuelve false o ya se haya metido al jugador en ese torneo.
-function unirseTorneo(idJugador, idTorneo){
-    return new Promise((resolve, reject) => {
-      var con = db.crearConexion();
-      con.connect();
-      const query = `SELECT * FROM Jugador WHERE email = '${idJugador}'`;       // Vemos si existe el jugador
-      con.query(query, (error, results) => {
-        if (error) {                                    // Caso -- ERROR
-          con.end();
-          reject(error);
-        } else if (results.length === 0) {              // Caso -- No existe JUGADOR
-          con.end();
-          resolve(false);
-        } else {                                        // Caso -- Existe JUGADOR
-
-          const query2 = `SELECT * FROM Torneo WHERE idTorneo = '${idTorneo}';`;
-          con.query(query2, (error, results2) => {
-            if (error) {                                // Caso -- ERROR
-              con.end();
-              reject(error);
-            } else if (results2.length === 0) {         // Caso -- No existe TORNEO
-              con.end();
-              resolve(false); 
-            } else {                                    // Caso -- Existe TORNEO
-
-              const query3 = `SELECT * FROM estaEnTorneo WHERE idTorneo = '${idTorneo}' AND email = '${idJugador}';`;
-              con.query(query3, (error, results3) => {
-                if (error) {                            // Caso -- ERROR
-                  con.end();
-                  reject(error);
-                } else if (results3.length === 0) {     // Caso -- No existe una entrada ya en estaEnTorneo -> SE AÑADE
-
-                  const sql = `INSERT INTO estaEnTorneo (idTorneo, email) VALUES ('${idTorneo}', '${idJugador}');`;
-                  con.query(sql, (error, results) => {
-                    if (error) {                        // Caso -- ERROR
-                    con.end();
-                    reject(error);
-                    } else {                            // Caso -- Se asocio el jugador al torneo correctamente
-                    con.end();
-                    resolve(true);
-                    }
-                  });
-
-                } else {                                // Caso --  Existe una entrada ya en estaEnTorneo
-                  con.end();
-                  resolve(false);
-                }
-              });
-            }
-          });
-        }
-      });
-    });
-  }
-  
-  
-  exports.unirseTorneo = unirseTorneo;
-  
 
 
 /*
@@ -1344,7 +960,7 @@ function crearPartida(id_jugador, id_torneo = null) {
   });
 }
 
-  exports.crearPartida = crearPartida;
+exports.crearPartida = crearPartida;
 
 
 
