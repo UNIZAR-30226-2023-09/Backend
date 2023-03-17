@@ -1,5 +1,12 @@
 #!/bin/bash
 
+################################################################################
+# Asignatura: Proyecto Software (2022/2023)                                    #
+# Fichero: server.sh                                                           #
+# Autor: David Rivera Seves (NIP: 815124)                                      #
+# Ejecución: bash server.sh [status/start/stop/restart]                        #
+################################################################################
+
 if [ "$1" = "status" ]; then
   if pgrep -f "main.js" > /dev/null; then
     echo "El archivo 'main.js' está en ejecución"
@@ -32,5 +39,5 @@ elif [ "$1" = "restart" ]; then
   echo "CREATE TABLES..."
   bash ejecutarSQL.sh 1 # Crear db
 else
-  echo "El parámetro debe ser 'start', 'stop', 'restart' o 'status'"
+  echo "El parámetro debe ser 'status', 'start', 'stop' o 'restart'"
 fi
