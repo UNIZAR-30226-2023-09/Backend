@@ -120,3 +120,7 @@ function obtenerNumPropiedades(id_partida,id_jugador);
 // Compra una propiedad la cual tiene QUE ESTAR VACIA SI O SI. devuelve true, si ha ido correcto devuelve true
 // y false en caso de que no haya sido posible comprarla. 
 function comprarPropiedad(id_partida,id_jugador, n_propiedad,precio_propiedad);
+
+// Obtener la lista de propiedades de un jugador. Si no tiene ninguna propiedad devuelve la cadena vacia (null).
+//Las propiedades van devueltas en una cadena separada por comas: "propiedad1,propiedad2".
+function obtenerPropiedades(id_partida,id_jugador)

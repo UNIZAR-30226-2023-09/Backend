@@ -1103,6 +1103,7 @@ exports.comprarPropiedad = comprarPropiedad;
 ===================OBTENER PROPIEDADES JUGADOR EN PARTIDA =========================================
 */
 // Obtener la lista de propiedades de un jugador. Si no tiene ninguna propiedad devuelve la cadena vacia (null).
+//Las propiedades van devueltas en una cadena separada por comas: "propiedad1,propiedad2".
 function obtenerPropiedades(id_partida,id_jugador){
   return new Promise((resolve, reject) => {
     var con = db.crearConexion();
