@@ -8,7 +8,7 @@
 */
 
 const con = require('../API/db');
-const API = require('../API/funcionesAPI');
+const API = require('../API/jugadorAPI');
 
 // Registra al jugador dado si es posible
 async function Registrarse(socket, email, contrasenya, nombre) {
@@ -44,9 +44,9 @@ async function IniciarSesion(socket, email, contrasenya) {
             // Está en una partida
             if (id_partida >= 0) {
                 // TODO: Ver como devuelven los datos de la partida y mandárselos al cliente
-                let datosPartida = await API.obtenerDatosPartida(id_partida);
+                //let datosPartida = await API.obtenerDatosPartida(id_partida);
                 // Mandar los datos de la partida para mostrarlos
-                socket.send();
+                //socket.send();
             }
             else {
                 socket.send(`INICIO_OK,${email},${gemas}`);

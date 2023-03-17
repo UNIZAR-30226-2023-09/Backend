@@ -8,13 +8,15 @@
 */
 
 const con = require('../API/db');
-const API = require('../API/funcionesAPI');
+const APIpartida = require('../API/partidaAPI');
+const APItorneo = require('../API/torneoAPI');
+
 
 // El jugador dado crea una partida
 async function CrearPartida(socket, ID_jugador) {
     try {
         // Creamos la partida y guardamos su ID
-        let id_partida = await API.crearPartida(ID_jugador);
+        let id_partida = await APIpartida.crearPartida(ID_jugador);
         if (id_partida == -1) {
             socket.send(`CREADAP_NOOK,${ID_jugador}`);
         }
@@ -36,7 +38,7 @@ exports.CrearPartida = CrearPartida;
 async function UnirsePartida(socket, ID_jugador, ID_partida) {
     try {
         // Unimos al jugador a la partida 
-        if (await API.unirPartida(ID_jugador, ID_partida)) {
+        if (await APIpartida.unirsePartida(ID_jugador, ID_partida)) {
             socket.send(`UNIRP_OK,${ID_partida},${ID_jugador}`);
         }
         else { // TODO: ¿Motivo?
@@ -56,7 +58,7 @@ exports.UnirsePartida = UnirsePartida;
 async function CrearTorneo(socket, ID_jugador) {
     try {
         // Creamos el torneo y guardamos su ID
-        let id_torneo = await API.crearTorneo(ID_jugador);
+        let id_torneo = await APItorneo.crearTorneo(ID_jugador);
         if (id_torneo == -1) {
             socket.send(`CREADOT_NOOK,${ID_jugador}`);
         }
@@ -77,7 +79,7 @@ exports.CrearTorneo = CrearTorneo;
 async function UnirseTorneo(socket, ID_jugador, ID_Torneo) {
     try {
         // Unimos al jugador al torneo 
-        if (await API.unirseTorneo(ID_jugador, ID_Torneo)) {
+        if (await APItorneo.unirseTorneo(ID_jugador, ID_Torneo)) {
             socket.send(`UNIRSET_OK,${ID_Torneo},${ID_jugador}`);
         }
         else { // TODO: ¿Motivo?
@@ -96,7 +98,7 @@ exports.UnirseTorneo = UnirseTorneo;
 async function EmpezarPartida(socket, ID_partida, ID_jugador) {
     try {
         // Empezamos la partida 
-        if (await API.empezarPartida(ID_partida, ID_jugador)) {
+        if (await APIpartida.empezarPartida(ID_partida, ID_jugador)) {
             socket.send(`EMPEZAR_OK,${ID_partida}`);
             // TODO: Mandar al jugador que le toca empezar que es su turno 
         }
