@@ -23,7 +23,7 @@ function agregarUsuario(socket, nombreUsuario) {
     connections.push(usuario);
   
     // Asociamos el nombre de usuario con la posición en el array de conexiones
-    users[nombreUsuario] = connections.indexOf(usuario);
+    usuarios[nombreUsuario] = connections.indexOf(usuario);
   
     // Escuchamos los eventos 'login' y 'disconnect' del usuario
     socket.on('login', (IDusuario) => handleLogin(IDusuario, usuario));
