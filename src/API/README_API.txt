@@ -123,4 +123,8 @@ function comprarPropiedad(id_partida,id_jugador, n_propiedad,precio_propiedad);
 
 // Obtener la lista de propiedades de un jugador. Si no tiene ninguna propiedad devuelve la cadena vacia (null).
 //Las propiedades van devueltas en una cadena separada por comas: "propiedad1,propiedad2".
-function obtenerPropiedades(id_partida,id_jugador)
+function obtenerPropiedades(id_partida,id_jugador);
+
+// Devuelve el ID_jugador al que pertenezca la propiedad dada (-1 si no pertenece a nadie)
+// Propiedad es un (integer) con el numero de propiedad.
+function obtenerJugadorPropiedad(n_propiedad, id_partida)
