@@ -181,6 +181,35 @@ then
 		FOREIGN KEY (perteneceTorneo) REFERENCES Torneo(idTorneo)
 	);
 	'''
+	node exec_remote_sql '''
+	CREATE TABLE juega (
+		numPropiedades  INT NOT NULL,
+		dineroInvertido FLOAT NOT NULL,
+		nTurnosCarcel   INT NOT NULL,
+		posicion        INT NOT NULL,
+		dinero          FLOAT NOT NULL,
+		skin            VARCHAR(255) NOT NULL,
+		puestoPartida   INT,
+		email           VARCHAR(255),
+		idPartida       INT,
+		PRIMARY KEY (idPartida, email),
+		FOREIGN KEY (email) REFERENCES Jugador(email),
+		FOREIGN KEY (idPartida) REFERENCES Partida(idPartida),
+		FOREIGN KEY (skin) REFERENCES Skins(idSkin)
+	);
+	'''
+	node exec_remote_sql '''
+	CREATE TABLE estaEnTorneo (
+		idTorneo        INT,
+		email           VARCHAR(255),
+		PRIMARY KEY (email, idTorneo),
+		FOREIGN KEY (idTorneo) REFERENCES Torneo(idTorneo),
+		FOREIGN KEY (email) REFERENCES Jugador(email)
+	);
+	'''
+	sleep 1
+	echo "POBLANDO TEST..."
+	node exec_remote_sql.js "INSERT INTO Skins (precioGemas, idSkin) VALUES (0, 'default')"
 
 
 elif [ $ejecutar -eq 2 ]
