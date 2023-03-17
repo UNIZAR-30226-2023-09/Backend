@@ -10,6 +10,7 @@
 const con = require('../API/db');
 const API = require('../API/jugadorAPI');
 const APIpartida = require('../API/partidaAPI');
+const conexion = require('./conexiones');
 
 // Registra al jugador dado si es posible
 async function Registrarse(socket, email, contrasenya, nombre) {
@@ -50,6 +51,9 @@ async function IniciarSesion(socket, email, contrasenya) {
                 //socket.send();
             }
             else {
+                // Almacenamos la conexión del usuario junto con su nombre de usuario
+                conexion.agregarUsuario(socket,{email});
+
                 socket.send(`INICIO_OK,${email},${gemas}`);
             }
         }
@@ -63,6 +67,7 @@ async function IniciarSesion(socket, email, contrasenya) {
         return false;
     }
 }
+
 exports.IniciarSesion = IniciarSesion;
 
 async function FinTurno (socket, ID_jugador, ID_partida) {
