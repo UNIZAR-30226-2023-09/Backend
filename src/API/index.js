@@ -403,6 +403,23 @@ async function obtenerResultadoComprarPropiedad(id_partida,id_jugador, n_propied
   }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerPropiedades(id_partida,id_jugador) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.obtenerPropiedades(id_partida,id_jugador);
+    console.log("El resultado obtenido de obtener propiedades concatenadas es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -446,7 +463,7 @@ async function obtenerResultadoComprarPropiedad(id_partida,id_jugador, n_propied
 
 //obtenerResultadoComprarPropiedad(1,'laura@example.com',1,3700);
 
-
+//obtenerResultadoObtenerPropiedades(1,'juan@example.com');
 
 // Probar partida rapida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');

@@ -1099,6 +1099,53 @@ exports.comprarPropiedad = comprarPropiedad;
 
 
 
+/*
+===================OBTENER PROPIEDADES JUGADOR EN PARTIDA =========================================
+*/
+// Obtener la lista de propiedades de un jugador. Si no tiene ninguna propiedad devuelve la cadena vacia (null).
+function obtenerPropiedades(id_partida,id_jugador){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    let propiedades = [];
+    let n_propiedad = NUM_MINIMO_PROPIEDAD;
+
+    for(; n_propiedad < NUM_MAX_PROPIEDAD; n_propiedad++){
+      let concat = 'propiedad' + n_propiedad;
+      const query = `SELECT ${concat} AS propiedad FROM Partida WHERE idPartida = '${id_partida}'`;
+      con.query(query, (error, results) => {
+        if (error) {
+          reject(error);
+        } else if (results.length === 0) {
+          resolve(null);
+        } else {
+          //comprobamos si es del usuario, si lo es, concatenamos, sino avanzamos siguiente propiedad.
+          let dueño = results[0].propiedad;
+          if(dueño == id_jugador){
+            //es del dueño, agregamos la propiedad al final del vector.
+            propiedades.push(concat);
+          }
+        }
+      });
+    }
+    con.on('end', () => {
+      let cadena = propiedades.join(",");
+      if(cadena == ""){
+        resolve(null);
+      }
+      else{
+        resolve(cadena);
+      }
+    });
+    con.end();
+  });
+}
+
+
+exports.obtenerPropiedades=obtenerPropiedades;
+
+
+
 
 /*
 ===================CREAR TORNEO CON ID_JUGADOR Y NPARTIDAS =========================================
