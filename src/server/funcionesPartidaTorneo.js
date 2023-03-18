@@ -115,6 +115,7 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
             }            
 
             socket.send(`EMPEZAR_OK,${ID_partida},${ordenJugadores[0]},${ordenJugadores[1]},${ordenJugadores[2]},${ordenJugadores[3]}`);
+            socket.send(`TURNO,${ordenJugadores[0]},${ID_partida}`);
         }
         else { // TODO: ¿Motivo?
             socket.send(`EMPEZAR_NO_OK,${ID_partida}`);
