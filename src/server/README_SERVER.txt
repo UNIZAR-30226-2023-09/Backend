@@ -21,8 +21,8 @@ CREADAP_OK,id_partida
 // Cuando no se puede crear una partida (por si acaso)
 CREADAP_NOOK,ID_jugador
 
-// Cuando empieza una partida bien
-EMPEZAR_OK,ID_partida
+// Cuando empieza una partida bien se mandan los 4 ids de jugadores en el orden correspondiente
+EMPEZAR_OK,ID_partida,ID_jugador1,ID_jugador2,ID_jugador3,ID_jugador4
 
 // Cuando no empieza una partida bien
 EMPEZAR_NO_OK,ID_partida

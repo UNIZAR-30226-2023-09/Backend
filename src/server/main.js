@@ -68,8 +68,9 @@ server.on("connection", (socket) => {
             funcionesPartidaTorneo.UnirsePartida(socket, mensaje[1],mensaje[2]);
         }
 
-        // empezarPartida, ID_Partida, ID_Lider
+       
         if (mensaje[0] == "empezarPartida") {
+             // socket, ID_Partida, ID_Lider
             funcionesPartidaTorneo.EmpezarPartida(socket, mensaje[1], mensaje[2]);
         }
 
