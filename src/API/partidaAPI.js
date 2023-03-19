@@ -326,7 +326,6 @@ function verificarCarcel(jugador, idPartida){
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
     con.query(query, (error, results) => {
       if (error) {
-        console.log("ERROR!!");
         con.end();
         reject(error);
       } else if (results.length === 0) {
@@ -337,31 +336,22 @@ function verificarCarcel(jugador, idPartida){
       else {
         //una vez comprobado que esta en la partida, realizaremos consulta para ver si se encuentra en la posicion 
         //de carcel, si es asi devuelve true, y en caso contrario devuelve false.
-        const query2 = `SELECT posicion FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+        const query2 = `SELECT nTurnosCarcel FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
         con.query(query2, (error, results2) => {
           if (error) {
             con.end();
             reject(error);
           } else {
             //si ha ido bien devolvemos la posicion.
-            let posicion = results2[0].posicion;
-            if(posicion == POSICION_CARCEL){
-              //esta en la casilla de la carcel, devuelve true.
-              con.end();
-              resolve(true);
-            }
-            else{
-              //no esta en la casilla de la carcel, devuelve false.
-              con.end();
-              resolve(false);
-            }            
+            let turnosCarcel = results2[0].nTurnosCarcel;
+            resolve(turnosCarcel);
+            con.end();
           }
         });
       }
     });
   });
 }
-
 exports.verificarCarcel = verificarCarcel;
 
 
