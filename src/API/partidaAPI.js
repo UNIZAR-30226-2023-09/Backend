@@ -73,13 +73,13 @@ exports.moverJugador = moverJugador;
 ===================MODIFICAR DINERO JUGADOR DEL MONOPOLY===================
 */
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
-// ser positiva o negativa)
-function modificarDinero(jugador, cantidad) {
+// ser positiva o negativa). Devuelve true si todo ha ido bien, y devuelve false si algo ha ido mal.
+function modificarDinero(idPartida,jugador, cantidad) {
   return new Promise((resolve, reject) => {
     var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".
-    const query = `SELECT dinero FROM juega WHERE email = '${jugador}'`;
+    const query = `SELECT dinero FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
     console.log(query);
     con.query(query, (error, results) => {
       if (error) {
@@ -94,10 +94,10 @@ function modificarDinero(jugador, cantidad) {
       } 
       else {
         // Realizar la consulta para modificar el dinero del jugador
-        const query = `UPDATE juega SET dinero = ? WHERE email = ?`;
+        const query = `UPDATE juega SET dinero = ? WHERE email = ? AND idPartida = ?`;
         let dinero = results[0].dinero;
         dinero += cantidad;
-        const values = [dinero, jugador];
+        const values = [dinero, jugador,idPartida];
         con.query(query, values, (error, results) => {
           if (error) {
             reject(error);
