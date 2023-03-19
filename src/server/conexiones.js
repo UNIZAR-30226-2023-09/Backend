@@ -51,6 +51,7 @@ function eliminarUsuario(nombreUsuario) {
 function buscarUsuario(IDusuario) {
     const index = usuarios[IDusuario];
     if (index !== undefined) {
+        console.log('Se ha encontrado al usuario:', IDusuario);
       return connections[index].socket;
     }
     return null;
