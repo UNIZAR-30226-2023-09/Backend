@@ -128,3 +128,6 @@ function obtenerPropiedades(id_partida,id_jugador);
 // Devuelve el ID_jugador al que pertenezca la propiedad dada (-1 si no pertenece a nadie)
 // Propiedad es un (integer) con el numero de propiedad.
 function obtenerJugadorPropiedad(n_propiedad, id_partida)
+
+// Dado un jugador y una partida, restarle a turnosCarcel los turnos dados. 
+function restarTurnoCarcel(id_jugador, id_partida, turnos)
