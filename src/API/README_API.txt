@@ -22,7 +22,7 @@ moverJugador(jugador, numero);
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
 // ser positiva o negativa). Devuelve true si ha ido todo bien, en caso de que haya ido algo mal
 // devuleve false.
-modificarDinero(jugador, cantidad);
+modificarDinero(idPartida,jugador, cantidad);
 
 
 // Pagar impuestos a la banca de un cierto jugador en cierta partida. Eso significa, que el jugador se le resta
