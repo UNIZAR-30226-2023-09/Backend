@@ -106,7 +106,7 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
 
             // Dado un ID_partida que devuelva los jugadores de la partida, si es un bot que devuelva 'bot' como el jugador
             // jugador1,jugador2,jugador3,jugador4
-            obtenerJugadoresPartida(ID_partida);
+            //obtenerJugadoresPartida(ID_partida);
 
             // Guardar en la base el orden de jugadores(funcion API que le pases el idPartida y el orden d los 4 jugadores)
             // Estos IDs se obtienen de funcion API

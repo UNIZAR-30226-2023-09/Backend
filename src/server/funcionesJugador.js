@@ -90,7 +90,9 @@ async function FinTurno (socket, ID_jugador, ID_partida) {
 
     }
     else {   // Es un jugador
-        socket.send(`TURNO,${siguienteJugador},${ID_partida}`);
+        // Buscar jugadores en el pool 
+        let conexionUsuario = con.buscarUsuario(siguienteJugador);
+        conexionUsuario.send(`TURNO,${siguienteJugador},${ID_partida}`);
     }
 
     // Comprobar si es fin de ronda y realizar lo oportuno con esta

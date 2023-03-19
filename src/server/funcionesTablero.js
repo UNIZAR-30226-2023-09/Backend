@@ -14,8 +14,8 @@ const API = require('../API/partidaAPI');
 async function LanzarDados(socket, ID_jugador, ID_partida) {
     try {
         // Calculamos el valor de los dados
-        let dado1 = Math.floor(Math.random() % 6) + 1;
-        let dado2 = Math.floor(Math.random() % 6) + 1;
+        let dado1 = Math.ceil(Math.random() * 6);
+        let dado2 = Math.ceil(Math.random() * 6);
         let sumaDados = dado1 + dado2;
 
         let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
