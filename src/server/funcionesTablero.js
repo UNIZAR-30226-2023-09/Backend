@@ -22,8 +22,8 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
         API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
 
         if (dado1 === dado2 && estaCarcel > 0) {
-            estaCarcel = 0;
             API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
+            estaCarcel = 0;
         }
 
         // Enviar la nueva posición del jugador, el valor de los dados y el numero de turnos en la carcel
