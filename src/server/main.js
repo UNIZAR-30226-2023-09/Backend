@@ -22,7 +22,7 @@ const WebSocket = require('ws');
 const server = new WebSocket.Server({ port: PUERTO });    
 
 // Crea una instancia de la clase
-const listaEspera = new ArrayDeStrings();
+//const listaEspera = new ArrayDeStrings();
 
 // Cuando se lance el servidor que notifique que esta activo
 server.on('listening', () => {
