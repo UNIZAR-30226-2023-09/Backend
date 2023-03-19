@@ -18,19 +18,24 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
         let dado2 = Math.floor(Math.random() % 6) + 1;
         let sumaDados = dado1 + dado2;
 
-        let estaCarcel = API.verificarCarcel(ID_jugador, ID_partida);
-        API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
+        let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
 
+        // Si estás en la cárcel restamos un turno
+        if (estaCarcel > 0) {
+            API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
+        }
+
+        // Si estás en la cárcel y has sacado dobles -> sales
         if (dado1 === dado2 && estaCarcel > 0) {
             API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
             estaCarcel = 0;
         }
+        // Movemos al jugador -> obtenemos su nueva posición
+        let posicionNueva = await API.moverJugador(ID_jugador, sumaDados);
 
         // Enviar la nueva posición del jugador, el valor de los dados y el numero de turnos en la carcel
         socket.send(`DADOS,${dado1},${dado2},${posicionNueva},${estaCarcel}`);
 
-        // Movemos al jugador -> obtenemos su nueva posición
-        let posicionNueva = await API.moverJugador(ID_jugador, sumaDados);
         // En función de la nueva casilla -> miramos que hacer
         /* Posibles casos al caer en una casilla:
         *    - Casilla de salida    -> Sumar 300$ al dinero al dinero del jugador (posicionNueva == casillaSalida)

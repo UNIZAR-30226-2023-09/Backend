@@ -52,7 +52,7 @@ async function IniciarSesion(socket, email, contrasenya) {
             }
             else {
                 // Almacenamos la conexión del usuario junto con su nombre de usuario
-                conexion.agregarUsuario(socket,{email});
+                conexion.agregarUsuario(socket,email);
 
                 socket.send(`INICIO_OK,${email},${gemas}`);
             }
