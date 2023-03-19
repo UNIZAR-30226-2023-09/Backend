@@ -1147,3 +1147,58 @@ function obtenerJugadoresPartida(idPartida){
 exports.obtenerJugadoresPartida = obtenerJugadoresPartida;
 
 
+/*
+===================INTERCAMBIAR PROPIEDADES JUGADORES =========================================
+*/
+
+//Intercambiar propiedades con otro jugador, sin tener en cuenta el dinero ni nada, solamente se cambia el nombre del propietario.
+function intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2) {
+  return new Promise((resolve, reject) => {
+    const con = db.crearConexion();
+    let propiedad_n1 = 'propiedad' + propiedad1;
+    let propiedad_n2 = 'propiedad' + propiedad2;
+    const query1 = `SELECT ${propiedad_n1} AS prop1, ${propiedad_n2} AS prop2 FROM Partida WHERE idPartida = '${id_partida}'`;
+
+    con.query(query1, (error, results1) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results1.length === 0) {
+        con.end();
+        resolve(false);
+      } else {
+        let propietario_1 = results1[0].prop1;
+        let propietario_2 = results1[0].prop2;
+
+        const query2 = `UPDATE Partida SET ${propiedad_n1} = '${propietario_2}' WHERE idPartida = '${id_partida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error);
+          } else if (results2.affectedRows === 0) {
+            con.end();
+            resolve(false);
+          } else {
+            const query3 = `UPDATE Partida SET ${propiedad_n2} = '${propietario_1}' WHERE idPartida = '${id_partida}'`;
+            con.query(query3, (error, results3) => {
+              con.end();
+
+              if (error) {
+                reject(error);
+              } else if (results3.affectedRows === 0) {
+                resolve(false);
+              } else {
+                resolve(true);
+              }
+            });
+          }
+        });
+      }
+    });
+  });
+}
+
+exports.intercambiarPropiedades=intercambiarPropiedades;
+
+
+

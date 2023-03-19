@@ -12,6 +12,7 @@
 const testPartida = require('./partidaAPI');  //habria que cambiar este require por cada uno de los ficheros nuevos creados.
 const testTorneo = require('./torneoAPI');
 const testJugador = require('./jugadorAPI');
+const testSkin = require('./skins');
 const con = require('./db');
 
 
@@ -459,7 +460,7 @@ async function obtenerResultadoRestarTurnoCarcel(id_jugador, id_partida, turnos)
 async function obtenerResultadoObtenerJugadoresPartida(idPartida) {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.obtenerJugadoresPartida(idPartida);
+    const resultado = await testPartida.obtenerJugadoresPartida(idPartida);
     console.log("El resultado obtenido el listado de jugadores en la partida es:", resultado);
     return resultado;
 
@@ -475,7 +476,7 @@ async function obtenerResultadoObtenerJugadoresPartida(idPartida) {
 async function obtenerResultadoObtenerListadoSkins() {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.obtenerListadoSkins();
+    const resultado = await testSkin.obtenerListadoSkins();
     console.log("El resultado obtenido de devolver listado de skins es:", resultado);
     return resultado;
 
@@ -491,7 +492,7 @@ async function obtenerResultadoObtenerListadoSkins() {
 async function obtenerComprarSkin(idJugador, idSkin) {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.comprarSkin(idJugador, idSkin);
+    const resultado = await testSkin.comprarSkin(idJugador, idSkin);
     console.log("El resultado obtenido de comprar la skin es:", resultado);
     return resultado;
 
@@ -502,7 +503,22 @@ async function obtenerComprarSkin(idJugador, idSkin) {
   }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoIntercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2);
+    console.log("El resultado obtenido de intercambiar propiedades es :", resultado);
 
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
 
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
@@ -552,6 +568,8 @@ async function obtenerComprarSkin(idJugador, idSkin) {
 // obtenerResultadoObtenerJugadorPropiedad(2,1);
 
 // obtenerResultadoRestarTurnoCarcel('juan@example.com',1,2);
+
+//obtenerResultadoIntercambiarPropiedades(1,'juan@example.com','laura@example.com',1,2);
 
 // Probar partida rapida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');

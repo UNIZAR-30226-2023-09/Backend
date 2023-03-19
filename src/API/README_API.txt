@@ -146,3 +146,6 @@ function obtenerListadoSkins();
 // Devuelve el true si se ha añadido la skin a las que tiene el jugador y se le ha actualizado el dinero
 // En caso de que no exista la skin o el jugador devuelve false o si ya tiene esa skin
 function comprarSkin(idJugador, idSkin);
+
+//Intercambiar propiedades con otro jugador, sin tener en cuenta el dinero ni nada, solamente se cambia el nombre del propietario.
+function intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2);
