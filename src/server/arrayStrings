@@ -1,0 +1,26 @@
+class ArrayDeStrings {
+  constructor() {
+    this.array = [];
+  }
+
+  // Añade un nuevo elemento al array
+  añadir(elemento) {
+    this.array.push(elemento);
+  }
+
+  // Busca si un elemento existe en el array
+  existe(elemento) {
+    return this.array.includes(elemento);
+  }
+
+  // Elimina un elemento del array
+  eliminar(elemento) {
+    const index = this.array.indexOf(elemento);
+    if (index !== -1) {
+      this.array.splice(index, 1);
+    }
+  }
+}
+
+// Exporta la clase ArrayDeStrings
+module.exports = ArrayDeStrings;

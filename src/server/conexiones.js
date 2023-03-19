@@ -54,15 +54,24 @@ function buscarUsuario(IDusuario) {
       return connections[index].socket;
     }
     return null;
-  }
-  
+}
+
+// Devuelve el ID de usuario asociado a la conexión
+function buscarConexion(socket) {
+	const index = connections.findIndex(conn => conn.socket === socket);
+	if (index !== -1) {
+	  return connections[index].usuario;
+	}
+	return null;
+}  
 
 // Creamos un objeto para almacenar todas las funciones que queremos exportar
 const funciones = {
     agregarUsuario,
     eliminarUsuario,
-    buscarUsuario
-  };
+    buscarUsuario,
+	buscarConexion
+};
   
 // Exportamos el objeto que contiene las funciones
 module.exports = funciones;
