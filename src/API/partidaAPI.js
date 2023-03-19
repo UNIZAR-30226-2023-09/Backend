@@ -583,10 +583,8 @@ function jugadorEnPartida(email){
     const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
     con.query(query, (error, results) => {
       if (error) {
-        con.end();
         reject(error);
       } else if (results.length === 0) {
-        con.end();
         resolve(-1);
       } else {
         let activa = false;
@@ -595,20 +593,18 @@ function jugadorEnPartida(email){
           const query2 = `SELECT * FROM partida WHERE idPartida = '${partida}' AND enCurso='1'`;
           con.query(query2, (error, results2) => {
             if (error) {
-              con.end();
               reject(error);
             } else if (results2.length != 0) {
               activa = true;
               resolve(partida);
             }
             if (i === results.length - 1 && !activa) {
-              con.end();
               resolve(-1);
             }
           });
         }
-        con.end(); // Cerrar la conexión después de terminar el bucle.
       }
+      con.end(); // Cerrar la conexión después de terminar el bucle.
     });
   });
 }
