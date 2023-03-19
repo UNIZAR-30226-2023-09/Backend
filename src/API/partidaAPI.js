@@ -590,7 +590,7 @@ function jugadorEnPartida(email){
         let activa = false;
         for(let i = 0; i < results.length; i++){
           let partida = results[i].idPartida;
-          const query2 = `SELECT * FROM partida WHERE idPartida = '${partida}' AND enCurso='1'`;
+          const query2 = `SELECT * FROM Partida WHERE idPartida = '${partida}' AND enCurso='1'`;
           con.query(query2, (error, results2) => {
             if (error) {
               reject(error);
