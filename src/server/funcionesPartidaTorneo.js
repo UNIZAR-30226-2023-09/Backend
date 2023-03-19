@@ -7,7 +7,7 @@
  ----------------------------------------------------------------------------
 */
 
-const con = require('../API/db');
+const con = require('./conexiones');
 const APIpartida = require('../API/partidaAPI');
 const APItorneo = require('../API/torneoAPI');
 
@@ -101,6 +101,11 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
         if (await APIpartida.empezarPartida(ID_partida, ID_jugador)) {
             // TODO: Mandar al jugador que le toca empezar que es su turno 
             // Establecer orden de jugadores (funcion API para obtener jugadores de la partida)
+            
+            // Dado un ID_partida que devuelva los jugadores de la partida
+            // jugador1,jugador2,jugador3,jugador4
+            // TODO: mirar los bots
+            obtenerJugadoresPartida(ID_partida);
             // Guardar en la base el orden de jugadores(funcion API que le pases el idPartida y el orden d los 4 jugadores)
             // Estos IDs se obtienen de funcion API
             let idJugador1 = "1";
@@ -114,8 +119,13 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                 [ordenJugadores[i], ordenJugadores[j]] = [ordenJugadores[j], ordenJugadores[i]]; // Intercambiamos las cadenas
             }            
 
-            socket.send(`EMPEZAR_OK,${ID_partida},${ordenJugadores[0]},${ordenJugadores[1]},${ordenJugadores[2]},${ordenJugadores[3]}`);
-            socket.send(`TURNO,${ordenJugadores[0]},${ID_partida}`);
+            for (let i = 0; i < ordenJugadores.length; i++) {
+                let conexionUsuario = con.buscarUsuario(ordenJugadores[i]);
+                conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${ordenJugadores[0]},${ordenJugadores[1]},${ordenJugadores[2]},${ordenJugadores[3]}`);
+                if (i === 0) {
+                    conexionUsuario.send(`TURNO,${ordenJugadores[0]},${ID_partida}`);
+                }
+            }
         }
         else { // TODO: ¿Motivo?
             socket.send(`EMPEZAR_NO_OK,${ID_partida}`);
