@@ -131,3 +131,18 @@ function obtenerJugadorPropiedad(n_propiedad, id_partida);
 
 // Dado un jugador y una partida, restarle a turnosCarcel los turnos dados. 
 function restarTurnoCarcel(id_jugador, id_partida, turnos);
+
+
+// Devuelve el listado de jugadores que hay asociados a una partida
+// En caso de que no haya los jugadores totales necesarios devolvera los que esten asociados y -1 hasta completar los necesarios
+function obtenerJugadoresPartida(idPartida);
+
+
+// Devuelve el listado de skins con id.Precio que estan en el sistema
+//En caso de que no existan skins en el sistema devuelve false
+function obtenerListadoSkins();
+
+
+// Devuelve el true si se ha añadido la skin a las que tiene el jugador y se le ha actualizado el dinero
+// En caso de que no exista la skin o el jugador devuelve false o si ya tiene esa skin
+function comprarSkin(idJugador, idSkin);

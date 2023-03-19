@@ -1097,3 +1097,53 @@ function restarTurnoCarcel(id_jugador, id_partida, turnos){
 }
 exports.restarTurnoCarcel = restarTurnoCarcel;
 
+
+
+
+
+/*
+===================OBTENER LISTADO JUGADORES EN PARTIDA CON CON ID_PARTIDA =========================================
+*/
+// Devuelve el listado de jugadores que hay asociados a una partida
+// En caso de que no haya los jugadores totales necesarios devolvera los que esten asociados y -1 hasta completar los necesarios
+function obtenerJugadoresPartida(idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    const query = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {                // Caso -- Error
+      if (error) {                                   
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {                  // Caso -- No existe la Partida
+        con.end();
+        resolve(false);
+      } else {                                            // Caso --  Existe la partida
+
+        const query2 = `SELECT email FROM juega WHERE idPartida = '${idPartida}'`;      
+        const respuesta = [] ;
+        con.query(query2, (error, results2) => {
+          if (error) {                                    
+            con.end();
+            reject(error);
+          } else {
+
+            results2.forEach((row, i) => {                
+              respuesta[i] = row.email;
+            });
+            while (respuesta.length < 4) {
+              respuesta.push("-1");
+            }
+            let cadena = respuesta.join(",");
+            con.end();
+            resolve(cadena)
+          }
+        });
+      }
+    });
+  });
+}
+
+
+exports.obtenerJugadoresPartida = obtenerJugadoresPartida;
+
+

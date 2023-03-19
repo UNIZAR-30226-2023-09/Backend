@@ -455,6 +455,55 @@ async function obtenerResultadoRestarTurnoCarcel(id_jugador, id_partida, turnos)
 }
 
 
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerJugadoresPartida(idPartida) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.obtenerJugadoresPartida(idPartida);
+    console.log("El resultado obtenido el listado de jugadores en la partida es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerListadoSkins() {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.obtenerListadoSkins();
+    console.log("El resultado obtenido de devolver listado de skins es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerComprarSkin(idJugador, idSkin) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.comprarSkin(idJugador, idSkin);
+    console.log("El resultado obtenido de comprar la skin es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -523,4 +572,10 @@ async function obtenerResultadoRestarTurnoCarcel(id_jugador, id_partida, turnos)
 // Probar empezar partida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');
 //obtenerResultadoCrearPartida('david@gmail.com');
-//obtenerResultadoEmpezarPartida(2, 'david@gmail.com')
+//obtenerResultadoEmpezarPartida(2, 'david@gmail.com');
+
+//obtenerResultadoObtenerJugadoresPartida(1);
+
+// Probar Skins
+//obtenerResultadoObtenerListadoSkins();
+//obtenerComprarSkin('AEoooo@gmail.com', 'default2');
