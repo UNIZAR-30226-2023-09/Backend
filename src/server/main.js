@@ -73,14 +73,23 @@ server.on("connection", (socket) => {
             funcionesPartidaTorneo.UnirsePartida(socket, mensaje[1],mensaje[2]);
         }
 
-        // empezarPartida, ID_Partida, ID_Lider
+       
         if (mensaje[0] == "empezarPartida") {
+            // socket, ID_Partida, ID_Lider
             funcionesPartidaTorneo.EmpezarPartida(socket, mensaje[1], mensaje[2]);
         }
 
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
             // socket, ID_jugador, ID_partida
+            funcionesTablero.LanzarDados(socket, mensaje[1],mensaje[2]);
+        }
+
+        // Si el mensaje es que se han lanzado los dados
+        if (mensaje[0] === "lanzarDados2") {
+            // Mandar dinero actual a todos (lo mismo que iria al fin del turno)
+            // TODO:
+            // Y volvemos a mirar la función de lanzarDados
             funcionesTablero.LanzarDados(socket, mensaje[1],mensaje[2]);
         }
 

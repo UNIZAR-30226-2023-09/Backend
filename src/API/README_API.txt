@@ -22,7 +22,7 @@ moverJugador(jugador, numero);
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
 // ser positiva o negativa). Devuelve true si ha ido todo bien, en caso de que haya ido algo mal
 // devuleve false.
-modificarDinero(jugador, cantidad);
+modificarDinero(idPartida,jugador, cantidad);
 
 
 // Pagar impuestos a la banca de un cierto jugador en cierta partida. Eso significa, que el jugador se le resta
@@ -127,4 +127,7 @@ function obtenerPropiedades(id_partida,id_jugador);
 
 // Devuelve el ID_jugador al que pertenezca la propiedad dada (-1 si no pertenece a nadie)
 // Propiedad es un (integer) con el numero de propiedad.
-function obtenerJugadorPropiedad(n_propiedad, id_partida)
+function obtenerJugadorPropiedad(n_propiedad, id_partida);
+
+// Dado un jugador y una partida, restarle a turnosCarcel los turnos dados. 
+function restarTurnoCarcel(id_jugador, id_partida, turnos);

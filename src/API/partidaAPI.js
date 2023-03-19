@@ -73,13 +73,13 @@ exports.moverJugador = moverJugador;
 ===================MODIFICAR DINERO JUGADOR DEL MONOPOLY===================
 */
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
-// ser positiva o negativa)
-function modificarDinero(jugador, cantidad) {
+// ser positiva o negativa). Devuelve true si todo ha ido bien, y devuelve false si algo ha ido mal.
+function modificarDinero(idPartida,jugador, cantidad) {
   return new Promise((resolve, reject) => {
     var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".
-    const query = `SELECT dinero FROM juega WHERE email = '${jugador}'`;
+    const query = `SELECT dinero FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
     console.log(query);
     con.query(query, (error, results) => {
       if (error) {
@@ -94,10 +94,10 @@ function modificarDinero(jugador, cantidad) {
       } 
       else {
         // Realizar la consulta para modificar el dinero del jugador
-        const query = `UPDATE juega SET dinero = ? WHERE email = ?`;
+        const query = `UPDATE juega SET dinero = ? WHERE email = ? AND idPartida = ?`;
         let dinero = results[0].dinero;
         dinero += cantidad;
-        const values = [dinero, jugador];
+        const values = [dinero, jugador,idPartida];
         con.query(query, values, (error, results) => {
           if (error) {
             reject(error);
@@ -326,7 +326,6 @@ function verificarCarcel(jugador, idPartida){
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
     con.query(query, (error, results) => {
       if (error) {
-        console.log("ERROR!!");
         con.end();
         reject(error);
       } else if (results.length === 0) {
@@ -337,31 +336,22 @@ function verificarCarcel(jugador, idPartida){
       else {
         //una vez comprobado que esta en la partida, realizaremos consulta para ver si se encuentra en la posicion 
         //de carcel, si es asi devuelve true, y en caso contrario devuelve false.
-        const query2 = `SELECT posicion FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+        const query2 = `SELECT nTurnosCarcel FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
         con.query(query2, (error, results2) => {
           if (error) {
             con.end();
             reject(error);
           } else {
             //si ha ido bien devolvemos la posicion.
-            let posicion = results2[0].posicion;
-            if(posicion == POSICION_CARCEL){
-              //esta en la casilla de la carcel, devuelve true.
-              con.end();
-              resolve(true);
-            }
-            else{
-              //no esta en la casilla de la carcel, devuelve false.
-              con.end();
-              resolve(false);
-            }            
+            let turnosCarcel = results2[0].nTurnosCarcel;
+            resolve(turnosCarcel);
+            con.end();
           }
         });
       }
     });
   });
 }
-
 exports.verificarCarcel = verificarCarcel;
 
 
@@ -593,32 +583,28 @@ function jugadorEnPartida(email){
     const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
     con.query(query, (error, results) => {
       if (error) {
-        con.end();
         reject(error);
       } else if (results.length === 0) {
-        con.end();
         resolve(-1);
       } else {
         let activa = false;
         for(let i = 0; i < results.length; i++){
           let partida = results[i].idPartida;
-          const query2 = `SELECT * FROM partida WHERE idPartida = '${partida}' AND enCurso='1'`;
+          const query2 = `SELECT * FROM Partida WHERE idPartida = '${partida}' AND enCurso='1'`;
           con.query(query2, (error, results2) => {
             if (error) {
-              con.end();
               reject(error);
             } else if (results2.length != 0) {
               activa = true;
               resolve(partida);
             }
             if (i === results.length - 1 && !activa) {
-              con.end();
               resolve(-1);
             }
           });
         }
-        con.end(); // Cerrar la conexión después de terminar el bucle.
       }
+      con.end(); // Cerrar la conexión después de terminar el bucle.
     });
   });
 }
@@ -1068,4 +1054,46 @@ function empezarPartida(id_partida, id_lider) {
 }
 
 exports.empezarPartida = empezarPartida;
+
+
+/*
+=================== RESTAR TURNOS CARCEL =========================================
+*/
+
+
+// Dado un jugador y una partida, restarle a turnosCarcel los turnos dados. 
+function restarTurnoCarcel(id_jugador, id_partida, turnos){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT nTurnosCarcel FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        con.end();
+        resolve(false);
+      } 
+      else {
+        //Actualizamos el numero de turnos en la enviarCarcel.
+        let turnosCarcel = results[0].nTurnosCarcel;
+        turnosCarcel -= turnos;
+        const query2 = `UPDATE juega SET nTurnosCarcel = ${turnosCarcel} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error);
+          } else {
+            //si ha ido bien,cerramos conexion
+            con.end();
+          }
+        });
+      }
+    });
+  });
+}
+exports.restarTurnoCarcel = restarTurnoCarcel;
 

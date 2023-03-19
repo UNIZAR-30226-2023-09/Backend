@@ -7,7 +7,7 @@
  ----------------------------------------------------------------------------
 */
 
-const con = require('../API/db');
+const con = require('./conexiones');
 const APIpartida = require('../API/partidaAPI');
 const APItorneo = require('../API/torneoAPI');
 
@@ -99,8 +99,35 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
     try {
         // Empezamos la partida 
         if (await APIpartida.empezarPartida(ID_partida, ID_jugador)) {
-            socket.send(`EMPEZAR_OK,${ID_partida}`);
             // TODO: Mandar al jugador que le toca empezar que es su turno 
+            // Establecer orden de jugadores (funcion API para obtener jugadores de la partida)
+            
+            // TODO: mirar los bots
+
+            // Dado un ID_partida que devuelva los jugadores de la partida, si es un bot que devuelva 'bot' como el jugador
+            // jugador1,jugador2,jugador3,jugador4
+            obtenerJugadoresPartida(ID_partida);
+
+            // Guardar en la base el orden de jugadores(funcion API que le pases el idPartida y el orden d los 4 jugadores)
+            // Estos IDs se obtienen de funcion API
+            let idJugador1 = "a";
+            let idJugador2 = "b";
+            let idJugador3 = "c";
+            let idJugador4 = "d";
+
+            const ordenJugadores = [idJugador1, idJugador2, idJugador3, idJugador4]; // Colocamos las cadenas en un array
+            for (let i = ordenJugadores.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1)); // Seleccionamos un índice aleatorio
+                [ordenJugadores[i], ordenJugadores[j]] = [ordenJugadores[j], ordenJugadores[i]]; // Intercambiamos las cadenas
+            }            
+
+            for (let i = 0; i < ordenJugadores.length; i++) {
+                let conexionUsuario = con.buscarUsuario(ordenJugadores[i]);
+                conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${ordenJugadores[0]},${ordenJugadores[1]},${ordenJugadores[2]},${ordenJugadores[3]}`);
+                if (i === 0) {
+                    conexionUsuario.send(`TURNO,${ordenJugadores[0]},${ID_partida}`);
+                }
+            }
         }
         else { // TODO: ¿Motivo?
             socket.send(`EMPEZAR_NO_OK,${ID_partida}`);
