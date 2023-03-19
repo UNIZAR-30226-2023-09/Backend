@@ -14,7 +14,7 @@ const funcionesPartidaTorneo = require('./funcionesPartidaTorneo');
 const funcionesJugador = require('./funcionesJugador');
 const funcionesTablero = require('./funcionesTablero');
 const conexion = require('./conexiones');
-const ArrayDeStrings = require('./ArrayDeStrings');
+// const ArrayDeStrings = require('./ArrayDeStrings');
 
 const PUERTO = 8080 // Puerto a elegir
 
