@@ -1059,3 +1059,45 @@ function empezarPartida(id_partida, id_lider) {
 
 exports.empezarPartida = empezarPartida;
 
+
+/*
+=================== RESTAR TURNOS CARCEL =========================================
+*/
+
+
+// Dado un jugador y una partida, restarle a turnosCarcel los turnos dados. 
+function restarTurnoCarcel(id_jugador, id_partida, turnos){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT nTurnosCarcel FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        con.end();
+        resolve(false);
+      } 
+      else {
+        //Actualizamos el numero de turnos en la enviarCarcel.
+        let turnosCarcel = results[0].nTurnosCarcel;
+        turnosCarcel -= turnos;
+        const query2 = `UPDATE juega SET nTurnosCarcel = ${turnosCarcel} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error);
+          } else {
+            //si ha ido bien,cerramos conexion
+            con.end();
+          }
+        });
+      }
+    });
+  });
+}
+exports.restarTurnoCarcel = restarTurnoCarcel;
+
