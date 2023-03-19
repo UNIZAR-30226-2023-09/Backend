@@ -105,13 +105,13 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
             // Dado un ID_partida que devuelva los jugadores de la partida
             // jugador1,jugador2,jugador3,jugador4
             // TODO: mirar los bots
-            obtenerJugadoresPartida(ID_partida);
+            // obtenerJugadoresPartida(ID_partida);
             // Guardar en la base el orden de jugadores(funcion API que le pases el idPartida y el orden d los 4 jugadores)
             // Estos IDs se obtienen de funcion API
-            let idJugador1 = "1";
-            let idJugador2 = "2";
-            let idJugador3 = "3";
-            let idJugador4 = "4";
+            let idJugador1 = "a";
+            let idJugador2 = "b";
+            let idJugador3 = "c";
+            let idJugador4 = "d";
 
             const ordenJugadores = [idJugador1, idJugador2, idJugador3, idJugador4]; // Colocamos las cadenas en un array
             for (let i = ordenJugadores.length - 1; i > 0; i--) {
