@@ -583,32 +583,28 @@ function jugadorEnPartida(email){
     const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
     con.query(query, (error, results) => {
       if (error) {
-        con.end();
         reject(error);
       } else if (results.length === 0) {
-        con.end();
         resolve(-1);
       } else {
         let activa = false;
         for(let i = 0; i < results.length; i++){
           let partida = results[i].idPartida;
-          const query2 = `SELECT * FROM partida WHERE idPartida = '${partida}' AND enCurso='1'`;
+          const query2 = `SELECT * FROM Partida WHERE idPartida = '${partida}' AND enCurso='1'`;
           con.query(query2, (error, results2) => {
             if (error) {
-              con.end();
               reject(error);
             } else if (results2.length != 0) {
               activa = true;
               resolve(partida);
             }
             if (i === results.length - 1 && !activa) {
-              con.end();
               resolve(-1);
             }
           });
         }
-        con.end(); // Cerrar la conexión después de terminar el bucle.
       }
+      con.end(); // Cerrar la conexión después de terminar el bucle.
     });
   });
 }
@@ -1100,4 +1096,137 @@ function restarTurnoCarcel(id_jugador, id_partida, turnos){
   });
 }
 exports.restarTurnoCarcel = restarTurnoCarcel;
+
+
+
+
+
+/*
+===================OBTENER LISTADO JUGADORES EN PARTIDA CON CON ID_PARTIDA =========================================
+*/
+// Devuelve el listado de jugadores que hay asociados a una partida
+// En caso de que no haya los jugadores totales necesarios devolvera los que esten asociados y -1 hasta completar los necesarios
+function obtenerJugadoresPartida(idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    const query = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {                // Caso -- Error
+      if (error) {                                   
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {                  // Caso -- No existe la Partida
+        con.end();
+        resolve(false);
+      } else {                                            // Caso --  Existe la partida
+
+        const query2 = `SELECT email FROM juega WHERE idPartida = '${idPartida}'`;      
+        const respuesta = [] ;
+        con.query(query2, (error, results2) => {
+          if (error) {                                    
+            con.end();
+            reject(error);
+          } else {
+
+            results2.forEach((row, i) => {                
+              respuesta[i] = row.email;
+            });
+            while (respuesta.length < 4) {
+              respuesta.push("-1");
+            }
+            let cadena = respuesta.join(",");
+            con.end();
+            resolve(cadena)
+          }
+        });
+      }
+    });
+  });
+}
+
+
+exports.obtenerJugadoresPartida = obtenerJugadoresPartida;
+
+
+/*
+===================INTERCAMBIAR PROPIEDADES JUGADORES =========================================
+*/
+
+//Intercambiar propiedades con otro jugador, sin tener en cuenta el dinero ni nada, solamente se cambia el nombre del propietario.
+function intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2) {
+  return new Promise((resolve, reject) => {
+    const con = db.crearConexion();
+    let propiedad_n1 = 'propiedad' + propiedad1;
+    let propiedad_n2 = 'propiedad' + propiedad2;
+    const query1 = `SELECT ${propiedad_n1} AS prop1, ${propiedad_n2} AS prop2 FROM Partida WHERE idPartida = '${id_partida}'`;
+
+    con.query(query1, (error, results1) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results1.length === 0) {
+        con.end();
+        resolve(false);
+      } else {
+        let propietario_1 = results1[0].prop1;
+        let propietario_2 = results1[0].prop2;
+
+        const query2 = `UPDATE Partida SET ${propiedad_n1} = '${propietario_2}' WHERE idPartida = '${id_partida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error);
+          } else if (results2.affectedRows === 0) {
+            con.end();
+            resolve(false);
+          } else {
+            const query3 = `UPDATE Partida SET ${propiedad_n2} = '${propietario_1}' WHERE idPartida = '${id_partida}'`;
+            con.query(query3, (error, results3) => {
+              con.end();
+
+              if (error) {
+                reject(error);
+              } else if (results3.affectedRows === 0) {
+                resolve(false);
+              } else {
+                resolve(true);
+              }
+            });
+          }
+        });
+      }
+    });
+  });
+}
+
+exports.intercambiarPropiedades=intercambiarPropiedades;
+
+
+
+/*
+===================OBTENER NUMERO DE CASAS DE LA PROPIEDAD =========================================
+*/
+
+//devuelve el numero de casas de la propiedad "nCasasPropiedadX". Devuelve -1 si algo ha ido mal
+function obtenerNumCasasPropiedad(idPartida,propiedad){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    let numCasas = 'nCasasProp' + propiedad;
+    const query1 = `SELECT ${numCasas} as num_casas FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos el dinero del usuario.
+        let numCas = results1[0].num_casas;
+        resolve(numCas);
+      }
+    });
+    con.end();
+  });
+}
+exports.obtenerNumCasasPropiedad = obtenerNumCasasPropiedad;
+
 

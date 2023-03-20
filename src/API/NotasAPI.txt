@@ -19,9 +19,7 @@
 -->borrarUsuario() dijimos al final que no se implementaria en el juego, con lo que no se va a utilizar. 
 
 
-- ¡Cuidado con SQL Inyection, en todas las funciones que meta texto el usuario!
-
-- En crearTorneo() y unirseTorneo() no meter 'idTorneo' manualmente, ya que es AUTOINCREMENT
+- ¡Cuidado con SQL Inyection, en todas las funciones que meta texto el usuario! -- DANGER DANGER
 
 
 - Se ha dividido en 4 ficheros los cuales son:

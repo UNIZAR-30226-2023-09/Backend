@@ -49,6 +49,11 @@ async function IniciarSesion(socket, email, contrasenya) {
                 //let datosPartida = await API.obtenerDatosPartida(id_partida);
                 // Mandar los datos de la partida para mostrarlos
                 //socket.send();
+                
+                // Almacenamos la conexión del usuario junto con su nombre de usuario
+                conexion.agregarUsuario(socket,{email});
+
+                socket.send(`INICIO_OK,${email},${gemas}`);
             }
             else {
                 // Almacenamos la conexión del usuario junto con su nombre de usuario
