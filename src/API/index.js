@@ -508,8 +508,25 @@ async function obtenerResultadoIntercambiarPropiedades(id_partida, id_jugador1, 
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
     let resultado;
-    resultado = await test.intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2);
+    resultado = await testPartida.intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2);
     console.log("El resultado obtenido de intercambiar propiedades es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerNumCasasPropiedad(idPartida,propiedad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await testPartida.obtenerNumCasasPropiedad(idPartida,propiedad);
+    console.log("El resultado obtenido de obtener numero de casas de la propiedades es :", resultado);
 
     return resultado;
 
@@ -570,6 +587,8 @@ async function obtenerResultadoIntercambiarPropiedades(id_partida, id_jugador1, 
 // obtenerResultadoRestarTurnoCarcel('juan@example.com',1,2);
 
 //obtenerResultadoIntercambiarPropiedades(1,'juan@example.com','laura@example.com',1,2);
+
+// obtenerResultadoObtenerNumCasasPropiedad(1,1);
 
 // Probar partida rapida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');

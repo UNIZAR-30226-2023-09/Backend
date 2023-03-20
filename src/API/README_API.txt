@@ -149,3 +149,6 @@ function comprarSkin(idJugador, idSkin);
 
 //Intercambiar propiedades con otro jugador, sin tener en cuenta el dinero ni nada, solamente se cambia el nombre del propietario.
 function intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2);
+
+//devuelve el numero de casas de la propiedad "nCasasPropiedadX". Devuelve -1 si algo ha ido mal
+function obtenerNumCasasPropiedad(idPartida,propiedad);

@@ -1202,3 +1202,31 @@ exports.intercambiarPropiedades=intercambiarPropiedades;
 
 
 
+/*
+===================OBTENER NUMERO DE CASAS DE LA PROPIEDAD =========================================
+*/
+
+//devuelve el numero de casas de la propiedad "nCasasPropiedadX". Devuelve -1 si algo ha ido mal
+function obtenerNumCasasPropiedad(idPartida,propiedad){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    let numCasas = 'nCasasProp' + propiedad;
+    const query1 = `SELECT ${numCasas} as num_casas FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos el dinero del usuario.
+        let numCas = results1[0].num_casas;
+        resolve(numCas);
+      }
+    });
+    con.end();
+  });
+}
+exports.obtenerNumCasasPropiedad = obtenerNumCasasPropiedad;
+
+
