@@ -239,7 +239,7 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
             // Multiplicamos el precio a pagar por la economía
             let precio = precioPagar * ECONOMIA;
             // Pagamos el alquiler con el nuevo precio
-            let dineroResultante = await API.pagarAlquiler(jugadorPaga, jugadorRecibe, precio);
+            let dineroResultante = await API.pagarAlquiler(jugadorPaga, jugadorRecibe, precio, ID_partida);
             let dinero = dineroResultante.split(",");
             let dineroJugadorPaga = dinero[0];
             let dineroJugadorRecibe = dinero[1];
@@ -347,7 +347,7 @@ exports.ComprarPropiedad = ComprarPropiedad;
 // Cuando se quiere vender una propiedad
 async function VenderPropiedad(socket, ID_jugador, propiedad, ID_partida) {
     try {
-        let dinero = await API.venderPropiedad(ID_jugador, propiedad, ID_partida);
+        let dinero = await API.liberarPropiedadJugador(ID_partida, ID_jugador, propiedad);
         if (dinero == -1) { // No se ha podido vender
             socket.send(`VENDER_NO_OK,${ID_jugador},${propiedad}`)
         }
