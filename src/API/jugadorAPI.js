@@ -237,3 +237,86 @@ function obtenerInformacionJugador(id_jugador){
   }
   
   exports.obtenerInformacionJugador = obtenerInformacionJugador;
+
+
+
+  
+
+/*
+=================== ANYADIR JUGADOR IDJUGADOR A PARTIDA IDPARTIDA =========================================================
+*/
+// Se añade el jugador con IDJugador a la partida
+// Devuelve false si el jugador o la partida no existen, o si el jugador ya está metido en esa partida o esta jugando ya otra
+// Devuelve true en caso contrario
+
+// OOOO====OOOOOOOOO CAMBIAR AL METER LOS BOTS, INSERT TENDRA MAS CAMPOS  OOOO====OOOOOOOOO
+
+
+function anyadirJugador(idJugador, idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+
+    const query = `SELECT idPartida FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {                            // Caso -- Error
+      if (error) {                                   
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {                              // Caso -- No existe esa Partida
+        con.end();
+        resolve(false);
+      } else {                                                        // Caso --  Existe esa Partida  
+        const query2 = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query2, (error, results2) => {                      // Caso -- Error
+          if (error) {                                   
+            con.end();
+            reject(error);
+          } else if (results2.length === 0) {                         // Caso -- No existe ese Jugador
+            con.end();
+            resolve(false);
+          } else {                                                    // Caso --  Existe ese Jugador
+
+            const query3 = `SELECT * FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
+            con.query(query3, (error, results3) => {                  // Caso -- Error
+              if (error) {                                   
+                con.end();
+                reject(error);
+              } else if (results3.length != 0) {                      // Caso -- El jugador ya esta jugando esa partida
+                con.end();
+                resolve(false);
+              } else {                                                // Caso -- El jugador no esta jugando esa partida
+
+                const query4 = `SELECT B.idPartida FROM juega A INNER JOIN Partida B ON A.idPartida = B.idPartida 
+                                WHERE A.email = '${idJugador}' AND B.enCurso = true`;
+                con.query(query4, (error, results4) => {              // Caso -- Error
+                  if (error) {                                   
+                    con.end();
+                    reject(error);
+                  } else if (results4.length != 0) {                  // Caso -- El jugador ya esta jugando una partida
+                    con.end();
+                    resolve(false);
+                  } else {                                            // Caso -- El jugador no esta jugando ninguna partida
+                    const sql = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
+                                dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?)`;
+                    const values = [0, 0.0, 0, 0, 0.0, 'default', 0 , idJugador, idPartida];
+                    con.query(sql,values, (error, results5) => {      // Caso -- Error
+                      if (error) {                                   
+                        con.end();
+                        reject(error);
+                      } else {                                         // Caso -- Insert okay
+                        con.end();
+                        resolve(true);
+                      }
+                    }); 
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    }); 
+  });
+}
+
+
+exports.anyadirJugador = anyadirJugador;

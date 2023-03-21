@@ -590,6 +590,7 @@ async function obtenerResultadoObtenerNumCasasPropiedad(idPartida,propiedad) {
 
 // obtenerResultadoObtenerNumCasasPropiedad(1,1);
 
+
 // Probar partida rapida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');
 //obtenerResultadoCrearPartida('david@gmail.com');
