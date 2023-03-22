@@ -590,6 +590,22 @@ async function obtenerResultadoPagarAlquiler(id_jugadorPaga, id_jugadorRecibe, p
   }
 }
 
+
+//FUNCIONA OKEY.
+async function obtenerVerClasificacionTorneo(idTorneo) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await test.verClasificacionTorneo(idTorneo);
+    console.log("El resultado obtenido de calsificacion Torneo es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -649,6 +665,7 @@ async function obtenerResultadoPagarAlquiler(id_jugadorPaga, id_jugadorRecibe, p
 
 // obtenerResultadoPagarAlquiler('juan@example.com','laura@example.com',1,1,200);
 
+//obtenerVerClasificacionTorneo(1);
 
 
 // Probar partida rapida
