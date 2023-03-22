@@ -1323,6 +1323,7 @@ function obtenerPrecioPropiedad(idPartida, numPropiedades){
         //TODO HA SALIDO CORRECTO, CON LO CUAL DEVOLVEMOS TRUE.
         resolve(true);
       }
+      con.end();
     });
   });
 }
