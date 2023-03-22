@@ -1258,3 +1258,100 @@ function obtenerNumCasasPropiedad(idPartida,propiedad){
 exports.obtenerNumCasasPropiedad = obtenerNumCasasPropiedad;
 
 
+/*
+===================LIBERAR PROPIEDAD JUGADOR=========================================
+*/
+
+// Eliminar al jugador dado la propiedad dada, sumanodle el dinero de la propiedad.
+function liberarPropiedadJugador(id_partida, id_jugador, propiedad, dineroJugador, dineroPropiedad){
+  return new Promise((resolve, reject) => {
+    var concat = 'propiedad' + propiedad;
+    var concat2 = 'nCasasProp' + propiedad;
+    var con = db.crearConexion();
+    con.connect();
+    // Primero ponemos a null el propietario.
+    const query = `UPDATE Partida SET ${concat} = NULL WHERE idPartida = '${id_partida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        reject(error);
+      } else if (results.affectedRows === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        resolve(-1);
+      } 
+      else {
+        //Ponemos a 0 el numero de casas de dicha propiedad.
+        let suma = dineroJugador + dineroPropiedad;
+        const query2 = `UPDATE Juega SET dinero = '${suma}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            reject(error);
+          } else if (results2.affectedRows === 0) {
+            // Si el jugador no existe en la partida, devolver false.
+            resolve(-1);
+          } 
+          else {
+            //Todo bien, devolvemos true.
+            resolve(true);
+          }
+        });
+      }
+      con.end();
+    });
+  });
+}
+exports.liberarPropiedadJugador = liberarPropiedadJugador;
+
+
+
+/*
+===================OBTENER PRECIO PROPIEDAD=========================================
+*/
+
+//FUNCIONA OKEY
+//obtener el precio de la propiedad en una partida.
+function obtenerPrecioPropiedad(idPartida, numPropiedades){
+  let precio = 'precioPropiedad' + numPropiedades;
+  const query1 = `SELECT ${precio} FROM Partida WHERE idPartida = '${idPartida}'`;
+  con.query(query1, (error, results) => {
+    if (error) {
+      reject(error);
+    } else if (results.affectedRows === 0) {
+      resolve(-1);
+    } else {
+      //TODO HA SALIDO CORRECTO, CON LO CUAL DEVOLVEMOS TRUE.
+      resolve(true);
+    }
+  });
+}
+exports.obtenerPrecioPropiedad = obtenerPrecioPropiedad;
+
+
+/*
+===================PAGAR ALQUILER=========================================
+*/
+
+// jugadorPaga paga el alquiler al jugadorRecibe por estar en propiedad si pertenece 
+// al jugadorRecibe
+async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad){
+  try {
+    //sacamos el numero de casas que tiene en dicha propiedad.
+    const numCasas = await obtenerNumCasasPropiedad(idPartida,propiedad);
+
+    //le aplicamos la formula para saber que dinero tiene que pagar.
+    let alquiler = precioPropiedad * ((numCasas * 20) / 100);
+
+    //le sumamos ese dinero al jugadorRecibe.
+    const res = await modificarDinero(idPartida,id_jugadorPaga,-alquiler);
+    
+    //le restamos el dinero al jugadorPaga.
+    const res2 = await modificarDinero(idPartida,id_jugadorRecibe,alquiler);
+
+    return res2 && res;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+exports.pagarAlquiler = pagarAlquiler;

@@ -537,6 +537,58 @@ async function obtenerResultadoObtenerNumCasasPropiedad(idPartida,propiedad) {
   }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoLiberarPropiedadJugador(id_partida, id_jugador, propiedad, dineroJugador, dineroPropiedad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await testPartida.liberarPropiedadJugador(id_partida, id_jugador, propiedad, dineroJugador, dineroPropiedad);
+    console.log("El resultado obtenido de liberar propiedad es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerNumCasasPropiedad(idPartida,propiedad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await testPartida.obtenerNumCasasPropiedad(idPartida,propiedad);
+    console.log("El resultado obtenido de obtener numero de casas de la propiedades es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoPagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad);
+    console.log("El resultado obtenido de pagar el alquiler es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -589,6 +641,14 @@ async function obtenerResultadoObtenerNumCasasPropiedad(idPartida,propiedad) {
 //obtenerResultadoIntercambiarPropiedades(1,'juan@example.com','laura@example.com',1,2);
 
 // obtenerResultadoObtenerNumCasasPropiedad(1,1);
+
+//obtenerResultadoLiberarPropiedadJugador(1,'pedro@example.com', 1, 750, 100);
+
+// obtenerResultadoObtenerNumCasasPropiedad(1,1);
+
+
+// obtenerResultadoPagarAlquiler('juan@example.com','laura@example.com',1,1,200);
+
 
 
 // Probar partida rapida
