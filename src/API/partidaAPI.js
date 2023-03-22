@@ -1307,24 +1307,26 @@ exports.liberarPropiedadJugador = liberarPropiedadJugador;
 ===================OBTENER PRECIO PROPIEDAD=========================================
 */
 
-//FUNCIONA OKEY
 //obtener el precio de la propiedad en una partida.
 function obtenerPrecioPropiedad(idPartida, numPropiedades){
-  let precio = 'precioPropiedad' + numPropiedades;
-  const query1 = `SELECT ${precio} FROM Partida WHERE idPartida = '${idPartida}'`;
-  con.query(query1, (error, results) => {
-    if (error) {
-      reject(error);
-    } else if (results.affectedRows === 0) {
-      resolve(-1);
-    } else {
-      //TODO HA SALIDO CORRECTO, CON LO CUAL DEVOLVEMOS TRUE.
-      resolve(true);
-    }
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    let precio = 'precioPropiedad' + numPropiedades;
+    const query1 = `SELECT ${precio} FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query1, (error, results) => {
+      if (error) {
+        reject(error);
+      } else if (results.affectedRows === 0) {
+        resolve(-1);
+      } else {
+        //TODO HA SALIDO CORRECTO, CON LO CUAL DEVOLVEMOS TRUE.
+        resolve(true);
+      }
+    });
   });
 }
 exports.obtenerPrecioPropiedad = obtenerPrecioPropiedad;
-
 
 /*
 ===================PAGAR ALQUILER=========================================
