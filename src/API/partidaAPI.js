@@ -951,53 +951,81 @@ exports.crearPartida = crearPartida;
 
 
 /*
-=================== UNIRSE A PARTIDA =========================================
+  =================== UNIRSE A PARTIDA =========================================
 */
+// Se añade el jugador con IDJugador a la partida
+// Devuelve false si el jugador o la partida no existen, o si el jugador ya está metido en esa partida o esta jugando ya otra
+// Devuelve true en caso contrario
 
-// Devuelve true si se ha unido con éxito, false de lo contrario
-function unirsePartida(id_jugador, id_partida) {
+// OOOO====OOOOOOOOO CAMBIAR AL METER LOS BOTS, INSERT TENDRA MAS CAMPOS  OOOO====OOOOOOOOO
+
+
+function unirsePartida(idJugador, idPartida){
   return new Promise((resolve, reject) => {
-    const con = db.crearConexion();
     con.connect();
-    const query1 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
-    con.query(query1, (error, results1) => {
-      if (error) {
+
+    const query = `SELECT idPartida FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {                            // Caso -- Error
+      if (error) {                                   
+        con.end();
         reject(error);
+      } else if (results.length === 0) {                              // Caso -- No existe esa Partida
         con.end();
-        return;
-      }
-      if (results1.length === 0) {
-        resolve(false); // Si no existe jugador
-        con.end();
-        return;
-      }
-      const jugador_id = results1[0].email;
-      const query2 = `SELECT * FROM Partida WHERE idPartida = ${id_partida}`;
-      con.query(query2, (error, results2) => {
-        if (error) {
-          reject(error);
-          con.end();
-          return;
-        }
-        if (results2.length === 0) {
-          resolve(false); // Si no existe partida
-          con.end();
-          return;
-        }
-        const query3 = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES (0, 0, 0, 0, 0, 'default', '${id_jugador}', ${id_partida})`;
-        con.query(query3, (error, results3) => {
-          if (error) {
-            reject(error);
+        resolve(false);
+      } else {                                                        // Caso --  Existe esa Partida  
+        const query2 = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query2, (error, results2) => {                      // Caso -- Error
+          if (error) {                                   
             con.end();
-            return;
+            reject(error);
+          } else if (results2.length === 0) {                         // Caso -- No existe ese Jugador
+            con.end();
+            resolve(false);
+          } else {                                                    // Caso --  Existe ese Jugador
+
+            const query3 = `SELECT * FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
+            con.query(query3, (error, results3) => {                  // Caso -- Error
+              if (error) {                                   
+                con.end();
+                reject(error);
+              } else if (results3.length != 0) {                      // Caso -- El jugador ya esta jugando esa partida
+                con.end();
+                resolve(false);
+              } else {                                                // Caso -- El jugador no esta jugando esa partida
+
+                const query4 = `SELECT B.idPartida FROM juega A INNER JOIN Partida B ON A.idPartida = B.idPartida 
+                                WHERE A.email = '${idJugador}' AND B.enCurso = true`;
+                con.query(query4, (error, results4) => {              // Caso -- Error
+                  if (error) {                                   
+                    con.end();
+                    reject(error);
+                  } else if (results4.length != 0) {                  // Caso -- El jugador ya esta jugando una partida
+                    con.end();
+                    resolve(false);
+                  } else {                                            // Caso -- El jugador no esta jugando ninguna partida
+                    const sql = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
+                                dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?)`;
+                    const values = [0, 0.0, 0, 0, 0.0, 'default', 0 , idJugador, idPartida];
+                    con.query(sql,values, (error, results5) => {      // Caso -- Error
+                      if (error) {                                   
+                        con.end();
+                        reject(error);
+                      } else {                                         // Caso -- Insert okay
+                        con.end();
+                        resolve(true);
+                      }
+                    }); 
+                  }
+                });
+              }
+            });
           }
-          resolve(true); // Devolver true si todo ha ido bien
-          con.end();
         });
-      });
-    });
+      }
+    }); 
   });
 }
+
 
 exports.unirsePartida = unirsePartida;
 

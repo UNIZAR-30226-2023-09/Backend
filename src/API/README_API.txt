@@ -101,8 +101,10 @@ function obtenerPosicion(id_jugador, id_partida);
 function crearPartida(id_jugador, id_torneo = null);
 
 
-// Devuelve true si se ha unido con éxito, false de lo contrario
-function unirsePartida(id_jugador, id_partida);
+// Se añade el jugador con IDJugador a la partida
+// Devuelve false si el jugador o la partida no existen, o si el jugador ya está metido en esa partida o esta jugando ya otra
+// Devuelve true en caso contrario
+function unirsePartida(idJugador, idPartida);
 
 
 // Devuelve true si se ha empezado la partida con éxito, false de lo contrario
