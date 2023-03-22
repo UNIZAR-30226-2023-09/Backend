@@ -13,11 +13,16 @@
 const funcionesPartidaTorneo = require('./funcionesPartidaTorneo');
 const funcionesJugador = require('./funcionesJugador');
 const funcionesTablero = require('./funcionesTablero');
+const conexion = require('./conexiones');
+// const ArrayDeStrings = require('./ArrayDeStrings');
 
 const PUERTO = 8080 // Puerto a elegir
 
 const WebSocket = require('ws');
 const server = new WebSocket.Server({ port: PUERTO });    
+
+// Crea una instancia de la clase
+//const listaEspera = new ArrayDeStrings();
 
 // Cuando se lance el servidor que notifique que esta activo
 server.on('listening', () => {
@@ -68,14 +73,23 @@ server.on("connection", (socket) => {
             funcionesPartidaTorneo.UnirsePartida(socket, mensaje[1],mensaje[2]);
         }
 
-        // empezarPartida, ID_Partida, ID_Lider
+       
         if (mensaje[0] == "empezarPartida") {
+            // socket, ID_Partida, ID_Lider
             funcionesPartidaTorneo.EmpezarPartida(socket, mensaje[1], mensaje[2]);
         }
 
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
             // socket, ID_jugador, ID_partida
+            funcionesTablero.LanzarDados(socket, mensaje[1],mensaje[2]);
+        }
+
+        // Si el mensaje es que se han lanzado los dados
+        if (mensaje[0] === "lanzarDados2") {
+            // Mandar dinero actual a todos (lo mismo que iria al fin del turno)
+            // TODO:
+            // Y volvemos a mirar la función de lanzarDados
             funcionesTablero.LanzarDados(socket, mensaje[1],mensaje[2]);
         }
 
@@ -179,5 +193,13 @@ server.on("connection", (socket) => {
 
     socket.on("close", () => {
         console.log("Cliente desconectado");
+        // let nomUsuario = conexion.buscarConexion();
+        // if (conexUsuario != null) {
+        //     listaEspera.añadir(nomUsuario)
+        // }
     });
+
+    // Hacer contador de 1 min
+    //  -> Si pasa el tiempo, sustituir jugador por bot
+    //  -> Si en socket on connection se vuelve a conectar, sigue jugando
 });

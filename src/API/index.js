@@ -12,6 +12,7 @@
 const testPartida = require('./partidaAPI');  //habria que cambiar este require por cada uno de los ficheros nuevos creados.
 const testTorneo = require('./torneoAPI');
 const testJugador = require('./jugadorAPI');
+const testSkin = require('./skins');
 const con = require('./db');
 
 
@@ -439,6 +440,103 @@ async function obtenerResultadoObtenerJugadorPropiedad(n_propiedad,id_partida) {
   }
 }
 
+//funciona OKEY.
+async function obtenerResultadoRestarTurnoCarcel(id_jugador, id_partida, turnos) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await testPartida.restarTurnoCarcel(id_jugador, id_partida, turnos);
+    console.log("Resultado de estae en la carcel : ", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerJugadoresPartida(idPartida) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await testPartida.obtenerJugadoresPartida(idPartida);
+    console.log("El resultado obtenido el listado de jugadores en la partida es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerListadoSkins() {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await testSkin.obtenerListadoSkins();
+    console.log("El resultado obtenido de devolver listado de skins es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerComprarSkin(idJugador, idSkin) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    const resultado = await testSkin.comprarSkin(idJugador, idSkin);
+    console.log("El resultado obtenido de comprar la skin es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+//FUNCIONA OKEY.
+async function obtenerResultadoIntercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await testPartida.intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2);
+    console.log("El resultado obtenido de intercambiar propiedades es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+//FUNCIONA OKEY.
+async function obtenerResultadoObtenerNumCasasPropiedad(idPartida,propiedad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await testPartida.obtenerNumCasasPropiedad(idPartida,propiedad);
+    console.log("El resultado obtenido de obtener numero de casas de la propiedades es :", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -486,6 +584,13 @@ async function obtenerResultadoObtenerJugadorPropiedad(n_propiedad,id_partida) {
 
 // obtenerResultadoObtenerJugadorPropiedad(2,1);
 
+// obtenerResultadoRestarTurnoCarcel('juan@example.com',1,2);
+
+//obtenerResultadoIntercambiarPropiedades(1,'juan@example.com','laura@example.com',1,2);
+
+// obtenerResultadoObtenerNumCasasPropiedad(1,1);
+
+
 // Probar partida rapida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');
 //obtenerResultadoCrearPartida('david@gmail.com');
@@ -505,4 +610,10 @@ async function obtenerResultadoObtenerJugadorPropiedad(n_propiedad,id_partida) {
 // Probar empezar partida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');
 //obtenerResultadoCrearPartida('david@gmail.com');
-//obtenerResultadoEmpezarPartida(2, 'david@gmail.com')
+//obtenerResultadoEmpezarPartida(2, 'david@gmail.com');
+
+//obtenerResultadoObtenerJugadoresPartida(1);
+
+// Probar Skins
+//obtenerResultadoObtenerListadoSkins();
+//obtenerComprarSkin('AEoooo@gmail.com', 'default2');

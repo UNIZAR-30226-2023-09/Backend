@@ -73,13 +73,13 @@ exports.moverJugador = moverJugador;
 ===================MODIFICAR DINERO JUGADOR DEL MONOPOLY===================
 */
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
-// ser positiva o negativa)
-function modificarDinero(jugador, cantidad) {
+// ser positiva o negativa). Devuelve true si todo ha ido bien, y devuelve false si algo ha ido mal.
+function modificarDinero(idPartida,jugador, cantidad) {
   return new Promise((resolve, reject) => {
     var con = db.crearConexion();
     con.connect();
     // Comprobar si el jugador existe en la tabla "juega".
-    const query = `SELECT dinero FROM juega WHERE email = '${jugador}'`;
+    const query = `SELECT dinero FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
     console.log(query);
     con.query(query, (error, results) => {
       if (error) {
@@ -94,10 +94,10 @@ function modificarDinero(jugador, cantidad) {
       } 
       else {
         // Realizar la consulta para modificar el dinero del jugador
-        const query = `UPDATE juega SET dinero = ? WHERE email = ?`;
+        const query = `UPDATE juega SET dinero = ? WHERE email = ? AND idPartida = ?`;
         let dinero = results[0].dinero;
         dinero += cantidad;
-        const values = [dinero, jugador];
+        const values = [dinero, jugador,idPartida];
         con.query(query, values, (error, results) => {
           if (error) {
             reject(error);
@@ -326,7 +326,6 @@ function verificarCarcel(jugador, idPartida){
     const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
     con.query(query, (error, results) => {
       if (error) {
-        console.log("ERROR!!");
         con.end();
         reject(error);
       } else if (results.length === 0) {
@@ -337,31 +336,22 @@ function verificarCarcel(jugador, idPartida){
       else {
         //una vez comprobado que esta en la partida, realizaremos consulta para ver si se encuentra en la posicion 
         //de carcel, si es asi devuelve true, y en caso contrario devuelve false.
-        const query2 = `SELECT posicion FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+        const query2 = `SELECT nTurnosCarcel FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
         con.query(query2, (error, results2) => {
           if (error) {
             con.end();
             reject(error);
           } else {
             //si ha ido bien devolvemos la posicion.
-            let posicion = results2[0].posicion;
-            if(posicion == POSICION_CARCEL){
-              //esta en la casilla de la carcel, devuelve true.
-              con.end();
-              resolve(true);
-            }
-            else{
-              //no esta en la casilla de la carcel, devuelve false.
-              con.end();
-              resolve(false);
-            }            
+            let turnosCarcel = results2[0].nTurnosCarcel;
+            resolve(turnosCarcel);
+            con.end();
           }
         });
       }
     });
   });
 }
-
 exports.verificarCarcel = verificarCarcel;
 
 
@@ -593,32 +583,28 @@ function jugadorEnPartida(email){
     const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
     con.query(query, (error, results) => {
       if (error) {
-        con.end();
         reject(error);
       } else if (results.length === 0) {
-        con.end();
         resolve(-1);
       } else {
         let activa = false;
         for(let i = 0; i < results.length; i++){
           let partida = results[i].idPartida;
-          const query2 = `SELECT * FROM partida WHERE idPartida = '${partida}' AND enCurso='1'`;
+          const query2 = `SELECT * FROM Partida WHERE idPartida = '${partida}' AND enCurso='1'`;
           con.query(query2, (error, results2) => {
             if (error) {
-              con.end();
               reject(error);
             } else if (results2.length != 0) {
               activa = true;
               resolve(partida);
             }
             if (i === results.length - 1 && !activa) {
-              con.end();
               resolve(-1);
             }
           });
         }
-        con.end(); // Cerrar la conexión después de terminar el bucle.
       }
+      con.end(); // Cerrar la conexión después de terminar el bucle.
     });
   });
 }
@@ -965,53 +951,81 @@ exports.crearPartida = crearPartida;
 
 
 /*
-=================== UNIRSE A PARTIDA =========================================
+  =================== UNIRSE A PARTIDA =========================================
 */
+// Se añade el jugador con IDJugador a la partida
+// Devuelve false si el jugador o la partida no existen, o si el jugador ya está metido en esa partida o esta jugando ya otra
+// Devuelve true en caso contrario
 
-// Devuelve true si se ha unido con éxito, false de lo contrario
-function unirsePartida(id_jugador, id_partida) {
+// OOOO====OOOOOOOOO CAMBIAR AL METER LOS BOTS, INSERT TENDRA MAS CAMPOS  OOOO====OOOOOOOOO
+
+
+function unirsePartida(idJugador, idPartida){
   return new Promise((resolve, reject) => {
-    const con = db.crearConexion();
     con.connect();
-    const query1 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
-    con.query(query1, (error, results1) => {
-      if (error) {
+
+    const query = `SELECT idPartida FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {                            // Caso -- Error
+      if (error) {                                   
+        con.end();
         reject(error);
+      } else if (results.length === 0) {                              // Caso -- No existe esa Partida
         con.end();
-        return;
-      }
-      if (results1.length === 0) {
-        resolve(false); // Si no existe jugador
-        con.end();
-        return;
-      }
-      const jugador_id = results1[0].email;
-      const query2 = `SELECT * FROM Partida WHERE idPartida = ${id_partida}`;
-      con.query(query2, (error, results2) => {
-        if (error) {
-          reject(error);
-          con.end();
-          return;
-        }
-        if (results2.length === 0) {
-          resolve(false); // Si no existe partida
-          con.end();
-          return;
-        }
-        const query3 = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES (0, 0, 0, 0, 0, 'default', '${id_jugador}', ${id_partida})`;
-        con.query(query3, (error, results3) => {
-          if (error) {
-            reject(error);
+        resolve(false);
+      } else {                                                        // Caso --  Existe esa Partida  
+        const query2 = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query2, (error, results2) => {                      // Caso -- Error
+          if (error) {                                   
             con.end();
-            return;
+            reject(error);
+          } else if (results2.length === 0) {                         // Caso -- No existe ese Jugador
+            con.end();
+            resolve(false);
+          } else {                                                    // Caso --  Existe ese Jugador
+
+            const query3 = `SELECT * FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
+            con.query(query3, (error, results3) => {                  // Caso -- Error
+              if (error) {                                   
+                con.end();
+                reject(error);
+              } else if (results3.length != 0) {                      // Caso -- El jugador ya esta jugando esa partida
+                con.end();
+                resolve(false);
+              } else {                                                // Caso -- El jugador no esta jugando esa partida
+
+                const query4 = `SELECT B.idPartida FROM juega A INNER JOIN Partida B ON A.idPartida = B.idPartida 
+                                WHERE A.email = '${idJugador}' AND B.enCurso = true`;
+                con.query(query4, (error, results4) => {              // Caso -- Error
+                  if (error) {                                   
+                    con.end();
+                    reject(error);
+                  } else if (results4.length != 0) {                  // Caso -- El jugador ya esta jugando una partida
+                    con.end();
+                    resolve(false);
+                  } else {                                            // Caso -- El jugador no esta jugando ninguna partida
+                    const sql = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
+                                dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?)`;
+                    const values = [0, 0.0, 0, 0, 0.0, 'default', 0 , idJugador, idPartida];
+                    con.query(sql,values, (error, results5) => {      // Caso -- Error
+                      if (error) {                                   
+                        con.end();
+                        reject(error);
+                      } else {                                         // Caso -- Insert okay
+                        con.end();
+                        resolve(true);
+                      }
+                    }); 
+                  }
+                });
+              }
+            });
           }
-          resolve(true); // Devolver true si todo ha ido bien
-          con.end();
         });
-      });
-    });
+      }
+    }); 
   });
 }
+
 
 exports.unirsePartida = unirsePartida;
 
@@ -1068,4 +1082,179 @@ function empezarPartida(id_partida, id_lider) {
 }
 
 exports.empezarPartida = empezarPartida;
+
+
+/*
+=================== RESTAR TURNOS CARCEL =========================================
+*/
+
+
+// Dado un jugador y una partida, restarle a turnosCarcel los turnos dados. 
+function restarTurnoCarcel(id_jugador, id_partida, turnos){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
+    const query = `SELECT nTurnosCarcel FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        con.end();
+        resolve(false);
+      } 
+      else {
+        //Actualizamos el numero de turnos en la enviarCarcel.
+        let turnosCarcel = results[0].nTurnosCarcel;
+        turnosCarcel -= turnos;
+        const query2 = `UPDATE juega SET nTurnosCarcel = ${turnosCarcel} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error);
+          } else {
+            //si ha ido bien,cerramos conexion
+            con.end();
+          }
+        });
+      }
+    });
+  });
+}
+exports.restarTurnoCarcel = restarTurnoCarcel;
+
+
+
+
+
+/*
+===================OBTENER LISTADO JUGADORES EN PARTIDA CON CON ID_PARTIDA =========================================
+*/
+// Devuelve el listado de jugadores que hay asociados a una partida
+// En caso de que no haya los jugadores totales necesarios devolvera los que esten asociados y -1 hasta completar los necesarios
+function obtenerJugadoresPartida(idPartida){
+  return new Promise((resolve, reject) => {
+    con.connect();
+    const query = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query, (error, results) => {                // Caso -- Error
+      if (error) {                                   
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {                  // Caso -- No existe la Partida
+        con.end();
+        resolve(false);
+      } else {                                            // Caso --  Existe la partida
+
+        const query2 = `SELECT email FROM juega WHERE idPartida = '${idPartida}'`;      
+        const respuesta = [] ;
+        con.query(query2, (error, results2) => {
+          if (error) {                                    
+            con.end();
+            reject(error);
+          } else {
+
+            results2.forEach((row, i) => {                
+              respuesta[i] = row.email;
+            });
+            while (respuesta.length < 4) {
+              respuesta.push("-1");
+            }
+            let cadena = respuesta.join(",");
+            con.end();
+            resolve(cadena)
+          }
+        });
+      }
+    });
+  });
+}
+
+
+exports.obtenerJugadoresPartida = obtenerJugadoresPartida;
+
+
+/*
+===================INTERCAMBIAR PROPIEDADES JUGADORES =========================================
+*/
+
+//Intercambiar propiedades con otro jugador, sin tener en cuenta el dinero ni nada, solamente se cambia el nombre del propietario.
+function intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2) {
+  return new Promise((resolve, reject) => {
+    const con = db.crearConexion();
+    let propiedad_n1 = 'propiedad' + propiedad1;
+    let propiedad_n2 = 'propiedad' + propiedad2;
+    const query1 = `SELECT ${propiedad_n1} AS prop1, ${propiedad_n2} AS prop2 FROM Partida WHERE idPartida = '${id_partida}'`;
+
+    con.query(query1, (error, results1) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results1.length === 0) {
+        con.end();
+        resolve(false);
+      } else {
+        let propietario_1 = results1[0].prop1;
+        let propietario_2 = results1[0].prop2;
+
+        const query2 = `UPDATE Partida SET ${propiedad_n1} = '${propietario_2}' WHERE idPartida = '${id_partida}'`;
+        con.query(query2, (error, results2) => {
+          if (error) {
+            con.end();
+            reject(error);
+          } else if (results2.affectedRows === 0) {
+            con.end();
+            resolve(false);
+          } else {
+            const query3 = `UPDATE Partida SET ${propiedad_n2} = '${propietario_1}' WHERE idPartida = '${id_partida}'`;
+            con.query(query3, (error, results3) => {
+              con.end();
+
+              if (error) {
+                reject(error);
+              } else if (results3.affectedRows === 0) {
+                resolve(false);
+              } else {
+                resolve(true);
+              }
+            });
+          }
+        });
+      }
+    });
+  });
+}
+
+exports.intercambiarPropiedades=intercambiarPropiedades;
+
+
+
+/*
+===================OBTENER NUMERO DE CASAS DE LA PROPIEDAD =========================================
+*/
+
+//devuelve el numero de casas de la propiedad "nCasasPropiedadX". Devuelve -1 si algo ha ido mal
+function obtenerNumCasasPropiedad(idPartida,propiedad){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    let numCasas = 'nCasasProp' + propiedad;
+    const query1 = `SELECT ${numCasas} as num_casas FROM Partida WHERE idPartida = '${idPartida}'`;
+    con.query(query1, (error, results1) => {
+      if (error) {
+        reject(error);
+      } else if (results1.length === 0) {
+        resolve(-1);
+      } else {
+        //devolvemos el dinero del usuario.
+        let numCas = results1[0].num_casas;
+        resolve(numCas);
+      }
+    });
+    con.end();
+  });
+}
+exports.obtenerNumCasasPropiedad = obtenerNumCasasPropiedad;
+
 

@@ -22,7 +22,7 @@ moverJugador(jugador, numero);
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
 // ser positiva o negativa). Devuelve true si ha ido todo bien, en caso de que haya ido algo mal
 // devuleve false.
-modificarDinero(jugador, cantidad);
+modificarDinero(idPartida,jugador, cantidad);
 
 
 // Pagar impuestos a la banca de un cierto jugador en cierta partida. Eso significa, que el jugador se le resta
@@ -101,8 +101,10 @@ function obtenerPosicion(id_jugador, id_partida);
 function crearPartida(id_jugador, id_torneo = null);
 
 
-// Devuelve true si se ha unido con éxito, false de lo contrario
-function unirsePartida(id_jugador, id_partida);
+// Se añade el jugador con IDJugador a la partida
+// Devuelve false si el jugador o la partida no existen, o si el jugador ya está metido en esa partida o esta jugando ya otra
+// Devuelve true en caso contrario
+function unirsePartida(idJugador, idPartida);
 
 
 // Devuelve true si se ha empezado la partida con éxito, false de lo contrario
@@ -127,4 +129,28 @@ function obtenerPropiedades(id_partida,id_jugador);
 
 // Devuelve el ID_jugador al que pertenezca la propiedad dada (-1 si no pertenece a nadie)
 // Propiedad es un (integer) con el numero de propiedad.
-function obtenerJugadorPropiedad(n_propiedad, id_partida)
+function obtenerJugadorPropiedad(n_propiedad, id_partida);
+
+// Dado un jugador y una partida, restarle a turnosCarcel los turnos dados. 
+function restarTurnoCarcel(id_jugador, id_partida, turnos);
+
+
+// Devuelve el listado de jugadores que hay asociados a una partida
+// En caso de que no haya los jugadores totales necesarios devolvera los que esten asociados y -1 hasta completar los necesarios
+function obtenerJugadoresPartida(idPartida);
+
+
+// Devuelve el listado de skins con id.Precio que estan en el sistema
+//En caso de que no existan skins en el sistema devuelve false
+function obtenerListadoSkins();
+
+
+// Devuelve el true si se ha añadido la skin a las que tiene el jugador y se le ha actualizado el dinero
+// En caso de que no exista la skin o el jugador devuelve false o si ya tiene esa skin
+function comprarSkin(idJugador, idSkin);
+
+//Intercambiar propiedades con otro jugador, sin tener en cuenta el dinero ni nada, solamente se cambia el nombre del propietario.
+function intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad1, propiedad2);
+
+//devuelve el numero de casas de la propiedad "nCasasPropiedadX". Devuelve -1 si algo ha ido mal
+function obtenerNumCasasPropiedad(idPartida,propiedad);

@@ -10,6 +10,7 @@
 const con = require('../API/db');
 const API = require('../API/jugadorAPI');
 const APIpartida = require('../API/partidaAPI');
+const conexion = require('./conexiones');
 
 // Registra al jugador dado si es posible
 async function Registrarse(socket, email, contrasenya, nombre) {
@@ -48,8 +49,16 @@ async function IniciarSesion(socket, email, contrasenya) {
                 //let datosPartida = await API.obtenerDatosPartida(id_partida);
                 // Mandar los datos de la partida para mostrarlos
                 //socket.send();
+                
+                // Almacenamos la conexión del usuario junto con su nombre de usuario
+                conexion.agregarUsuario(socket,{email});
+
+                socket.send(`INICIO_OK,${email},${gemas}`);
             }
             else {
+                // Almacenamos la conexión del usuario junto con su nombre de usuario
+                conexion.agregarUsuario(socket,email);
+
                 socket.send(`INICIO_OK,${email},${gemas}`);
             }
         }
@@ -63,6 +72,7 @@ async function IniciarSesion(socket, email, contrasenya) {
         return false;
     }
 }
+
 exports.IniciarSesion = IniciarSesion;
 
 async function FinTurno (socket, ID_jugador, ID_partida) {
@@ -85,7 +95,9 @@ async function FinTurno (socket, ID_jugador, ID_partida) {
 
     }
     else {   // Es un jugador
-        socket.send(`TURNO,${siguienteJugador},${ID_partida}`);
+        // Buscar jugadores en el pool 
+        let conexionUsuario = con.buscarUsuario(siguienteJugador);
+        conexionUsuario.send(`TURNO,${siguienteJugador},${ID_partida}`);
     }
 
     // Comprobar si es fin de ronda y realizar lo oportuno con esta
