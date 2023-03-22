@@ -134,8 +134,8 @@ function obtenerJugadorPropiedad(n_propiedad, id_partida);
 // Dado un jugador y una partida, restarle a turnosCarcel los turnos dados. 
 function restarTurnoCarcel(id_jugador, id_partida, turnos);
 
-// Devuelve el listado de jugadores que hay asociados a una partida
-// En caso de que no haya los jugadores totales necesarios devolvera los que esten asociados y -1 hasta completar los necesarios
+// Devuelve el listado de jugadores que hay asociados a una partida separados por comas, si son bots pondra -1 en vez de email
+// En caso de que no no exista la partida devuelve false
 function obtenerJugadoresPartida(idPartida);
 
 // Devuelve el listado de skins con id.Precio que estan en el sistema
@@ -165,4 +165,10 @@ function obtenerPrecioPropiedad(idPartida, numPropiedades);
 // jugadorPaga paga el alquiler al jugadorRecibe por estar en propiedad si pertenece 
 // al jugadorRecibe
 async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad);
+
+
+// Devuelve el listado de los jugadores y sus puntuaciones totales en el torneo (Menor es que ha quedado mas veces primero)
+// ejemplo=> jugador1 - puntuacion1 , jugador2 - puntuacion2
+// En caso de que no exista el torneo, o no tenga partidas acabadas para poder sacar datos, devuelve false
+function verClasificacionTorneo(idTorneo);
 
