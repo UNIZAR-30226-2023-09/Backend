@@ -578,7 +578,7 @@ async function obtenerResultadoPagarAlquiler(id_jugadorPaga, id_jugadorRecibe, p
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
     let resultado;
-    resultado = await test.pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad);
+    resultado = await testPartida.pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad);
     console.log("El resultado obtenido de pagar el alquiler es :", resultado);
 
     return resultado;
@@ -595,8 +595,25 @@ async function obtenerResultadoPagarAlquiler(id_jugadorPaga, id_jugadorRecibe, p
 async function obtenerVerClasificacionTorneo(idTorneo) {
   try {
     // Hacemos la llamada a la función que devuelve una Promesa.
-    const resultado = await test.verClasificacionTorneo(idTorneo);
+    const resultado = await testTorneo.verClasificacionTorneo(idTorneo);
     console.log("El resultado obtenido de calsificacion Torneo es:", resultado);
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+//FUNCIONA OKEY.
+async function obtenerResultadoSacarDineroBancoAPartida(id_partida, id_jugador,cantidad) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await testPartida.sacarDineroBancoAPartida(id_partida, id_jugador,cantidad);
+    console.log("El resultado obtenido de sacar dinero del banco es :", resultado);
+
     return resultado;
 
   } catch (error) {
@@ -662,8 +679,10 @@ async function obtenerVerClasificacionTorneo(idTorneo) {
 
 // obtenerResultadoObtenerNumCasasPropiedad(1,1);
 
-
 // obtenerResultadoPagarAlquiler('juan@example.com','laura@example.com',1,1,200);
+
+// obtenerResultadoSacarDineroBancoAPartida(1,'juan@example.com',5500);
+
 
 //obtenerVerClasificacionTorneo(1);
 

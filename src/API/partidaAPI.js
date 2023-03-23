@@ -1363,3 +1363,82 @@ async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPart
   }
 }
 exports.pagarAlquiler = pagarAlquiler;
+
+
+
+
+
+/*
+===================SACAR DINERO BANCO=========================================
+*/
+
+//funcion que saca dinero del banco y lo mete en dinero de la cuenta del jugador.
+//Devuelve el dinero del jugador sacado del banco.
+//Devuelve -2 si no tiene el dinero suficiente en el banco para sacarlo.
+//Devuelve -1 si ha ido algo mal.
+function sacarDineroBancoAPartida(id_partida,id_jugador,cantidad){
+  return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
+    con.connect();
+    // Primero ponemos a null el propietario.
+    const query = `SELECT dineroInvertido, dinero FROM juega WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        reject(error);
+        con.end();
+      } else if (results.length === 0) {
+        // Si el jugador no existe en la partida, devolver false.
+        resolve(-1);
+        con.end();
+      } 
+      else {
+        //comparamos y vemos si la cantidad a sacar es menor que el dinero del banco, sino es asi devolvemos -1.
+        let dineroBanco = results[0].dineroInvertido;
+        let dineroJugador = results[0].dinero;
+        if(cantidad <= dineroBanco){
+          //actualizamos el dinero del banco y del jugador en la partida.
+          dineroJugador += cantidad;
+          const query2 = `UPDATE juega SET dinero = ${dineroJugador} WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
+          con.query(query2, (error, results2) => {
+            if (error) {
+              reject(error);
+              con.end();
+            } else if (results2.affectedRows === 0) {
+              // Si el jugador no existe en la partida, devolver false.
+              resolve(-1);
+              con.end();
+            } 
+            else {
+              //ahora actualizamos el dinero del banco.
+              dineroBanco -= cantidad;
+              const query3 = `UPDATE juega SET dineroInvertido = ${dineroBanco} WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
+              con.query(query3, (error, results3) => {
+                if (error) {
+                  reject(error);
+                  con.end();
+                } else if (results3.affectedRows === 0) {
+                  // Si el jugador no existe en la partida, devolver false.
+                  resolve(-1);
+                  con.end();
+                } 
+                else {
+                  //todo okey, devolvemos el dinero del jugador en la partida ahora.
+                  resolve(dineroJugador);
+                  con.end();
+                }
+              });
+            }
+          });
+        }
+        else{
+          //no tenemos dinero suficinete, con lo que devolvemos -1.
+          resolve(-2);
+          con.end();
+        }
+      }
+    });
+  });
+}
+exports.sacarDineroBancoAPartida = sacarDineroBancoAPartida;
+
+

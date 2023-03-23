@@ -172,3 +172,10 @@ async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPart
 // En caso de que no exista el torneo, o no tenga partidas acabadas para poder sacar datos, devuelve false
 function verClasificacionTorneo(idTorneo);
 
+
+//funcion que saca dinero del banco y lo mete en dinero de la cuenta del jugador.
+//Devuelve el dinero del jugador sacado del banco.
+//Devuelve -2 si no tiene el dinero suficiente en el banco para sacarlo.
+//Devuelve -1 si ha ido algo mal.
+function sacarDineroBancoAPartida(id_partida,id_jugador,cantidad);
+
