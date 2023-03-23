@@ -48,7 +48,7 @@ then
 		bote            FLOAT NOT NULL,
 		evento          VARCHAR(255) NOT NULL,
 		economia        FLOAT NOT NULL,
-		precioBase      FLOAT NOT NULL,
+		
 		propiedad1      VARCHAR(255),
 		propiedad2      VARCHAR(255),
 		propiedad3      VARCHAR(255),
@@ -89,9 +89,48 @@ then
 		propiedad38     VARCHAR(255),
 		propiedad39     VARCHAR(255),
 		propiedad40     VARCHAR(255),
-		carta1          VARCHAR(255),
-		carta2          VARCHAR(255),
-		turno           VARCHAR(255),
+		
+		precioPropiedad1      FLOAT NOT NULL,
+		precioPropiedad2      FLOAT NOT NULL,
+		precioPropiedad3      FLOAT NOT NULL,
+		precioPropiedad4      FLOAT NOT NULL,
+		precioPropiedad5      FLOAT NOT NULL,
+		precioPropiedad6      FLOAT NOT NULL,
+		precioPropiedad7      FLOAT NOT NULL,
+		precioPropiedad8      FLOAT NOT NULL,
+		precioPropiedad9      FLOAT NOT NULL,
+		precioPropiedad10     FLOAT NOT NULL,
+		precioPropiedad11     FLOAT NOT NULL,
+		precioPropiedad12     FLOAT NOT NULL,
+		precioPropiedad13     FLOAT NOT NULL,
+		precioPropiedad14     FLOAT NOT NULL,
+		precioPropiedad15     FLOAT NOT NULL,
+		precioPropiedad16     FLOAT NOT NULL,
+		precioPropiedad17     FLOAT NOT NULL,
+		precioPropiedad18     FLOAT NOT NULL,
+		precioPropiedad19     FLOAT NOT NULL,
+		precioPropiedad20     FLOAT NOT NULL,
+		precioPropiedad21     FLOAT NOT NULL,
+		precioPropiedad22     FLOAT NOT NULL,
+		precioPropiedad23     FLOAT NOT NULL,
+		precioPropiedad24     FLOAT NOT NULL,
+		precioPropiedad25     FLOAT NOT NULL,
+		precioPropiedad26     FLOAT NOT NULL,
+		precioPropiedad27     FLOAT NOT NULL,
+		precioPropiedad28     FLOAT NOT NULL,
+		precioPropiedad29     FLOAT NOT NULL,
+		precioPropiedad30     FLOAT NOT NULL,
+		precioPropiedad31     FLOAT NOT NULL,
+		precioPropiedad32     FLOAT NOT NULL,
+		precioPropiedad33     FLOAT NOT NULL,
+		precioPropiedad34     FLOAT NOT NULL,
+		precioPropiedad35     FLOAT NOT NULL,
+		precioPropiedad36     FLOAT NOT NULL,
+		precioPropiedad37     FLOAT NOT NULL,
+		precioPropiedad38     FLOAT NOT NULL,
+		precioPropiedad39     FLOAT NOT NULL,
+		precioPropiedad40     FLOAT NOT NULL,
+		
 		nCasasPropiedad1        INT,
 		nCasasPropiedad2        INT,
 		nCasasPropiedad3        INT,
@@ -132,6 +171,12 @@ then
 		nCasasPropiedad38       INT,
 		nCasasPropiedad39       INT,
 		nCasasPropiedad40       INT,
+		
+		carta1          VARCHAR(255),
+		carta2          VARCHAR(255),
+		turno           VARCHAR(255),
+		
+		
 		enCurso         BOOLEAN,
 		perteneceTorneo INT,
 		idPartida       INT AUTO_INCREMENT PRIMARY KEY,
@@ -183,6 +228,9 @@ then
 	'''
 	node exec_remote_sql '''
 	CREATE TABLE juega (
+		turno           INT,
+		esBotInicial    BOOLEAN NOT NULL,
+		esBot           BOOLEAN NOT NULL,
 		numPropiedades  INT NOT NULL,
 		dineroInvertido FLOAT NOT NULL,
 		nTurnosCarcel   INT NOT NULL,
@@ -207,6 +255,7 @@ then
 		FOREIGN KEY (email) REFERENCES Jugador(email)
 	);
 	'''
+
 	sleep 1
 	echo "POBLANDO TEST..."
 	node exec_remote_sql.js "INSERT INTO Skins (precioGemas, idSkin) VALUES (0, 'default')"
