@@ -31,7 +31,7 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
             estaCarcel = 0;
         }
         // Movemos al jugador -> obtenemos su nueva posición
-        let posicionNueva = await API.moverJugador(ID_jugador, sumaDados);
+        let posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
 
         // Enviar la nueva posición del jugador, el valor de los dados y el numero de turnos en la carcel
         socket.send(`DADOS,${dado1},${dado2},${posicionNueva},${estaCarcel}`);
@@ -102,7 +102,7 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
     if (posicion == 5) {
         try {
             // 50€ + 20€ * número de propiedades
-            let numPropiedades = await API.obtenerNumPropiedades(ID_jugador);
+            let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
             let cantidad = 50 + 20 * numPropiedades;
             let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
             if(await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
@@ -123,7 +123,7 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
     if (posicion == 5) {
         try {
             // 100€ + 50€ * número de propiedades
-            let numPropiedades = await API.obtenerNumPropiedades(ID_jugador);
+            let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
             let cantidad = 100 + 50 * numPropiedades;
             let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
             socket.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
@@ -149,7 +149,7 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
     // Comprobar si la nueva casilla es la del bote
     if (posicion == 21) {
         try {
-            let dineroBote = await API.obtenerDineroBote(ID_jugador);
+            let dineroBote = await API.obtenerDineroBote(ID_jugador, ID_partida);
             socket.send(`OBTENER_BOTE,${ID_jugador},${dineroBote}`);
         }
 
@@ -171,7 +171,7 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
     // Comprobar si la nueva casilla es la de ir a la cárcel
     if (posicion == 31) {
         try {
-            await API.enviarCarcel(ID_jugador);
+            API.enviarCarcel(ID_jugador, ID_partida);
             socket.send(`DENTRO_CARCEL,${ID_jugador}`);
         }
 
@@ -214,7 +214,16 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
 
     // Si no es ninguna de las anteriores -> es casilla de propiedad
     // TODO: Try catch de esto?
-    let IDjugador_propiedad = await API.obtenerJugadorPropiedad(tablero[posicion - 1]);
+    // Obtener a quien pertenece la propiedad
+    let IDjugador_propiedad;
+    try {
+        IDjugador_propiedad = await API.obtenerJugadorPropiedad(tablero[posicion - 1], ID_partida);
+    }
+    catch(error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
 
     let propiedad = tablero[posicion - 1];
     // Comprobamos si la propiedad no pertenece a ningún jugador
@@ -231,19 +240,19 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
     else if (IDjugador_propiedad != ID_jugador) {
         try {
             // Pagar al jugador que posee la propiedad
-            // pagarAlquiler(jugadorPaga, jugadorRecibe, propiedad)
             // obtenerPrecioPropiedad(propiedad, ID_partida)
             // multiplicarlo por ECONOMIA
             // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
-            let precioPagar = await API.obtenerPrecioPropiedad(propiedad, ID_partida);
+            let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
             // Multiplicamos el precio a pagar por la economía
             let precio = precioPagar * ECONOMIA;
             // Pagamos el alquiler con el nuevo precio
-            let dineroResultante = await API.pagarAlquiler(jugadorPaga, jugadorRecibe, precio, ID_partida);
-            let dinero = dineroResultante.split(",");
-            let dineroJugadorPaga = dinero[0];
-            let dineroJugadorRecibe = dinero[1];
-            socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
+            if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, propiedad, ID_partida, precio)) {
+                // obtener dinero de ambos jugadores
+                let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
+                let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
+                socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
+            }
         }
 
         catch(error) {
@@ -296,7 +305,7 @@ exports.Apostar = Apostar;
 async function MeterBanco(socket, ID_jugador, ID_partida, cantidad) {
     try {
         let dineroJugadorBanco = await API.meterDineroBanco(ID_jugador, ID_partida, cantidad);
-        let dineroJugador = obtenerDinero(ID_jugador, ID_partida);
+        let dineroJugador =  await API.obtenerDinero(ID_jugador, ID_partida);
         socket.send(`METER_DINERO_BANCO,${ID_jugador},${ID_partida},${dineroJugadorBanco},${dineroJugador}`);
     }
 
@@ -312,7 +321,7 @@ exports.MeterBanco = MeterBanco;
 async function SacarBanco(socket, ID_jugador, ID_partida, cantidad) {
     try {
         let dineroJugadorBanco = await API.sacarDineroBanco(ID_jugador, ID_partida, cantidad);
-        let dineroJugador = obtenerDinero(ID_jugador, ID_partida);
+        let dineroJugador =  await API.obtenerDinero(ID_jugador, ID_partida);
         socket.send(`SACAR_DINERO_BANCO,${ID_jugador},${ID_partida},${dineroJugadorBanco},${dineroJugador}`);
     }
 
@@ -327,7 +336,8 @@ exports.SacarBanco = SacarBanco;
 // Realizar lo oportuno cuando se quiera comprar una propiedad
 async function ComprarPropiedad(socket, ID_jugador, propiedad, ID_partida) {
     try {
-        let dinero = await API.comprarPropiedad(ID_partida, ID_jugador, propiedad);
+        let precioPropiedad = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
+        let dinero = await API.comprarPropiedad(ID_partida, ID_jugador, propiedad, precioPropiedad);
         if (dinero == -1) { // No se ha podido comprar
             socket.send(`COMPRAR_NO_OK,${ID_jugador},${propiedad},${ID_partida}`)
         }
@@ -347,7 +357,11 @@ exports.ComprarPropiedad = ComprarPropiedad;
 // Cuando se quiere vender una propiedad
 async function VenderPropiedad(socket, ID_jugador, propiedad, ID_partida) {
     try {
-        let dinero = await API.liberarPropiedadJugador(ID_partida, ID_jugador, propiedad);
+        // Obtener precio propiedad
+        let dineroPropiedad = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
+        // Obtener precio jugador
+        let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
+        let dinero = await API.liberarPropiedadJugador(ID_partida, ID_jugador, propiedad, dineroJugador, dineroPropiedad);
         if (dinero == -1) { // No se ha podido vender
             socket.send(`VENDER_NO_OK,${ID_jugador},${propiedad}`)
         }
@@ -366,7 +380,15 @@ exports.VenderPropiedad = VenderPropiedad;
 
 // Se obtiene la lista de posibles casas a edificar con su precio y se devuelve al cliente
 async function PropiedadesDispEdificar(socket,ID_jugador,ID_partida) {
-    let propiedadesDisponibles = await API.propiedadesEdificar(ID_jugador, ID_partida);
+    let propiedadesDisponibles;
+    try {
+        propiedadesDisponibles = await API.propiedadesEdificar(ID_jugador, ID_partida);
+    }
+    catch(error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
     // PropiedadesDisponibles en un string de propiedad1-precio1,propiedad2-precio2...
     // Lo mandamos tal cual lo recibimos
     socket.send(`EDIFICAR,${ID_jugador},${propiedadesDisponibles}`);
@@ -377,7 +399,16 @@ exports.PropiedadesDispEdificar = PropiedadesDispEdificar;
 // Edifica, si se tiene dinero suficiente, la propiedad dada
 async function EdificarPropiedad(socket,ID_jugador,ID_partida,propiedadPrecio) {
     // Servidor comprueba que tenga dinero suficiente para edificar y en ese caso mando EDIFICAR_OK,propiedad,nuevoDineroJugador
-    let dineroJugador = API.obtenerDinero(ID_jugador, ID_partida);
+    let dineroJugador;
+    try {
+        dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
+    }
+    catch(error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+
     let lista = propiedadPrecio.split('-');
     let propiedad = lista[0];
     let precioProp = lista[1];
