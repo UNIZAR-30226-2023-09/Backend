@@ -22,6 +22,9 @@
 - ¡Cuidado con SQL Inyection, en todas las funciones que meta texto el usuario! -- DANGER DANGER
 
 
+- OJO Los emails de los jugadores no pueden tener ',' o '-' pq se usan en msgs, y las skins no pueden tener '.' -- DANGER DANGER
+
+
 - Se ha dividido en 4 ficheros los cuales son:
 					1.) torneoAPI.js 
 					2.) jugadorAPI.js

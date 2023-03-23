@@ -18,6 +18,7 @@ const db = require('./db');
 //En caso de que no existan skins en el sistema devuelve false
 function obtenerListadoSkins(){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     const query = `SELECT * FROM Skins`;
     con.query(query, (error, results) => {                // Caso -- Error
@@ -57,6 +58,7 @@ exports.obtenerListadoSkins = obtenerListadoSkins;
 // En caso de que no exista la skin o el jugador devuelve false o si ya tiene esa skin
 function comprarSkin(idJugador, idSkin){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     const query = `SELECT gemas FROM Jugador WHERE email = '${idJugador}'`;       // Vemos si existe el jugador
     con.query(query, (error, results) => {

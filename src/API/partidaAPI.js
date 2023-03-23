@@ -957,11 +957,10 @@ exports.crearPartida = crearPartida;
 // Devuelve false si el jugador o la partida no existen, o si el jugador ya está metido en esa partida o esta jugando ya otra
 // Devuelve true en caso contrario
 
-// OOOO====OOOOOOOOO CAMBIAR AL METER LOS BOTS, INSERT TENDRA MAS CAMPOS  OOOO====OOOOOOOOO
-
 
 function unirsePartida(idJugador, idPartida){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
 
     const query = `SELECT idPartida FROM Partida WHERE idPartida = '${idPartida}'`;
@@ -1003,9 +1002,9 @@ function unirsePartida(idJugador, idPartida){
                     con.end();
                     resolve(false);
                   } else {                                            // Caso -- El jugador no esta jugando ninguna partida
-                    const sql = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
-                                dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?)`;
-                    const values = [0, 0.0, 0, 0, 0.0, 'default', 0 , idJugador, idPartida];
+                    const sql = `INSERT INTO juega (esBotInicial, esBot,numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
+                                dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+                    const values = [false, false,0, 0.0, 0, 0, 0.0, 'default', 0 , idJugador, idPartida];
                     con.query(sql,values, (error, results5) => {      // Caso -- Error
                       if (error) {                                   
                         con.end();
@@ -1132,10 +1131,11 @@ exports.restarTurnoCarcel = restarTurnoCarcel;
 /*
 ===================OBTENER LISTADO JUGADORES EN PARTIDA CON CON ID_PARTIDA =========================================
 */
-// Devuelve el listado de jugadores que hay asociados a una partida
-// En caso de que no haya los jugadores totales necesarios devolvera los que esten asociados y -1 hasta completar los necesarios
+// Devuelve el listado de jugadores que hay asociados a una partida separados por comas, si son bots pondra -1 en vez de email
+// En caso de que no no exista la partida devuelve false
 function obtenerJugadoresPartida(idPartida){
   return new Promise((resolve, reject) => {
+    var con = db.crearConexion();
     con.connect();
     const query = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
     con.query(query, (error, results) => {                // Caso -- Error
@@ -1147,7 +1147,7 @@ function obtenerJugadoresPartida(idPartida){
         resolve(false);
       } else {                                            // Caso --  Existe la partida
 
-        const query2 = `SELECT email FROM juega WHERE idPartida = '${idPartida}'`;      
+        const query2 = `SELECT email, esBot, esBotInicial FROM juega WHERE idPartida = '${idPartida}'`;      
         const respuesta = [] ;
         con.query(query2, (error, results2) => {
           if (error) {                                    
@@ -1155,12 +1155,17 @@ function obtenerJugadoresPartida(idPartida){
             reject(error);
           } else {
 
-            results2.forEach((row, i) => {                
-              respuesta[i] = row.email;
+            results2.forEach((row, i) => {
+              if (row.esBot || row.esBotInicial){
+                respuesta[i] = -1;
+              } else {
+                respuesta[i] = row.email;
+              }               
+              
             });
-            while (respuesta.length < 4) {
+            /*while (respuesta.length < 4) {
               respuesta.push("-1");
-            }
+            }*/
             let cadena = respuesta.join(",");
             con.end();
             resolve(cadena)
@@ -1323,6 +1328,7 @@ function obtenerPrecioPropiedad(idPartida, numPropiedades){
         //TODO HA SALIDO CORRECTO, CON LO CUAL DEVOLVEMOS TRUE.
         resolve(true);
       }
+      con.end();
     });
   });
 }
