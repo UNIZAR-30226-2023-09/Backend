@@ -1423,7 +1423,7 @@ function sacarDineroBancoAPartida(id_partida,id_jugador,cantidad){
                 } 
                 else {
                   //todo okey, devolvemos el dinero del jugador en la partida ahora.
-                  resolve(dineroJugador);
+                  resolve(dineroBanco);
                   con.end();
                 }
               });
