@@ -1157,9 +1157,15 @@ function obtenerJugadoresPartida(idPartida) {
 
                         results2.forEach((row, i) => {
                             if (row.esBot || row.esBotInicial) {
-                                respuesta[i] = -1;
+                                let aux = [];
+                                aux[0] = row.email;
+                                aux[1] = 1;
+                                respuesta[i] = aux.join(":");
                             } else {
-                                respuesta[i] = row.email;
+                                let aux = [];
+                                aux[0] = row.email;
+                                aux[1] = 0;
+                                respuesta[i] = aux.join(":");
                             }
 
                         });
@@ -1440,5 +1446,214 @@ function sacarDineroBancoAPartida(id_partida, id_jugador, cantidad) {
     });
 }
 exports.sacarDineroBancoAPartida = sacarDineroBancoAPartida;
+
+
+
+
+/*
+=================== SUSTITUIR JUGADOR IDJUGADOR POR BOT =========================================================
+*/
+// Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
+//Devuelve true si se ha sustituido por bot correctamente
+// Si el jugador ya era bot da igual devuelve true otra vez y le vuelve a convertir en bot
+function sustituirJugadorPorBot(idJugador, idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query, (error, results) => {                          // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                          // Caso -- No existe el Jugador
+                con.end();
+                resolve(false);
+            } else {                                                    // Caso --  Existe el jugador
+                const query2 = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+                con.query(query2, (error, results2) => {                // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else if (results2.length === 0) {                 // Caso -- No existe La partida
+                        con.end();
+                        resolve(false);
+                    } else {                                            // Caso -- Existe la partida
+                        const query2 = `SELECT * FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+                        con.query(query2, (error, results2) => {        // Caso -- Error
+                            if (error) {
+                                con.end();
+                                reject(error);
+                            } else if (results2.length === 0) {         // Caso -- No existe el Jugador en esa partida
+                                con.end();
+                                resolve(false);
+                            } else {
+                                const sql = `UPDATE juega SET esBot = 1 WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+                                con.query(sql, (error, results3) => {        // Caso -- Error
+                                    if (error) {
+                                        con.end();
+                                        reject(error);
+                                    } else {
+                                        con.end();
+                                        resolve(true);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }); 
+    });
+}
+
+
+exports.sustituirJugadorPorBot = sustituirJugadorPorBot;
+
+
+
+
+/*
+=================== SUSTITUIR BOT POR JUGADOR IDJUGADOR (Vuelve a conectarse) =========================================================
+*/
+// Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
+//Devuelve true si se ha sustituido por bot por jugador correctamente
+// Si el jugador ya era jugador da igual devuelve true otra vez y le vuelve a convertir en jugador
+function sustituirBotPorJugador(idJugador, idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query, (error, results) => {                          // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                          // Caso -- No existe el Jugador
+                con.end();
+                resolve(false);
+            } else {                                                    // Caso --  Existe el jugador
+                const query2 = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+                con.query(query2, (error, results2) => {                // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else if (results2.length === 0) {                 // Caso -- No existe La partida
+                        con.end();
+                        resolve(false);
+                    } else {                                            // Caso -- Existe la partida
+                        const query2 = `SELECT * FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+                        con.query(query2, (error, results2) => {        // Caso -- Error
+                            if (error) {
+                                con.end();
+                                reject(error);
+                            } else if (results2.length === 0) {         // Caso -- No existe el Jugador en esa partida
+                                con.end();
+                                resolve(false);
+                            } else {
+                                const sql = `UPDATE juega SET esBot = 0 WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+                                con.query(sql, (error, results3) => {        // Caso -- Error
+                                    if (error) {
+                                        con.end();
+                                        reject(error);
+                                    } else {
+                                        con.end();
+                                        resolve(true);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }); 
+    });
+}
+
+
+exports.sustituirBotPorJugador = sustituirBotPorJugador;
+
+
+
+/*
+=================== OBTENER SIGUIENTE JUGADOR =========================================================
+*/
+// Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
+// Devuelve el id del siguiente jugador y si es bot y si es fin de partida
+// ejemplo jugador bot y no fin --> pedro@gmail.com : 1 , 0
+function obtenerSiguienteJugador(idJugador, idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        //const turno_siguiente = 0;
+        con.connect();
+        const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query, (error, results) => {                          // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                          // Caso -- No existe el Jugador
+                con.end();
+                resolve(false);
+            } else {                                                  // Caso --  Existe el jugador
+                const query2 = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+                con.query(query2, (error, results2) => {                // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else if (results2.length === 0) {                 // Caso -- No existe La partida
+                        con.end();
+                        resolve(false);
+                    } else {                                          // Caso -- Existe la partida
+                        const query2 = `SELECT turno, email FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+                        con.query(query2, (error, results2) => {        // Caso -- Error
+                            if (error) {
+                                con.end();
+                                reject(error);
+                            } else if (results2.length === 0) {         // Caso -- No existe el Jugador en esa partida
+                                con.end();
+                                resolve(false);
+                            } else {
+                                let turno_siguiente = (results2[0].turno + 1) % 4;
+                                if (turno_siguiente === 0) {
+                                    turno_siguiente = 4;
+                                }
+                                console.log("hola", turno_siguiente)
+                                const sql = `SELECT esBotInicial, esBot, email FROM juega WHERE idPartida = '${idPartida}' AND turno = '${turno_siguiente}'`;
+                                con.query(sql, (error, results3) => {        // Caso -- Error
+                                    if (error) {
+                                        con.end;
+                                        reject(error);
+                                    } else {
+                                        const respuesta = [];
+                                        const aux = [];
+                                        aux[0] = results3[0].email;
+                                        if (results3[0].esBot || results3[0].esBotInicial){
+                                            aux[1] = 1;
+                                        } else {
+                                            aux[1] = 0;
+                                        }
+                                        respuesta[0] = aux.join(":");
+                                        if (turno_siguiente === 4) {
+                                            respuesta[1] = 1;
+                                        } else {
+                                            respuesta[1] = 0;
+                                        }
+                                        let cadena = respuesta.join(",");
+                                        con.end();
+                                        resolve(cadena)
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+                });
+            }
+        }); 
+    });
+}
+
+
+exports.obtenerSiguienteJugador = obtenerSiguienteJugador;
+
+
 
 
