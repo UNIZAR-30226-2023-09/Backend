@@ -39,8 +39,6 @@ function agregarUsuario(socket, nombreUsuario) {
 
 }
 
-
-
 function eliminarUsuario(nombreUsuario) {
     console.log('Usuario desconectado:', nombreUsuario);
 
@@ -130,8 +128,7 @@ const funciones = {
     eliminarUsuario,
     buscarUsuario,
     buscarConexion,
-    desconexionUsuario,
-    desactivarTimer
+    desconexionUsuario
 };
 
 // Exportamos el objeto que contiene las funciones

@@ -12,15 +12,16 @@ var mysql = require('mysql');
 
 //valores para conectarse a la base.
 const config = {
-  host: '34.175.167.234',
-  user: 'root',
-  password: 'psbackend1234',
-  database: 'otterfortune_main_db'
+    host: '34.175.167.234',
+    user: 'root',
+    password: 'psbackend1234',
+    database: 'otterfortune_main_db'
 };
 
-function crearConexion(){
-  var conexion = mysql.createConnection(config);
-  return conexion;
+function crearConexion() {
+    var conexion = mysql.createConnection(config);
+    return conexion;
 };
-exports.crearConexion=crearConexion;
+
+exports.crearConexion = crearConexion;
 

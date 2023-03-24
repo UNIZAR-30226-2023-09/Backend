@@ -25,7 +25,7 @@ async function CrearPartida(socket, ID_jugador) {
         }
     }
 
-    catch(error) {
+    catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
@@ -46,7 +46,7 @@ async function UnirsePartida(socket, ID_jugador, ID_partida) {
         }
     }
 
-    catch(error) {
+    catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
@@ -67,7 +67,7 @@ async function CrearTorneo(socket, ID_jugador) {
         }
     }
 
-    catch(error) {
+    catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
@@ -87,7 +87,7 @@ async function UnirseTorneo(socket, ID_jugador, ID_Torneo) {
         }
     }
 
-    catch(error) {
+    catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
@@ -101,7 +101,7 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
         if (await APIpartida.empezarPartida(ID_partida, ID_jugador)) {
             // TODO: Mandar al jugador que le toca empezar que es su turno 
             // Establecer orden de jugadores (funcion API para obtener jugadores de la partida)
-            
+
             // TODO: mirar los bots, -1
 
             // Dado un ID_partida que devuelva los jugadores de la partida, si es un bot que devuelva 'bot' como el jugador
@@ -123,7 +123,7 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                 [ordenJugadores[i], ordenJugadores[j]] = [ordenJugadores[j], ordenJugadores[i]]; // Intercambiamos las cadenas
                 // TODO: Guardar en la base el orden de los jugadores
                 // FUNCIÓN API!!!!
-            } */          
+            } */
 
             for (let i = 0; i < ordenJugadores.length; i++) {
                 // Si el jugador es un bot, hacer lo oportuno 
@@ -139,15 +139,15 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                 }
             }
         }
-        else { 
+        else {
             socket.send(`EMPEZAR_NO_OK,${ID_partida}`);
         }
     }
 
-    catch(error) {
+    catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
-        return false; 
+        return false;
     }
 }
 exports.EmpezarPartida = EmpezarPartida;
