@@ -41,6 +41,7 @@ async function IniciarSesion(socket, email, contrasenya) {
         let gemas = await API.comprobarInicioSesion(email, contrasenya);
         // Si ha iniciado sesión correctamente
         if ( gemas >= 0) {
+            conexion.agregarUsuario(socket,{email});
             // Comprobams si está en una partida existente
             let id_partida = await APIpartida.jugadorEnPartida(email);
             // Está en una partida
@@ -50,17 +51,10 @@ async function IniciarSesion(socket, email, contrasenya) {
                 // Mandar los datos de la partida para mostrarlos
                 //socket.send();
                 
-                // Almacenamos la conexión del usuario junto con su nombre de usuario
-                conexion.agregarUsuario(socket,{email});
-
-                socket.send(`INICIO_OK,${email},${gemas}`);
+                // TODO: temporal, hay que modificarlo
+                
             }
-            else {
-                // Almacenamos la conexión del usuario junto con su nombre de usuario
-                conexion.agregarUsuario(socket,email);
-
-                socket.send(`INICIO_OK,${email},${gemas}`);
-            }
+            socket.send(`INICIO_OK,${email},${gemas}`);
         }
         else {
             socket.send(`INICIO_NO_OK`);

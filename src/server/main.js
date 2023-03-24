@@ -7,22 +7,16 @@
  -----------------------------------------------------------------------
 */
 
-/* TODO: HACER IMPORTS
- *       CONFIGURAR EL SEND
-*/
 const funcionesPartidaTorneo = require('./funcionesPartidaTorneo');
 const funcionesJugador = require('./funcionesJugador');
 const funcionesTablero = require('./funcionesTablero');
 const conexion = require('./conexiones');
-// const ArrayDeStrings = require('./ArrayDeStrings');
+
 
 const PUERTO = 8080 // Puerto a elegir
 
 const WebSocket = require('ws');
 const server = new WebSocket.Server({ port: PUERTO });    
-
-// Crea una instancia de la clase
-//const listaEspera = new ArrayDeStrings();
 
 // Cuando se lance el servidor que notifique que esta activo
 server.on('listening', () => {
@@ -192,14 +186,8 @@ server.on("connection", (socket) => {
     });
 
     socket.on("close", () => {
-        console.log("Cliente desconectado");
-        // let nomUsuario = conexion.buscarConexion();
-        // if (conexUsuario != null) {
-        //     listaEspera.añadir(nomUsuario)
-        // }
+        console.log("Cliente desconectado, esperando 1 minuto");
+        conexion.desconexionUsuario(socket);
     });
 
-    // Hacer contador de 1 min
-    //  -> Si pasa el tiempo, sustituir jugador por bot
-    //  -> Si en socket on connection se vuelve a conectar, sigue jugando
 });
