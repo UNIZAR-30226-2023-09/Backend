@@ -64,6 +64,7 @@ async function jugar(IDusuario, IDpartida) {
         return false;
     }
 }
+exports.Jugar = jugar;
 
 async function casillaActual(IDJugador, IDpartida) {
     let tablero = ["Salida", "Monterrey", "Guadalajara", "Treasure", "Tax", "AeropuertoNarita",
