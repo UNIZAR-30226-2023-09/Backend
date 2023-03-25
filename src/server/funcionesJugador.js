@@ -69,7 +69,7 @@ async function IniciarSesion(socket, email, contrasenya) {
 
 exports.IniciarSesion = IniciarSesion;
 
-async function FinTurno (socket, ID_jugador, ID_partida) {
+async function FinTurno (ID_jugador, ID_partida) {
     // Función de la API que diga si el siguiente jugador es un bot o no
     //      Si no es un bot devuelve el correo del jugador que le toca
     //      Si es un bot, que devuelva TurnoBot
