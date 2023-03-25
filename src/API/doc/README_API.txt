@@ -179,3 +179,18 @@ function verClasificacionTorneo(idTorneo);
 //Devuelve -1 si ha ido algo mal.
 function sacarDineroBancoAPartida(id_partida,id_jugador,cantidad);
 
+
+// Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
+//Devuelve true si se ha sustituido por bot correctamente
+// Si el jugador ya era bot da igual devuelve true otra vez y le vuelve a convertir en bot
+function sustituirJugadorPorBot(idJugador, idPartida);
+
+// Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
+//Devuelve true si se ha sustituido por bot por jugador correctamente
+// Si el jugador ya era jugador da igual devuelve true otra vez y le vuelve a convertir en jugador
+function sustituirBotPorJugador(idJugador, idPartida);
+
+// Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
+// Devuelve el id del siguiente jugador y si es bot y si es fin de partida
+// ejemplo jugador bot y no fin --> pedro@gmail.com : 1 , 0
+function obtenerSiguienteJugador(idJugador, idPartida);
