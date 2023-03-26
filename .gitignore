@@ -14,3 +14,4 @@ logs/
 # Otros archivos generados
 coverage/
 dist/
+.DS_Store
