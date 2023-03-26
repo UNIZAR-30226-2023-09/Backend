@@ -913,7 +913,7 @@ function crearPartida(id_jugador, id_torneo = null) {
             }
             const jugador_id = results1[0].email;
             const perteneceTorneo = (id_torneo === null) ? "NULL" : parseInt(id_torneo);
-            const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioBase, enCurso, perteneceTorneo) VALUES (0, 0, 0, 0, 0, NULL, ${perteneceTorneo})`;
+            const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioPropiedad1, precioPropiedad2, precioPropiedad3, precioPropiedad4, precioPropiedad5, precioPropiedad6, precioPropiedad7, precioPropiedad8, precioPropiedad9, precioPropiedad10, precioPropiedad11, precioPropiedad12, precioPropiedad13, precioPropiedad14, precioPropiedad15, precioPropiedad16, precioPropiedad17, precioPropiedad18, precioPropiedad19, precioPropiedad20, precioPropiedad21, precioPropiedad22, precioPropiedad23, precioPropiedad24, precioPropiedad25, precioPropiedad26, precioPropiedad27, precioPropiedad28, precioPropiedad29, precioPropiedad30, precioPropiedad31, precioPropiedad32, precioPropiedad33, precioPropiedad34, precioPropiedad35, precioPropiedad36, precioPropiedad37, precioPropiedad38, precioPropiedad39, precioPropiedad40, enCurso, perteneceTorneo) VALUES (0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, NULL, ${perteneceTorneo})`;
             con.query(query2, (error, results2) => {
                 if (error) {
                     reject(error);
@@ -930,7 +930,7 @@ function crearPartida(id_jugador, id_torneo = null) {
                     }
                     // Unir al jugador a la partida
                     const partida_id = results2.insertId;
-                    const query3 = `INSERT INTO juega (numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES (0, 0, 0, 0, 0, 'default', '${id_jugador}', ${partida_id})`;
+                    const query3 = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES (false, false, 0, 0, 0, 0, 0, 'default', '${id_jugador}', ${partida_id})`;
                     con.query(query3, (error, results3) => {
                         if (error) {
                             reject(error);
@@ -1002,7 +1002,7 @@ function unirsePartida(idJugador, idPartida) {
                                         con.end();
                                         resolve(false);
                                     } else {                                            // Caso -- El jugador no esta jugando ninguna partida
-                                        const sql = `INSERT INTO juega (esBotInicial, esBot,numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
+                                        const sql = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
                                 dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
                                         const values = [false, false, 0, 0.0, 0, 0, 0.0, 'default', 0, idJugador, idPartida];
                                         con.query(sql, values, (error, results5) => {      // Caso -- Error
