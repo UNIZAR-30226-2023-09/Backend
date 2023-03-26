@@ -24,6 +24,9 @@
 
 - OJO Los emails de los jugadores no pueden tener ',' o '-' pq se usan en msgs, y las skins no pueden tener '.' -- DANGER DANGER
 
+- // OJOO , el nCasas al comprar la propiedad se debe poner a 0 pq esta puesto a null
+- // OJOO maximo de casas a edificar es 5
+
 
 - Se ha dividido en 4 ficheros los cuales son:
 					1.) torneoAPI.js 

@@ -194,3 +194,20 @@ function sustituirBotPorJugador(idJugador, idPartida);
 // Devuelve el id del siguiente jugador y si es bot y si es fin de partida
 // ejemplo jugador bot y no fin --> pedro@gmail.com : 1 , 0
 function obtenerSiguienteJugador(idJugador, idPartida);
+
+
+// Devuelve el dinero que le queda al usuario despues edificar la propiedad IdPropiedad y
+//  gastar X dinero obtenido del precio base y el numero de casas que tiene edificado.
+// En caso de que no exista jugador o partida o que la propiedad no sea suya o ya haya edificado el maximo devuelve false 
+// OJOO maximo de casas a edificar es 5
+function edificarPropiedad(idJugador, idPartida, propiedad);
+
+
+//  Se obtienen todas las propiedades que tiene el usuario se obtiene el numero de 
+//  casas que tiene en cada una y se devuelve un string indicando que propiedades 
+//  tiene el usuario y cuanto le costaría edificar teniendo en cuenta el numero de 
+//  casas que tiene en cada propiedad, se obtiene un string de la siguiente forma:
+//  propiedad1-precio1,propiedad2-precio2,propiedad3-precio3,etc…
+//Si el jugador o la partida no existen devuelve false
+// OJOO , el nCasas al comprar la propiedad se debe poner a 0 pq esta puesto a null
+function propiedadesEdificar(idJugador, idPartida);

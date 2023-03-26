@@ -627,15 +627,15 @@ async function obtenerResultadoSacarDineroBancoAPartida(id_partida, id_jugador, 
 //FUNCIONA OKEY.
 async function obtenerSustituirJugadorPorBot(idJugador, idPartida) {
     try {
-      // Hacemos la llamada a la función que devuelve una Promesa.
-      const resultado = await test.sustituirJugadorPorBot(idJugador, idPartida);
-      console.log("El resultado obtenido de sustituir jugador por bot es:", resultado);
-      return resultado;
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.sustituirJugadorPorBot(idJugador, idPartida);
+        console.log("El resultado obtenido de sustituir jugador por bot es:", resultado);
+        return resultado;
   
     } catch (error) {
-      // Si hay un error en la Promesa, devolvemos false.
-      console.error("Error en la Promesa: ", error);
-      return false;
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
   }
   
@@ -643,15 +643,15 @@ async function obtenerSustituirJugadorPorBot(idJugador, idPartida) {
   //FUNCIONA OKEY.
   async function obtenerSustituirBotPorJugador(idJugador, idPartida) {
     try {
-      // Hacemos la llamada a la función que devuelve una Promesa.
-      const resultado = await test.sustituirBotPorJugador(idJugador, idPartida);
-      console.log("El resultado obtenido de sustituir jugador por bot es:", resultado);
-      return resultado;
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.sustituirBotPorJugador(idJugador, idPartida);
+        console.log("El resultado obtenido de sustituir jugador por bot es:", resultado);
+        return resultado;
   
     } catch (error) {
-      // Si hay un error en la Promesa, devolvemos false.
-      console.error("Error en la Promesa: ", error);
-      return false;
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
   }
   
@@ -659,15 +659,47 @@ async function obtenerSustituirJugadorPorBot(idJugador, idPartida) {
   //FUNCIONA OKEY.
   async function obtenerObtenerSiguienteJugador(idJugador, idPartida) {
     try {
-      // Hacemos la llamada a la función que devuelve una Promesa.
-      const resultado = await test.obtenerSiguienteJugador(idJugador, idPartida);
-      console.log("El resultado obtenido de siguiente jugfador es:", resultado);
-      return resultado;
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.obtenerSiguienteJugador(idJugador, idPartida);
+        console.log("El resultado obtenido de siguiente jugfador es:", resultado);
+        return resultado;
   
     } catch (error) {
-      // Si hay un error en la Promesa, devolvemos false.
-      console.error("Error en la Promesa: ", error);
-      return false;
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+  }
+
+
+  //FUNCIONA OKEY.
+async function obtenerPropiedadesEdificar(idJugador, idPartida) {
+    try {
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.propiedadesEdificar(idJugador, idPartida);
+        console.log("El resultado obtenido de obtener propiedades que edificiar es:", resultado);
+        return resultado;
+  
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerEdificarPropiedad(idJugador, idPartida, propiedad) {
+    try {
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.edificarPropiedad(idJugador, idPartida, propiedad);
+        console.log("El resultado obtenido de edificar propiedad es:", resultado);
+        return resultado;
+  
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
   }
 
@@ -731,14 +763,17 @@ async function obtenerSustituirJugadorPorBot(idJugador, idPartida) {
 
 // obtenerResultadoSacarDineroBancoAPartida(1,'juan@example.com',5500);
 
-
 //obtenerVerClasificacionTorneo(1);
+
 //obtenerSustituirJugadorPorBot('chemita@example.com', 1);
 
 //obtenerSustituirBotPorJugador('chemita@example.com', 1);
 
 //obtenerObtenerSiguienteJugador('miguelito@example.com', 1);
 
+//obtenerPropiedadesEdificar('albertito@example.com', 1);
+
+//obtenerEdificarPropiedad('albertito@example.com', 1, 1);
 
 // Probar partida rapida
 //obtenerResultadoInsertar('david,1234,david@gmail.com,10');

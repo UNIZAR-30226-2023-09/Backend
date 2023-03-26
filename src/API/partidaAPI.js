@@ -1657,3 +1657,182 @@ exports.obtenerSiguienteJugador = obtenerSiguienteJugador;
 
 
 
+
+
+/*
+=================== OBTENER LISTADO DE PROPIEDADES A EDIFICAR   =========================================================
+*/
+
+//  Se obtienen todas las propiedades que tiene el usuario se obtiene el numero de 
+//  casas que tiene en cada una y se devuelve un string indicando que propiedades 
+//  tiene el usuario y cuanto le costaría edificar teniendo en cuenta el numero de 
+//  casas que tiene en cada propiedad, se obtiene un string de la siguiente forma:
+//  propiedad1-precio1,propiedad2-precio2,propiedad3-precio3,etc…
+//Si el jugador o la partida no existen devuelve false
+
+
+// OJOO , el nCasas al comprar la propiedad se debe poner a 0 pq esta puesto a null
+
+function propiedadesEdificar(idJugador, idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+
+        const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query, (error, results) => {                          // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                          // Caso -- No existe el Jugador
+                con.end();
+                resolve(false);
+            } else {                                                  // Caso --  Existe el jugador
+                const query2 = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+                con.query(query2, (error, results2) => {                // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else if (results2.length === 0) {                 // Caso -- No existe La partida
+                        con.end();
+                        resolve(false);
+                    } else {
+                        let resultado = '';
+                        // Iterar por todas las propiedades de la tabla
+                        for (let i = 1; i <= 40; i++) {
+                            // Construir la consulta SQL para obtener las propiedades del usuario 'idJugador' en 'idPartida'
+                            let consulta = `SELECT CONCAT('propiedad', ${i}) AS propiedad, precioPropiedad${i} AS precio, nCasasPropiedad${i} AS nCasas FROM Partida 
+                            WHERE propiedad${i} = '${idJugador}' AND idPartida = '${idPartida}';`;
+                            // Ejecutar la consulta en la base de datos y obtener el resultado
+                            con.query(consulta, (err, res) => {
+                                if (err) {
+                                    con.end;
+                                    reject(err);
+                                } else {
+                                    // Iterar por el resultado y agregar cada propiedad al resultado final
+                                    res.forEach((fila) => {
+                                        precioAux = fila.precio * (20 * fila.nCasas / 100)
+                                        resultado += `${fila.propiedad}-${precioAux},`;
+                                    });
+                                    if (i === 40){
+                                        con.end();
+                                        resolve(resultado.slice(0,-1))
+                                    }
+                                }
+                            });  
+                        }
+                    }
+                });
+            }
+        }); 
+    });
+}
+
+
+exports.propiedadesEdificar = propiedadesEdificar;
+
+
+
+ /*
+=================== USUARIO EDIFICAR PROPIEDAD  =========================================================
+*/
+// Devuelve el dinero que le queda al usuario despues edificar la propiedad IdPropiedad y
+//  gastar X dinero obtenido del precio base y el numero de casas que tiene edificado.
+// En caso de que no exista jugador o partida o que la propiedad no sea suya o ya haya edificado el maximo devuelve false 
+
+// OJOO maximo de casas a edificar es 5
+
+function edificarPropiedad(idJugador, idPartida, propiedad) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        let propiedadAux = "propiedad" + propiedad;
+        let precioAux = "precioPropiedad" + propiedad;
+        let nCasasAux =  "nCasasPropiedad" + propiedad;
+        const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query, (error, results) => {                                              // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                                              // Caso -- No existe el Jugador
+                con.end();
+                resolve(false);
+            } else {                                                                        // Caso --  Existe el jugador
+                const query2 = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+                con.query(query2, (error, results2) => {                                    // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else if (results2.length === 0) {                                     // Caso -- No existe La partida
+                        con.end();
+                        resolve(false);
+                    } else {
+                        const query3 = `SELECT ${propiedadAux} AS propietario, ${precioAux} AS precio, ${nCasasAux} AS nCasas 
+                        FROM Partida WHERE idPartida = '${idPartida}'`;
+                        con.query(query3, (error, results3) => {                            // Caso -- Error
+                            if (error) {
+                                con.end();
+                                reject(error);
+                            } else {
+
+                                if (results3[0].propietario != idJugador || (results3[0].nCasas + 1) > 5){   
+                                    con.end();                                              // Caso -- Propiedad no es suya o ya ha edificado todo
+                                    resolve(false);
+                                } else {                                                    // Caso -- Propiedad es suya
+                                    let dineroQuitar = results3[0].precio * (20 * (results3[0].nCasas + 1) / 100);
+                                    const sql4 = `SELECT dinero FROM juega WHERE idPartida = '${idPartida}' 
+                                                    AND email = '${idJugador}'`;
+                                    con.query(sql4, (error, results7) => {                  // Caso -- Error
+                                        if (error) {
+                                            con.end();
+                                            reject(error);
+                                        } else if (results7[0].dinero < dineroQuitar) {
+                                            con.end();                                      // Caso -- No tiene dinero para pagar
+                                            resolve(false);
+                                        } else {
+                                            const sql = `UPDATE Partida SET ${nCasasAux} = ${nCasasAux} + 1 WHERE idPartida = '${idPartida}'`;
+                                            con.query(sql, (error, results4) => {           // Caso -- Error
+                                                if (error) {
+                                                    con.end();
+                                                    reject(error);                          // Caso -- Se ha modificado el numero de casas
+                                                } else {
+
+                                                    console.log("dinero", dineroQuitar);
+                                                    const sql2 = `UPDATE juega SET dinero = dinero - ${dineroQuitar} WHERE idPartida = '${idPartida}' 
+                                                    AND email = '${idJugador}'`;
+                                                    con.query(sql2, (error, results5) => {  // Caso -- Error
+                                                        if (error) {
+                                                            con.end();
+                                                            reject(error);
+                                                        } else {                            // Caso -- Se ha modificado el dinero del jugador
+
+                                                            const sql3 = `SELECT dinero FROM juega WHERE idPartida = '${idPartida}' 
+                                                            AND email = '${idJugador}'`;
+                                                            con.query(sql3, (error, results6) => {// Caso -- Error
+                                                                if (error) {
+                                                                    con.end();
+                                                                    reject(error);
+                                                                } else {
+                                                                    con.end();
+                                                                    resolve(results6[0].dinero);
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            });
+
+                                        }
+                                    });  
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }); 
+    });
+}
+
+
+exports.edificarPropiedad = edificarPropiedad;
+
