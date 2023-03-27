@@ -1836,3 +1836,158 @@ function edificarPropiedad(idJugador, idPartida, propiedad) {
 
 exports.edificarPropiedad = edificarPropiedad;
 
+
+/*
+===================AÑADIR PROPIEDAD AL JUGADOR COMPRADOR===================
+*/
+
+//Funcion que dado un comprador y un vendedor, verifica que la casa sea del vendedor y el comprador realiza la compra.
+function anyadirPropiedadCompradorVendedor(id_partida,id_jugador_comprador,id_jugador_vendedor,n_propiedad){
+    return new Promise((resolve, reject) => {
+      var con = db.crearConexion();
+      con.connect();
+      var concat = 'propiedad' + n_propiedad;
+      const query = `SELECT P.${concat} AS nombre_propietario, P.nCasasPropiedad${n_propiedad} AS num_casas_propiedad , J.numPropiedades AS num_propiedades_totales FROM Partida P INNER JOIN juega J ON P.idPartida=J.idPartida WHERE P.idPartida = '${id_partida}'`;
+      con.query(query, (error, results) => {
+        if (error) {
+          con.end();
+          reject(error);
+        } else if (results.length === 0) {
+          con.end();
+          console.log("hemos entrado en el lenght = 0");
+          resolve(-1);
+        } else {
+          let nombre_propietario = results[0].nombre_propietario; 
+          if(nombre_propietario === id_jugador_vendedor){
+            //la propiedad es del vendedor, con lo cual se la vamos a dar al comprador.
+            let n_propiedades = results[0].num_propiedades_totales;
+            n_propiedades--; 
+            const query2 = `UPDATE Juega SET numPropiedades = '${n_propiedades}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador_vendedor}'`;
+            con.query(query2, (error, results2) => {
+              if (error) {
+                reject(error);
+                con.end();
+              } else if (results2.affectedRows === 0) {
+                resolve(-2);
+                con.end();
+              } else {
+                //una vez actualizado el numero de propiedades del vendedor, ahora actualizaremos la propiedad para que sea del comprador.
+                //HAY QUE OBTENER EL NUMERO DE PROPIEDADES_TOTALES QUE TENIA ANTES DE COMPRAR ESTA PROPIEDAD EL COMPRADOR PARA PODER ACTUALIZARLO.
+                const query3 = `SELECT numPropiedades FROM juega WHERE idPartida = '${id_partida}' AND email = '${id_jugador_comprador}' `;
+                con.query(query3, (error, results3) => {
+                  if (error) {
+                    reject(error);
+                    con.end();
+                  } else if (results3.length === 0) {
+                    resolve(-3);
+                    con.end();
+                  } else {
+                    //Actualizamos el numero de propiedades del comprador en + 1.
+                    let total_propiedades_comprador = results3[0].numPropiedades;
+                    total_propiedades_comprador ++;
+                    const query4 = `UPDATE juega SET numPropiedades = '${total_propiedades_comprador}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador_comprador}' `;
+                    con.query(query4, (error, results4) => {
+                      if (error) {
+                        reject(error);
+                        con.end();
+                      } else if (results4.affectedRows === 0) {
+                        resolve(-4);
+                        con.end();
+                      } else {
+                        //Actualizamos la propiedad para que sea del comprador.
+                        let n_casas = results[0].num_casas_propiedad;     //ESTO ES LO QUE HAY QUE VER SI DEJAMOS EL NUMERO DE CASAS QUE YA ESTABA O EMPIEZA CON 1 CASA SOLO.
+                        const query5 = `UPDATE Partida SET nCasasPropiedad${n_propiedad} = '${n_casas}' WHERE idPartida = '${id_partida}' `;
+                        con.query(query5, (error, results5) => {
+                          if (error) {
+                            reject(error);
+                            con.end();
+                          } else if (results5.affectedRows === 0) {
+                            resolve(-5);
+                            con.end();
+                          } else {
+                            //Actualizamos la propiedad, para que aparezca como dueño el comprador.
+                            const query6 = `UPDATE Partida SET propiedad${n_propiedad} = '${id_jugador_comprador}' WHERE idPartida = '${id_partida}' `;
+                            con.query(query6, (error, results6) => {
+                              if (error) {
+                                reject(error);
+                                con.end();
+                              } else if (results5.affectedRows === 0) {
+                                resolve(-6);
+                                con.end();
+                              } else {
+                                //TODO HA SALIDO BIEN, DEVOLVEMOS 1.
+                                resolve(1);
+                                con.end();
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+          else{
+            //caso de no ser el propietario, directamente devolvemos -1.
+            resolve(-7);
+            con.end();
+          }
+        }
+      });
+    });
+}
+  
+  
+exports.anyadirPropiedadCompradorVendedor = anyadirPropiedadCompradorVendedor;
+  
+  
+  
+  /*
+  ===================VENDER PROPIEDAD A UN JUGADOR DADO===================
+
+  
+    El propietario de la vivienda pasara a ser el vendedor. 
+    Al comprador se le restara la cantidad y si es mayor que 0 el saldo aceptara la transferencia, 
+    en caso de que no haya dinero devolvera -1, en caso de que vaya todo bien, devolvera 1.
+  */
+  
+async function venderPropiedadJugador(id_partida, id_jugador_vendedor, id_jugador_comprador, cantidad, n_propiedad){
+    //llamaremos a la funcion comprarPropiedad para que el id_jugador_comprador tenga su nueva propiedad.
+    try {
+      const dinero = await dineroBanco(id_jugador_comprador,id_partida);
+      console.log("Dinero del comprador: ", dinero);
+      if(dinero >= cantidad){
+        //tiene dinero suficiente para comprarla. Primero le restamos el dinero y despues la compramos.
+        const res = await modificarDinero(id_partida,id_jugador_comprador,-cantidad);
+        console.log("Res1: ", res);
+        const res2 = await modificarDinero(id_partida,id_jugador_vendedor,cantidad);
+        console.log("Res2: ", res2);
+        const resultado = await anyadirPropiedadCompradorVendedor(id_partida,id_jugador_comprador,id_jugador_vendedor,n_propiedad);
+  
+        if(resultado == -7){
+          //no era del propietario, asi que volvemos a actualizar el dinero.
+          const res = await modificarDinero(id_partida,id_jugador_comprador,cantidad);
+          console.log("Res1: ", res);
+          const res2 = await modificarDinero(id_partida,id_jugador_vendedor,-cantidad);
+          console.log("Res2: ", res2);
+        }
+        return resultado;
+      }
+      else{
+        //no tenemos dinero suficiente, con lo cual devolvemos -1.
+        return -1;
+      }
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+}
+  
+exports.venderPropiedadJugador = venderPropiedadJugador;
+  
+  
+

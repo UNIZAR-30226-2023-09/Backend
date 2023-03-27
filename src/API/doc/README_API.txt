@@ -211,3 +211,13 @@ function edificarPropiedad(idJugador, idPartida, propiedad);
 //Si el jugador o la partida no existen devuelve false
 // OJOO , el nCasas al comprar la propiedad se debe poner a 0 pq esta puesto a null
 function propiedadesEdificar(idJugador, idPartida);
+
+
+//El propietario de la vivienda pasara a ser el vendedor. 
+//Al comprador se le restara la cantidad y si es mayor que 0 el saldo aceptara la transferencia, 
+//en caso de que no haya dinero devolvera -1, en caso de que vaya todo bien, devolvera 1.
+async function venderPropiedadJugador(id_partida, id_jugador_vendedor, id_jugador_comprador, cantidad, n_propiedad);
+
+//FUNCION INTERNA LA CUAL SE LE LLAMA DESDE UNA FUNCION, NO LLAMARLA EN LA LOGICA.
+//Funcion que dado un comprador y un vendedor, verifica que la casa sea del vendedor y el comprador realiza la compra.
+function anyadirPropiedadCompradorVendedor(id_partida,id_jugador_comprador,id_jugador_vendedor,n_propiedad);
