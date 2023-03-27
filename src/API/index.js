@@ -302,11 +302,11 @@ async function obtenerResultadoObtenerPosicion(id_jugador, id_partida) {
 
 
 //FUNCIONA OKEY.
-async function obtenerResultadoCrearPartida(id_jugador, id_torneo = null) {
+async function obtenerResultadoCrearPartida(id_jugador,) {
     try {
         // Hacemos la llamada a la función que devuelve una Promesa.
         let resultado;
-        resultado = await testPartida.crearPartida(id_jugador, id_torneo);
+        resultado = await testPartida.crearPartida(id_jugador,);
         console.log("El resultado obtenido de crear partida Jugador es :", resultado);
 
         return resultado;

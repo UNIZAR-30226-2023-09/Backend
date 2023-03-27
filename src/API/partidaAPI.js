@@ -892,61 +892,83 @@ exports.obtenerPropiedades = obtenerPropiedades;
 =================== CREAR PARTIDA =========================================
 */
 
+
 // Devuelve el id de la partida creada
-// crearPartida(id_jugador) crea partida rapida
-// crearPartida(id_jugador, id_torneo) crea partida asociada a un torneo
-function crearPartida(id_jugador, id_torneo = null) {
+// crearPartida(id_jugador) crea partida rapida sin asociarse a ningun torneo.
+function crearPartida(id_jugador) {
     return new Promise((resolve, reject) => {
         const con = db.crearConexion();
         con.connect();
         const query1 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
         con.query(query1, (error, results1) => {
+        if (error) {
+          reject(error);
+          con.end();
+        }
+        else if (results1.length === 0) {
+          resolve(-1); // Si no existe jugador
+          con.end();
+        }
+        else{
+          const jugador_id = results1[0].email;
+          const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioPropiedad1,
+          precioPropiedad2,precioPropiedad3,precioPropiedad4,precioPropiedad5,precioPropiedad6,precioPropiedad7,precioPropiedad8,
+          precioPropiedad9,precioPropiedad10,precioPropiedad11,precioPropiedad12,precioPropiedad13,precioPropiedad14,precioPropiedad15,
+          precioPropiedad16,precioPropiedad17,precioPropiedad18,precioPropiedad19,precioPropiedad20,precioPropiedad21,precioPropiedad22,
+          precioPropiedad23,precioPropiedad24,precioPropiedad25,precioPropiedad26,precioPropiedad27,precioPropiedad28,precioPropiedad29,
+          precioPropiedad30,precioPropiedad31,precioPropiedad32,precioPropiedad33,precioPropiedad34,precioPropiedad35,precioPropiedad36,
+          precioPropiedad37,precioPropiedad38,precioPropiedad39,precioPropiedad40) VALUES (0, 0.0, 'Inicial', 0.0, 0.0, 1,1,1,1,1,1,1,1,
+          1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)`;
+          con.query(query2, (error, results2) => {
             if (error) {
-                reject(error);
-                con.end();
-                return;
+              reject(error);
+              con.end();
             }
-            if (results1.length === 0) {
-                resolve(-1); // Si no existe jugador
-                con.end();
-                return;
+            else if (results1.length === 0) {
+              resolve(-1); // Si no existe jugador
+              con.end();
             }
-            const jugador_id = results1[0].email;
-            const perteneceTorneo = (id_torneo === null) ? "NULL" : parseInt(id_torneo);
-            const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioPropiedad1, precioPropiedad2, precioPropiedad3, precioPropiedad4, precioPropiedad5, precioPropiedad6, precioPropiedad7, precioPropiedad8, precioPropiedad9, precioPropiedad10, precioPropiedad11, precioPropiedad12, precioPropiedad13, precioPropiedad14, precioPropiedad15, precioPropiedad16, precioPropiedad17, precioPropiedad18, precioPropiedad19, precioPropiedad20, precioPropiedad21, precioPropiedad22, precioPropiedad23, precioPropiedad24, precioPropiedad25, precioPropiedad26, precioPropiedad27, precioPropiedad28, precioPropiedad29, precioPropiedad30, precioPropiedad31, precioPropiedad32, precioPropiedad33, precioPropiedad34, precioPropiedad35, precioPropiedad36, precioPropiedad37, precioPropiedad38, precioPropiedad39, precioPropiedad40, enCurso, perteneceTorneo) VALUES (0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, NULL, ${perteneceTorneo})`;
-            con.query(query2, (error, results2) => {
+            else{
+              //obtener el maximo idPartida, ya que sera el ultimo y lo devolvemos.
+              const query3 = `SELECT MAX(idPartida) as maximo FROM Partida`;
+              con.query(query3, (error, results3) => {
                 if (error) {
-                    reject(error);
-                    con.end();
-                    return;
+                  reject(error);
+                  con.end();
                 }
-                const partida_id = results2.insertId;
-                const query3 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
-                con.query(query3, (error, results3) => {
+                else if (results3.length === 0) {
+                  resolve(-1); // Si no existe jugador
+                  con.end();
+                }
+                else{
+                  //ahora hay que enlazarlo con la tabla juega
+                  let maxIdPartida = results3[0].maximo;  //id de la partida creada.
+                  const query3 = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
+                  email, idPartida) VALUES (false, false, 0, 0.0, 0, 0, 0.0, 'default', 0 , '${id_jugador}', ${maxIdPartida})`;
+                  con.query(query3, (error, results3) => {
                     if (error) {
-                        reject(error);
-                        con.end();
-                        return;
+                      reject(error);
+                      con.end();
                     }
-                    // Unir al jugador a la partida
-                    const partida_id = results2.insertId;
-                    const query3 = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, email, idPartida) VALUES (false, false, 0, 0, 0, 0, 0, 'default', '${id_jugador}', ${partida_id})`;
-                    con.query(query3, (error, results3) => {
-                        if (error) {
-                            reject(error);
-                            con.end();
-                            return;
-                        }
-                        resolve(partida_id);
-                        con.end();
-                    });
-                });
-            });
-        });
+                    else if (results3.length === 0) {
+                      resolve(-1); // Si no existe jugador
+                      con.end();
+                    }
+                    else{
+                      resolve(maxIdPartida);
+                      con.end();
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }   
+      });
     });
-}
-
-exports.crearPartida = crearPartida;
+  }
+  
+  exports.crearPartida = crearPartida;
 
 
 
