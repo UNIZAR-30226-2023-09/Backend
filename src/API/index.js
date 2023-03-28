@@ -720,6 +720,24 @@ async function obtenerResultadoAnyadirPropiedadCompradorVendedor(id_partida, id_
     }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoCrearPartidaTorneo(id_jugador,id_torneo) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.crearPartidaTorneo(id_jugador,id_torneo);
+      console.log("El resultado obtenido de crear Partida en torneo:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -793,6 +811,8 @@ async function obtenerResultadoAnyadirPropiedadCompradorVendedor(id_partida, id_
 //obtenerEdificarPropiedad('albertito@example.com', 1, 1);
 
 //obtenerResultadoAnyadirPropiedadCompradorVendedor(2 ,'juan@example.com','juan.perez@example.com',50, 2);
+
+// obtenerResultadoCrearPartidaTorneo('juan@example.com',1);
 
 
 // Probar partida rapida

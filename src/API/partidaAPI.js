@@ -1952,7 +1952,7 @@ function anyadirPropiedadCompradorVendedor(id_partida,id_jugador_comprador,id_ju
             });
           }
           else{
-            //caso de no ser el propietario, directamente devolvemos -1.
+            //caso de no ser el propietario, directamente devolvemos -7.
             resolve(-7);
             con.end();
           }
@@ -2013,3 +2013,42 @@ exports.venderPropiedadJugador = venderPropiedadJugador;
   
   
 
+/*
+=================== CREAR PARTIDA TORNEO =========================================
+*/
+
+//funcion la cual crea una partida y la enlaza con el torneo id_torneo.
+//El torneo tiene que existir y el jugador tambien.
+async function crearPartidaTorneo(id_jugador, id_torneo){
+
+    try{
+  
+      //llamamos a la funcion crearPartida.
+      let idPartidaCreada = await crearPartida(id_jugador);
+  
+      //actualizamos la partida para que pertenezca al torneo id_torneo.
+      const query = `UPDATE Partida SET perteneceTorneo = ${id_torneo} WHERE idPartida = ${idPartidaCreada}`;
+      con.query(query, (error, results) => {
+        if (error) {
+          reject(error);
+          con.end();
+        }
+        else if (results.length === 0) {
+          resolve(-1); // Si no existe jugador
+          con.end();
+        }
+        else{
+          resolve(true);
+          con.end();
+        }
+      });
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+}
+  
+exports.crearPartidaTorneo = crearPartidaTorneo;
+  

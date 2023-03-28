@@ -221,3 +221,7 @@ async function venderPropiedadJugador(id_partida, id_jugador_vendedor, id_jugado
 //FUNCION INTERNA LA CUAL SE LE LLAMA DESDE UNA FUNCION, NO LLAMARLA EN LA LOGICA.
 //Funcion que dado un comprador y un vendedor, verifica que la casa sea del vendedor y el comprador realiza la compra.
 function anyadirPropiedadCompradorVendedor(id_partida,id_jugador_comprador,id_jugador_vendedor,n_propiedad);
+
+//funcion la cual crea una partida y la enlaza con el torneo id_torneo.
+//El torneo tiene que existir y el jugador tambien.
+async function crearPartidaTorneo(id_jugador, id_torneo);
