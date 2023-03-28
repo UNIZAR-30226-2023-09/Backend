@@ -1,8 +1,8 @@
 /*
  ----------------------------------------------------------------------------
  * Fichero: skinsAPI.js
- * Autores: Jesus Lizama Moreno, Cesar Vela Martínez y David Rivera Seves
- * NIPs: 816473, 816590, 815124
+ * Autores: Jesus Lizama Moreno, Cesar Vela Martínez 
+ * NIPs: 816473, 816590
  * Descripción: Fichero de funciones API para el acceso a la base de datos.
  * Fecha ultima actualizacion: 18/03/2023
  ----------------------------------------------------------------------------
