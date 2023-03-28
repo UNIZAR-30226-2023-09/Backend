@@ -77,6 +77,9 @@ METER_DINERO_BANCO,ID_jugador,ID_partida,dineroJugadorBanco,dineroJugador
 // Si es sacar dinero del banco
 SACAR_DINERO_BANCO,ID_jugador,ID_partida,dineroJugadorBanco,dineroJugador
 
+// Cuando no se puede sacar el dinero del banco porque la cantidad solicitada es mayor
+SACAR_DINERO_BANCO_NO_OK,ID_jugador,ID_partida
+
 // Cuando caes en una casilla de propiedad libre -> dar opción de comprarla
 // Espero recibir: SI/NO_COMPRAR_PROPIEDAD,ID_jugador,propiedad,ID_partida
 QUIERES_COMPRAR_PROPIEDAD,ID_jugador,propiedad,ID_partida

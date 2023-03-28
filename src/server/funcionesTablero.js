@@ -340,13 +340,13 @@ exports.MeterBanco = MeterBanco;
 // Sacar el dinero dado del banco del jugador en la partida dada
 async function SacarBanco(socket, ID_jugador, ID_partida, cantidad) {
     try {
-        let dineroJugadorBanco = await API.sacarDineroBanco(ID_partida, ID_jugador, cantidad);
+        let dineroJugadorBanco = await API.sacarDineroBancoAPartida(ID_partida, ID_jugador, cantidad);
         if (dineroJugadorBanco === -2) {
-            // TODO: No ha podido sacarlo porque la cantidad era mayor al dinero del jugador
+            // No ha podido sacarlo porque la cantidad era mayor al dinero del jugador en el banco
             socket.send(`SACAR_DINERO_BANCO_NO_OK,${ID_jugador},${ID_partida}`);
         }
         else {
-            let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
+            let dineroJugador =  await API.obtenerDinero(ID_jugador, ID_partida);
             socket.send(`SACAR_DINERO_BANCO,${ID_jugador},${ID_partida},${dineroJugadorBanco},${dineroJugador}`);
         }
     }
