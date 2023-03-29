@@ -10,6 +10,7 @@
 const con = require('./conexiones');
 const APIpartida = require('../API/partidaAPI');
 const APItorneo = require('../API/torneoAPI');
+const bot = require('./bot');
 
 
 // El jugador dado crea una partida
@@ -99,44 +100,56 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
     try {
         // Empezamos la partida 
         if (await APIpartida.empezarPartida(ID_partida, ID_jugador)) {
-            // TODO: Mandar al jugador que le toca empezar que es su turno 
-            // Establecer orden de jugadores (funcion API para obtener jugadores de la partida)
-
-            // TODO: mirar los bots, -1
 
             // Dado un ID_partida que devuelva los jugadores de la partida, si es un bot que devuelva 'bot' como el jugador
             // jugador1,jugador2,jugador3,jugador4
-            //obtenerJugadoresPartida(ID_partida);
             let jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
+            console.log(jugadores);
+            jugadores = jugadores + ",a2:1,a3:1,a4:1";
+            console.log(jugadores);
             let jugadoresPartida = jugadores.split(",");
-            // Guardar en la base el orden de jugadores(funcion API que le pases el idPartida y el orden d los 4 jugadores)
-            // Estos IDs se obtienen de funcion API
-            let idJugador1 = jugadoresPartida[0];
-            let idJugador2 = jugadoresPartida[1];
-            let idJugador3 = jugadoresPartida[2];
-            let idJugador4 = jugadoresPartida[3];
+            let jugadores_struct = new Array(4);
+            let aux;
+            for (let i = 0; i < 4; i++) {
+                aux = jugadoresPartida[i].split(":");
+                jugadores_struct[i] = new Usuario(aux[0], aux[1]);
+            }
+
+            mostrarJugadores(jugadores_struct);
 
             // Ordenar aleatoriamente los jugadores de la partida
-            const ordenJugadores = [idJugador1, idJugador2, idJugador3, idJugador4]; // Colocamos las cadenas en un array
-            /*for (let i = ordenJugadores.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1)); // Seleccionamos un índice aleatorio
-                [ordenJugadores[i], ordenJugadores[j]] = [ordenJugadores[j], ordenJugadores[i]]; // Intercambiamos las cadenas
-                // TODO: Guardar en la base el orden de los jugadores
-                // FUNCIÓN API!!!!
-            } */
+            // for (let i = jugadores_struct.length - 1; i > 0; i--) {
+            //     const j = Math.floor(Math.random() * (i + 1)); // Seleccionamos un índice aleatorio
+            //     [jugadores_struct[i], jugadores_struct[j]] = [jugadores_struct[j], jugadores_struct[i]]; // Intercambiamos las cadenas
+            // }
 
-            for (let i = 0; i < ordenJugadores.length; i++) {
-                // Si el jugador es un bot, hacer lo oportuno 
-                if (ordenJugadores[i] === -1) {
-                    // TODO: Llamar a funcion bot
-                }
-                else {
-                    let conexionUsuario = con.buscarUsuario(ordenJugadores[i]);
-                    conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${ordenJugadores[0]},${ordenJugadores[1]},${ordenJugadores[2]},${ordenJugadores[3]}`);
-                    if (i === 0) {
-                        conexionUsuario.send(`TURNO,${ordenJugadores[0]},${ID_partida}`);
+            // TODO: Guardar en la base el orden de los jugadores funcion -> establecerOrdenPartida(ID_partida,jugadores_array[0], jugadores_array[1], jugadores_array[2], jugadores_array[3]);
+
+            for (let i = 0; i < jugadores_struct.length; i++) {
+                console.log('pp');
+                // Si el jugador no es un bot
+                if (jugadores_struct[i].esBot === "0") {
+                    console.log('ppopo');
+                    let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
+                    if (conexionUsuario === null) {
+                        console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
+                        return;
                     }
+                    conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${jugadores_struct[0].id},${jugadores_struct[1].id},${jugadores_struct[2].id},${jugadores_struct[3].id}`);
                 }
+            }
+
+            // Damos el turno al primer jugador
+            if (jugadores_struct[0].esBot === 1) {
+                bot.jugar(jugadores_struct[0].id, ID_partida);
+            } else {
+                con.mostrarUsuarios();
+                let conexionUsuario = con.buscarUsuario(jugadores_struct[0].id);
+                if (conexionUsuario === null) {
+                    console.log('NO SE ENCUENTRA ESE USUARIO');
+                    return;
+                }
+                conexionUsuario.send(`TURNO,${jugadores_struct[0].id},${ID_partida}`);
             }
         }
         else {
@@ -151,3 +164,17 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
     }
 }
 exports.EmpezarPartida = EmpezarPartida;
+
+// Almacenar el usuario y si es un bot
+function Usuario(id, esBot) {
+    this.id = id;
+    this.esBot = esBot;
+}
+
+function mostrarJugadores(jugadores_struct) {
+    console.log("Jugadores de la partida:");
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        console.log(`Jugador ${i + 1}: ${jugadores_struct[i].id} (${jugadores_struct[i].esBot})`);
+    }
+}
+

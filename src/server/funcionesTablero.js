@@ -15,7 +15,7 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
     try {
         // Calculamos el valor de los dados
         let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverJugador(ID_jugador, ID_partida);
-
+        console.log(`DADOS,${dado1},${dado2},${posicionNueva},${estaCarcel}, sumaDados: ${sumaDados}, jugador: ${ID_jugador}`);
         // Enviar la nueva posición del jugador, el valor de los dados y el numero de turnos en la carcel
         socket.send(`DADOS,${dado1},${dado2},${posicionNueva},${estaCarcel}`);
 
@@ -346,7 +346,7 @@ async function SacarBanco(socket, ID_jugador, ID_partida, cantidad) {
             socket.send(`SACAR_DINERO_BANCO_NO_OK,${ID_jugador},${ID_partida}`);
         }
         else {
-            let dineroJugador =  await API.obtenerDinero(ID_jugador, ID_partida);
+            let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
             socket.send(`SACAR_DINERO_BANCO,${ID_jugador},${ID_partida},${dineroJugadorBanco},${dineroJugador}`);
         }
     }

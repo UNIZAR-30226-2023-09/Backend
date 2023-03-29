@@ -16,7 +16,7 @@ const conexion = require('./conexiones');
 const PUERTO = 8080 // Puerto a elegir
 
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: PUERTO });    
+const server = new WebSocket.Server({ port: PUERTO });
 
 // Cuando se lance el servidor que notifique que esta activo
 server.on('listening', () => {
@@ -26,7 +26,7 @@ server.on('listening', () => {
 // Nueva conexion de cliente
 server.on("connection", (socket) => {
     console.log("Cliente conectado");
-    
+
     // Nuevo mensaje recibido
     socket.on("message", (message) => {
         console.log(`Mensaje recibido: ${message}`);
@@ -40,19 +40,19 @@ server.on("connection", (socket) => {
         else {
             mensaje = [message];
         }
-        
+
         // TODO: HACER TODOS LOS MENSAJES RECIBIDOS EN OTROS FICHEROS
 
         // Si se quiere registrar
         if (mensaje[0] == "registrarse") {
             // socket, email, contrasenya, nombre
-            funcionesJugador.Registrarse(socket, mensaje[1],mensaje[2],mensaje[3]);
+            funcionesJugador.Registrarse(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
 
         // Si se quiere iniciar sesión
         if (mensaje[0] == "iniciarSesion") {
             // socket, email, contrasenya
-            funcionesJugador.IniciarSesion(socket, mensaje[1],mensaje[2]);
+            funcionesJugador.IniciarSesion(socket, mensaje[1], mensaje[2]);
         }
 
         // Si el mensaje es que se ha creado una partida
@@ -62,12 +62,12 @@ server.on("connection", (socket) => {
         }
 
         // Si el mensaje es que se ha unido a una partida
-        if (mensaje == "unirsePartida") {
+        if (mensaje[0] == "unirsePartida") {
             // socket, ID_jugador, ID_partida
-            funcionesPartidaTorneo.UnirsePartida(socket, mensaje[1],mensaje[2]);
+            funcionesPartidaTorneo.UnirsePartida(socket, mensaje[1], mensaje[2]);
         }
 
-       
+
         if (mensaje[0] == "empezarPartida") {
             // socket, ID_Partida, ID_Lider
             funcionesPartidaTorneo.EmpezarPartida(socket, mensaje[1], mensaje[2]);
@@ -76,7 +76,7 @@ server.on("connection", (socket) => {
         // Si el mensaje es que se han lanzado los dados
         if (mensaje[0] === "lanzarDados") {
             // socket, ID_jugador, ID_partida
-            funcionesTablero.LanzarDados(socket, mensaje[1],mensaje[2]);
+            funcionesTablero.LanzarDados(socket, mensaje[1], mensaje[2]);
         }
 
         // Si el mensaje es que se han lanzado los dados
@@ -84,13 +84,13 @@ server.on("connection", (socket) => {
             // Mandar dinero actual a todos (lo mismo que iria al fin del turno)
             // TODO:
             // Y volvemos a mirar la función de lanzarDados
-            funcionesTablero.LanzarDados(socket, mensaje[1],mensaje[2]);
+            funcionesTablero.LanzarDados(socket, mensaje[1], mensaje[2]);
         }
 
         // En caso de que el jugador haya apostado
         if (mensaje[0] == "APOSTAR") {
             // socket, ID_jugador, ID_partida, cantidad
-            funcionesTablero.Apostar(socket, mensaje[1],mensaje[2]);
+            funcionesTablero.Apostar(socket, mensaje[1], mensaje[2]);
         }
 
         // En caso de caer en la casilla del banco, realizar la acción oportuna si se desea
@@ -106,19 +106,19 @@ server.on("connection", (socket) => {
         if (mensaje[0] == "SI_COMPRAR_PROPIEDAD") {
             // Socket, ID_jugador,propiedad,ID_partida
             funcionesTablero.ComprarPropiedad(socket, mensaje[1], mensaje[2], mensaje[3]);
-        }      
+        }
 
         // Si el mensaje es que no se quiere comprar una propiedad -> no hacer nada y pasar turno
         if (mensaje[0] == "NO_COMPRAR_PROPIEDAD") {
             // No hacer nada
             // TODO:
-        }      
+        }
 
         // Si el mensaje es que se quiere vender una propiedad
         if (mensaje[0] == "venderPropiedad") {
             // Socket, jugador, propiedad, ID_Partida
             funcionesTablero.VenderPropiedad(socket, mensaje[1], mensaje[2], mensaje[3]);
-        }   
+        }
 
         // Cuando se quiere edificar
         if (mensaje[0] == "QUIERO_EDIFICAR") {
@@ -135,7 +135,7 @@ server.on("connection", (socket) => {
         // Si el mensaje es que se quiere usar una carta
         if (mensaje[0] == "usarCarta") {
             // TODO:
-        }   
+        }
 
         // Si el mensaje es que se quiere acabar el turno
         if (mensaje[0] === "finTurno") {
@@ -147,46 +147,46 @@ server.on("connection", (socket) => {
             //                      actualizar economía
             // Si es un jugador mando: TURNO,ID_jugador,ID_partida
             // socket, ID_jugador, ID_partida
-            funcionesJugador.FinTurno(socket, mensaje[1],mensaje[2]);
+            funcionesJugador.FinTurno(socket, mensaje[1], mensaje[2]);
         }
-        
+
         // Si el mensaje es que se quiere crear un torneo
         if (mensaje[0] == "crearTorneo") {
             // socket, ID_jugador
             funcionesPartidaTorneo.CrearTorneo(socket, mensaje[1]);
-        }   
-        
+        }
+
         // Si el mensaje es que se quiere unir a un torneo
         if (mensaje[0] == "unirseTorneo") {
             // socket, ID_jugador, ID_Torneo
-            funcionesPartidaTorneo.UnirseTorneo(socket, mensaje[1],mensaje[2]);
-        }   
-        
+            funcionesPartidaTorneo.UnirseTorneo(socket, mensaje[1], mensaje[2]);
+        }
+
         /*------------------------------------------------------*/
         // Se solicita hacer un intercambio
         if (mensaje[0] == "intercambio") {
             // TODO:
-        }   
-        
+        }
+
         // Se inicia una subasta
         if (mensaje[0] == "iniciarSubasta") {
             // TODO:
-        }   
+        }
 
         // Se quiere comprar una skin
         if (mensaje[0] == "comprarSkin") {
             // TODO:
-        }   
+        }
 
         // Se quiere ver las skins disponibles de un jugador
         if (mensaje[0] == "verSkins") {
             // TODO:
-        }   
+        }
 
     });
 
     socket.on("close", () => {
-        console.log("Cliente desconectado, esperando 1 minuto");
+        console.log("Cliente desconectado");
         conexion.desconexionUsuario(socket);
     });
 

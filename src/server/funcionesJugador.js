@@ -42,7 +42,7 @@ async function IniciarSesion(socket, email, contrasenya) {
         let gemas = await API.comprobarInicioSesion(email, contrasenya);
         // Si ha iniciado sesión correctamente
         if (gemas >= 0) {
-            conexion.agregarUsuario(socket, { email });
+            conexion.agregarUsuario(socket, email);
             // Comprobams si está en una partida existente
             let id_partida = await APIpartida.jugadorEnPartida(email);
             // Está en una partida

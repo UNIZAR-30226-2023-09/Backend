@@ -47,8 +47,9 @@ function eliminarUsuario(nombreUsuario) {
     if (!usuario) return; // Si no encontramos al usuario, salimos de la función
 
     // Eliminamos la conexión del usuario del array de conexiones
-    const index = connections.indexOf(usuario.socket);
+    const index = connections.indexOf(usuario);
     if (index !== -1) connections.splice(index, 1);
+
 
     // Eliminamos al usuario del diccionario de usuarios
     delete usuarios[nombreUsuario];
@@ -59,7 +60,7 @@ function eliminarUsuario(nombreUsuario) {
 function buscarUsuario(IDusuario) {
     const index = usuarios[IDusuario];
     if (index !== undefined) {
-        console.log('Se ha encontrado al usuario:', IDusuario);
+        console.log('Se ha encontrado al socket del usuario:', IDusuario);
         return connections[index].socket;
     }
     return null;
@@ -69,11 +70,11 @@ function buscarUsuario(IDusuario) {
 function buscarConexion(socket) {
     const index = connections.findIndex(conn => conn.socket === socket);
     if (index !== -1) {
-        return connections[index].usuario;
+        console.log('Se ha encontrado al usuario');
+        return connections[index].name;
     }
     return null;
 }
-
 
 // ***** Apartado que gestiona las desconexiones *****
 
@@ -90,8 +91,10 @@ async function desconexionUsuario(socket) {
             // Comprobar si el usuario esta jugando una partida
             let enPartida = await APIpartida.jugadorEnPartida(IDusuario);
             if (enPartida !== -1) {
+                console.log('El cliente ' + IDusuario +
+                    ' se encontraba en una partida y dispone de 60 segundos para reconectarse');
                 const index = usuarios[IDusuario];
-                conecctions[index].timeoutId = setTimeout(() => {
+                connections[index].timeoutId = setTimeout(() => {
                     sustituirJugadorPorBot(IDusuario, enPartida);
                 }, TIMEOUT); // 10 minutos en milisegundos
             }
@@ -104,9 +107,9 @@ async function desconexionUsuario(socket) {
 
 // Dado un usuario desactiva su timer de desconexion
 function desactivarTimer(IDusuario) {
-    console.log('Desactivando el timer de:', IDusuario);
     const index = usuarios[IDusuario];
     if (index !== undefined) {
+        console.log('Desactivando el timer de:', IDusuario);
         clearTimeout(connections[index].timeoutId);
     }
 }
@@ -122,13 +125,25 @@ async function sustituirJugadorPorBot(IDusuario, IDPartida) {
     }
 }
 
+function mostrarUsuarios() {
+    console.log('Usuarios conectados:');
+    for (let usuario in usuarios) {
+        const name = usuarios[usuario].name;
+        console.log(name);
+    }
+
+}
+
+
+
 // Creamos un objeto para almacenar todas las funciones que queremos exportar
 const funciones = {
     agregarUsuario,
     eliminarUsuario,
     buscarUsuario,
     buscarConexion,
-    desconexionUsuario
+    desconexionUsuario,
+    mostrarUsuarios
 };
 
 // Exportamos el objeto que contiene las funciones
