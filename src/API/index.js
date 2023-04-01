@@ -753,6 +753,23 @@ async function obtenerEstablecerOrdenPartida(idPartida,idJugador1,idJugador2,idJ
     }
 }
 
+//FUNCIONA OKEY.
+async function obtenerResultadoIniciarPartida(idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.iniciarPartida(idPartida);
+      console.log("El resultado obtenido de iniciar Partida es:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -829,7 +846,10 @@ async function obtenerEstablecerOrdenPartida(idPartida,idJugador1,idJugador2,idJ
 
 // obtenerResultadoCrearPartidaTorneo('juan@example.com',1);
 
-obtenerEstablecerOrdenPartida(2,'albertito@example.com','chemita@example.com','miguelito@example.com','pedrito@example.com');
+// obtenerEstablecerOrdenPartida(2,'albertito@example.com','chemita@example.com','miguelito@example.com','pedrito@example.com');
+
+// obtenerResultadoIniciarPartida(5);
+
 
 
 // Probar partida rapida

@@ -9,12 +9,14 @@
 */
 
 const db = require('./db');
+const Jugador = require('./jugadorAPI');
 
 const POSICION_CARCEL = 11;
 const POSICION_BOTE = 21;
 const NUM_TURNOS_CARCEL = 3;
 const NUM_MINIMO_PROPIEDAD = 1;
 const NUM_MAX_PROPIEDAD = 40;
+const NUM_JUGADORES = 4;
 
 
 /*
@@ -1025,7 +1027,7 @@ function unirsePartida(idJugador, idPartida) {
                                         resolve(false);
                                     } else {                                            // Caso -- El jugador no esta jugando ninguna partida
                                         const sql = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
-                                dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+                                        dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
                                         const values = [false, false, 0, 0.0, 0, 0, 0.0, 'default', 0, idJugador, idPartida];
                                         con.query(sql, values, (error, results5) => {      // Caso -- Error
                                             if (error) {
@@ -1050,59 +1052,6 @@ function unirsePartida(idJugador, idPartida) {
 
 exports.unirsePartida = unirsePartida;
 
-
-
-/*
-=================== EMPEZAR LA PARTIDA =========================================
-*/
-
-// Devuelve true si se ha empezado la partida con éxito, false de lo contrario
-// Empezar una partida existente, solo la puede llamar el líder que ha creado la partida
-function empezarPartida(id_partida, id_lider) {
-    return new Promise((resolve, reject) => {
-        const con = db.crearConexion();
-        con.connect();
-        const query1 = `SELECT * FROM Jugador WHERE email = '${id_lider}'`;
-        con.query(query1, (error, results1) => {
-            if (error) {
-                reject(error);
-                con.end();
-                return;
-            }
-            if (results1.length === 0) {
-                resolve(false); // Si no existe jugador
-                con.end();
-                return;
-            }
-            const jugador_id = results1[0].email;
-            const query2 = `SELECT * FROM juega WHERE idPartida = ${id_partida} AND email = '${id_lider}'`;
-            con.query(query2, (error, results2) => {
-                if (error) {
-                    reject(error);
-                    con.end();
-                    return;
-                }
-                if (results2.length === 0) {
-                    resolve(false); // Si el jugador no participa en esta partida
-                    con.end();
-                    return;
-                }
-                const query3 = `UPDATE Partida SET enCurso = true WHERE idPartida = ${id_partida}`;
-                con.query(query3, (error, results3) => {
-                    if (error) {
-                        reject(error);
-                        con.end();
-                        return;
-                    }
-                    resolve(true);
-                    con.end();
-                });
-            });
-        });
-    });
-}
-
-exports.empezarPartida = empezarPartida;
 
 
 /*
@@ -1637,7 +1586,6 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                 if (turno_siguiente === 0) {
                                     turno_siguiente = 4;
                                 }
-                                console.log("hola", turno_siguiente)
                                 const sql = `SELECT esBotInicial, esBot, email FROM juega WHERE idPartida = '${idPartida}' AND turno = '${turno_siguiente}'`;
                                 con.query(sql, (error, results3) => {        // Caso -- Error
                                     if (error) {
@@ -2147,3 +2095,120 @@ function establecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJug
 
 
 exports.establecerOrdenPartida = establecerOrdenPartida;
+
+
+
+//devuelve el numero de jugadores de una partida.
+function comprobarJugadores(idPartida){
+    return new Promise((resolve, reject) => {
+      var con = db.crearConexion();
+      con.connect();
+      const query1 = `SELECT DISTINCT COUNT(email) as jugadores FROM juega WHERE idPartida='${idPartida}'`;
+      con.query(query1, (error, results1) => {
+        if (error) {
+          con.end();
+          reject(error);
+        } else if (results1.length === 0) {
+          con.end();
+          resolve(-1);
+        } 
+        else {
+          //devuelve el numero de jugadores de la partida
+          con.end();
+          resolve(results1[0].jugadores);
+        }
+      });
+    });
+  }
+  
+  
+  
+  //unir un jugador a una partida dada.
+  function unirBotPartida(idJugador, idPartida) {
+    return new Promise((resolve, reject) => {
+      var con = db.crearConexion();
+      con.connect();
+      const sql = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
+        email, idPartida) VALUES (true, true, 0, 0.0, 0, 0, 0.0, 'default', 0 , '${idJugador}', ${idPartida})`;
+        con.query(sql, (error, results) => {      // Caso -- Error
+            if (error) {
+              console.log(sql);
+                con.end();
+                reject(error);
+            } else if (results.length == 0){
+              resolve(-1);
+            }
+             else {                                         // Caso -- Insert okay
+              con.end();
+              resolve(true);
+            }
+        });
+    });
+  }
+  
+  
+  
+exports.unirBotPartida = unirBotPartida;
+  
+  
+  
+//inicializamos la partida (enCurso=1).
+function inicializamosPartida(idPartida){
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query2 = `UPDATE partida SET enCurso='true' WHERE idPartida='${idPartida}'`;
+        con.query(query2, (error, results2) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results2.length === 0) {
+                con.end();
+                resolve(-1);
+            } else {
+                //todo ha ido bien, con lo que devolvemos true.
+                con.end();
+                resolve(true);
+            }
+        
+        });
+    });
+}
+  
+
+/*
+=================== INICIAR UNA PARTIDA =========================================================
+*/
+//funcion la cual inicie una partida (poner a 1 enCurso). Si la partida tiene 4 jugadores la iniciamos normal, sino rellenamos con bots 
+//hasta llegar a 4 jugadores y la iniciamos.
+async function iniciarPartida(idPartida){
+    try{
+      //comprobamos el numero de jugadores de la partida.
+      let numJugadares = await comprobarJugadores(idPartida);
+      console.log(numJugadares);
+      if(numJugadares == 4){
+        //partida completa, la podemos inicializar.
+        let partidaIni = await inicializamosPartida(idPartida);
+        return partidaIni;
+      }
+      else{
+        let jugadoresRestantes = NUM_JUGADORES - numJugadares;
+        for(let i = 0; i < jugadoresRestantes; i++){
+          let randomNumber = Math.floor(Math.random() * 10000) + 1;
+          let email = `bot@bot${randomNumber}.com`;
+          let jugadorConcat = `bot${randomNumber}.com` +`,`+ 1234 +`,`+ email +`,`+ 0;
+          let resCrearJugador = await Jugador.insertarUsuario(jugadorConcat);
+          let resUnirPartida = await unirBotPartida(email,idPartida);
+        }
+        let partidaIni = await inicializamosPartida(idPartida);
+        return partidaIni;
+      }
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  exports.iniciarPartida = iniciarPartida;

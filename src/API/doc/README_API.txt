@@ -230,3 +230,7 @@ async function crearPartidaTorneo(id_jugador, id_torneo);
 // Establece el orden de los jugadores en la partida definida
 // En caso de que no existan los jugadores en juega devuelve faslse, sino true
 function establecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJugador4);
+
+//funcion la cual inicie una partida (poner a 1 enCurso). Si la partida tiene 4 jugadores la iniciamos normal, sino rellenamos con bots 
+//hasta llegar a 4 jugadores y la iniciamos.
+async function iniciarPartida(idPartida);
