@@ -736,7 +736,22 @@ async function obtenerResultadoCrearPartidaTorneo(id_jugador,id_torneo) {
       return false;
     }
   }
-  
+
+
+//FUNCIONA OKEY.
+async function obtenerEstablecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJugador4){
+    try {
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.establecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJugador4);
+        console.log("El resultado obtenido de obtener orden partida es:", resultado);
+        return resultado;
+
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+}
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -813,6 +828,8 @@ async function obtenerResultadoCrearPartidaTorneo(id_jugador,id_torneo) {
 //obtenerResultadoAnyadirPropiedadCompradorVendedor(2 ,'juan@example.com','juan.perez@example.com',50, 2);
 
 // obtenerResultadoCrearPartidaTorneo('juan@example.com',1);
+
+obtenerEstablecerOrdenPartida(2,'albertito@example.com','chemita@example.com','miguelito@example.com','pedrito@example.com');
 
 
 // Probar partida rapida

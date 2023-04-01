@@ -225,3 +225,8 @@ function anyadirPropiedadCompradorVendedor(id_partida,id_jugador_comprador,id_ju
 //funcion la cual crea una partida y la enlaza con el torneo id_torneo.
 //El torneo tiene que existir y el jugador tambien.
 async function crearPartidaTorneo(id_jugador, id_torneo);
+
+
+// Establece el orden de los jugadores en la partida definida
+// En caso de que no existan los jugadores en juega devuelve faslse, sino true
+function establecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJugador4);

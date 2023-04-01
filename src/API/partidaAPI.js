@@ -2051,4 +2051,99 @@ async function crearPartidaTorneo(id_jugador, id_torneo){
 }
   
 exports.crearPartidaTorneo = crearPartidaTorneo;
-  
+
+
+
+
+/*
+=================== ESTABLECER ORDEN DE JUGADORES EN PARTIDA IDPARTIDA =========================================================
+*/
+// Establece el orden de los jugadores en la partida definida
+// En caso de que no existan los jugadores en juega devuelve faslse, sino true
+function establecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJugador4) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT idPartida FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador1}'`;
+        con.query(query, (error, results) => {                                                              // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                                                              // Caso -- No existe el jugador en juega
+                con.end();
+                resolve(false);
+            } else {                                                                                        // Caso --  Existe el jugador en juega
+                const query = `SELECT idPartida FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador2}'`;
+                con.query(query, (error, results) => {                                                      // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else if (results.length === 0) {                                                      // Caso -- No existe el jugador en juega
+                        con.end();
+                        resolve(false);
+                    } else {                                                                                // Caso --  Existe el jugador en juega
+                        const query = `SELECT idPartida FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador3}'`;
+                        con.query(query, (error, results) => {                                              // Caso -- Error
+                            if (error) {
+                                con.end();
+                                reject(error);
+                            } else if (results.length === 0) {                                              // Caso -- No existe el jugador en juega
+                                con.end();
+                                resolve(false);
+                            } else {                                                                        // Caso --  Existe el jugador en juega
+                                const query = `SELECT idPartida FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador4}'`;
+                                con.query(query, (error, results) => {                                      // Caso -- Error
+                                    if (error) {
+                                        con.end();
+                                        reject(error);
+                                    } else if (results.length === 0) {                                      // Caso -- No existe el jugador en juega
+                                        con.end();
+                                        resolve(false);
+                                    } else {                                                                // Caso --  Existe el jugador en juega
+                                        const query = `UPDATE juega set turno = 1 WHERE idPartida = '${idPartida}' AND email = '${idJugador1}'`;
+                                        con.query(query, (error, results) => {                              // Caso -- Error
+                                            if (error) {
+                                                con.end();
+                                                reject(error);
+                                            } else {                                                        // Caso --  Update correcto
+                                                const query = `UPDATE juega set turno = 2 WHERE idPartida = '${idPartida}' AND email = '${idJugador2}'`;
+                                                con.query(query, (error, results) => {                      // Caso -- Error
+                                                    if (error) {
+                                                        con.end();
+                                                        reject(error);
+                                                    } else {                                                // Caso --  Update correcto
+                                                        const query = `UPDATE juega set turno = 3 WHERE idPartida = '${idPartida}' AND email = '${idJugador3}'`;
+                                                        con.query(query, (error, results) => {              // Caso -- Error
+                                                            if (error) {
+                                                                con.end();
+                                                                reject(error);
+                                                            } else {                                        // Caso --  Update correcto
+                                                                const query = `UPDATE juega set turno = 4 WHERE idPartida = '${idPartida}' AND email = '${idJugador4}'`;
+                                                                con.query(query, (error, results) => {      // Caso -- Error
+                                                                    if (error) {
+                                                                        con.end();
+                                                                        reject(error);
+                                                                    } else {                                // Caso --  Update correcto
+                                                                        con.end();
+                                                                        resolve(true);
+                                                                    }
+                                                                });     
+                                                            }
+                                                        });     
+                                                    }
+                                                });
+                                            }
+                                        });     
+                                    }
+                                });     
+                            }
+                        });     
+                    }
+                });
+            }
+        });
+    });
+}
+
+
+exports.establecerOrdenPartida = establecerOrdenPartida;
