@@ -768,8 +768,43 @@ async function obtenerResultadoIniciarPartida(idPartida) {
       console.error("Error en la Promesa: ", error);
       return false;
     }
-  }
+}
 
+//FUNCIONA OKEY.
+async function obtenerResultadoEliminarBotsPartida(idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.eliminarBotsPartida(idPartida);
+      console.log("El resultado obtenido de eliminar bots de una partida es :", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+}
+
+
+  //FUNCIONA OKEY.
+async function obtenerResultadoAcabarPartida(idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.acabarPartida(idPartida);
+      console.log("El resultado obtenido de acabar partida es:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+}
+  
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -849,6 +884,12 @@ async function obtenerResultadoIniciarPartida(idPartida) {
 // obtenerEstablecerOrdenPartida(2,'albertito@example.com','chemita@example.com','miguelito@example.com','pedrito@example.com');
 
 // obtenerResultadoIniciarPartida(5);
+
+// obtenerResultadoEliminarBotsPartida(2);
+
+// obtenerResultadoAcabarPartida(5);
+
+
 
 
 

@@ -234,3 +234,9 @@ function establecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJug
 //funcion la cual inicie una partida (poner a 1 enCurso). Si la partida tiene 4 jugadores la iniciamos normal, sino rellenamos con bots 
 //hasta llegar a 4 jugadores y la iniciamos.
 async function iniciarPartida(idPartida);
+
+//funcion la cual una vez acabada la partida, indica que dicha partida no esta en curso.
+function acabarPartida(idPartida);
+
+//se eliminan todos los bots los cuales han sido creados para la partida con id, idPartida.
+function eliminarBotsPartida(idPartida);

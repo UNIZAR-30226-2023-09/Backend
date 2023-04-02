@@ -2212,3 +2212,78 @@ async function iniciarPartida(idPartida){
   }
   
   exports.iniciarPartida = iniciarPartida;
+
+
+/*
+=================== ELIMINAR BOTS PARTIDA =========================================================
+*/
+//se eliminan todos los bots los cuales han sido creados para la partida con id, idPartida.
+function eliminarBotsPartida(idPartida){
+    return new Promise((resolve, reject) => {
+      var con = db.crearConexion();
+      con.connect();
+      //en la API de github hay que poner false en vez de 0.
+      const query = `SELECT * FROM juega WHERE email LIKE 'bot@bot%' AND idPartida ='${idPartida}'`;
+      con.query(query, (error, results) => {
+        if (error) {
+          con.end();
+          reject(error);
+        } else if (results.length === 0) {
+          con.end();
+          resolve(-1);
+        } else {
+          //todo ha ido bien, vamos a borrar de la tabla juega y de la tabla jugador los bots.
+          results.forEach((row, i) => {
+            con.query(`DELETE FROM juega WHERE email = '${results[i].email}' AND idPartida = '${idPartida}'`, (error, result) => {
+              if (error) {
+                con.end();
+                reject(error);
+              } else {
+                con.query(`DELETE FROM Jugador WHERE email = '${results[i].email}'`, (error, result) => {
+                  if (error) {
+                    con.end();
+                    reject(error);
+                  } else {
+                    // Si se eliminaron correctamente las instancias de ambas tablas, se pasa a la siguiente línea de results.
+                    if (i === results.length - 1) {
+                      con.end();
+                      resolve(true);
+                    }
+                  }
+                });
+              }
+            });
+          });
+        }    
+      });
+    });
+  }
+  exports.eliminarBotsPartida = eliminarBotsPartida;
+
+
+/*
+=================== ACABAR PARTIDA =========================================================
+*/
+//funcion la cual una vez acabada la partida, indica que dicha partida no esta en curso.
+function acabarPartida(idPartida){
+    return new Promise((resolve, reject) => {
+      var con = db.crearConexion();
+      con.connect();
+      //en la API de github hay que poner false en vez de 0.
+      const query = `UPDATE partida SET enCurso='0' WHERE idPartida='${idPartida}'`;
+      con.query(query, (error, results) => {
+        if (error) {
+          con.end();
+          reject(error);
+        } else if (results.length === 0) {
+          con.end();
+          resolve(-1);
+        } else {
+          //todo ha ido bien, con lo que devolvemos true.
+          con.end();
+          resolve(true);
+        }    
+      });
+    });
+  }
+  exports.acabarPartida = acabarPartida;
