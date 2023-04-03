@@ -99,14 +99,14 @@ exports.UnirseTorneo = UnirseTorneo;
 async function EmpezarPartida(socket, ID_partida, ID_jugador) {
     try {
         // Empezamos la partida 
-        if (await APIpartida.empezarPartida(ID_partida, ID_jugador)) {
+        if (await APIpartida.iniciarPartida(ID_partida, ID_jugador)) {
 
             // Dado un ID_partida que devuelva los jugadores de la partida, si es un bot que devuelva 'bot' como el jugador
             // jugador1,jugador2,jugador3,jugador4
             let jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
             console.log(jugadores);
-            jugadores = jugadores + ",a2:1,a3:1,a4:1";
-            console.log(jugadores);
+            //jugadores = jugadores + ",a2:1,a3:1,a4:1";
+            //console.log(jugadores);
             let jugadoresPartida = jugadores.split(",");
             let jugadores_struct = new Array(4);
             let aux;

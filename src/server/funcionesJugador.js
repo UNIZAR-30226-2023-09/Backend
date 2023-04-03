@@ -74,15 +74,19 @@ async function FinTurno(ID_jugador, ID_partida) {
     // TODO: Comprobar si es fin de ronda para lo de los eventos, para actualizar saldos bancos                 actualizar economía
     // Si es un jugador mando: TURNO,ID_jugador,ID_partida
 
+
+    // TODO: Buscar todos los jugadores de la partida y si no son bots, enviar la info actualizada de su jugada a los demas jugadores
+
     // Llamar a la función de la api para obtener el siguiente jugador
-    let siguienteJugador = await API.obtenerSiguienteJugador(ID_jugador, ID_partida);
+    let siguienteJugador = await APIpartida.obtenerSiguienteJugador(ID_jugador, ID_partida);
+    console.log("Siguiente jugador: ", siguienteJugador);
     let resultado = siguienteJugador.split(",");
     let resultado2 = resultado.split(":");
     let jugador = resultado2[0];
     let esBot = resultado2[1];
     let finRonda = resultado[1];
     // Si le toca a un bot
-    if (esBot == "1") {
+    if (esBot === "1") {
         bot.Jugar(jugador, ID_partida);
     }
     else {   // Es un jugador

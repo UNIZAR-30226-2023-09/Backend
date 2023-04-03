@@ -903,17 +903,17 @@ function crearPartida(id_jugador) {
         con.connect();
         const query1 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
         con.query(query1, (error, results1) => {
-        if (error) {
-          reject(error);
-          con.end();
-        }
-        else if (results1.length === 0) {
-          resolve(-1); // Si no existe jugador
-          con.end();
-        }
-        else{
-          const jugador_id = results1[0].email;
-          const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioPropiedad1,
+            if (error) {
+                reject(error);
+                con.end();
+            }
+            else if (results1.length === 0) {
+                resolve(-1); // Si no existe jugador
+                con.end();
+            }
+            else {
+                const jugador_id = results1[0].email;
+                const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioPropiedad1,
           precioPropiedad2,precioPropiedad3,precioPropiedad4,precioPropiedad5,precioPropiedad6,precioPropiedad7,precioPropiedad8,
           precioPropiedad9,precioPropiedad10,precioPropiedad11,precioPropiedad12,precioPropiedad13,precioPropiedad14,precioPropiedad15,
           precioPropiedad16,precioPropiedad17,precioPropiedad18,precioPropiedad19,precioPropiedad20,precioPropiedad21,precioPropiedad22,
@@ -921,56 +921,56 @@ function crearPartida(id_jugador) {
           precioPropiedad30,precioPropiedad31,precioPropiedad32,precioPropiedad33,precioPropiedad34,precioPropiedad35,precioPropiedad36,
           precioPropiedad37,precioPropiedad38,precioPropiedad39,precioPropiedad40) VALUES (0, 0.0, 'Inicial', 0.0, 0.0, 1,1,1,1,1,1,1,1,
           1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)`;
-          con.query(query2, (error, results2) => {
-            if (error) {
-              reject(error);
-              con.end();
-            }
-            else if (results1.length === 0) {
-              resolve(-1); // Si no existe jugador
-              con.end();
-            }
-            else{
-              //obtener el maximo idPartida, ya que sera el ultimo y lo devolvemos.
-              const query3 = `SELECT MAX(idPartida) as maximo FROM Partida`;
-              con.query(query3, (error, results3) => {
-                if (error) {
-                  reject(error);
-                  con.end();
-                }
-                else if (results3.length === 0) {
-                  resolve(-1); // Si no existe jugador
-                  con.end();
-                }
-                else{
-                  //ahora hay que enlazarlo con la tabla juega
-                  let maxIdPartida = results3[0].maximo;  //id de la partida creada.
-                  const query3 = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-                  email, idPartida) VALUES (false, false, 0, 0.0, 0, 0, 0.0, 'default', 0 , '${id_jugador}', ${maxIdPartida})`;
-                  con.query(query3, (error, results3) => {
+                con.query(query2, (error, results2) => {
                     if (error) {
-                      reject(error);
-                      con.end();
+                        reject(error);
+                        con.end();
                     }
-                    else if (results3.length === 0) {
-                      resolve(-1); // Si no existe jugador
-                      con.end();
+                    else if (results1.length === 0) {
+                        resolve(-1); // Si no existe jugador
+                        con.end();
                     }
-                    else{
-                      resolve(maxIdPartida);
-                      con.end();
+                    else {
+                        //obtener el maximo idPartida, ya que sera el ultimo y lo devolvemos.
+                        const query3 = `SELECT MAX(idPartida) as maximo FROM Partida`;
+                        con.query(query3, (error, results3) => {
+                            if (error) {
+                                reject(error);
+                                con.end();
+                            }
+                            else if (results3.length === 0) {
+                                resolve(-1); // Si no existe jugador
+                                con.end();
+                            }
+                            else {
+                                //ahora hay que enlazarlo con la tabla juega
+                                let maxIdPartida = results3[0].maximo;  //id de la partida creada.
+                                const query3 = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
+                  email, idPartida) VALUES (false, false, 0, 0.0, 0, 0, 0.0, 'default', 0 , '${id_jugador}', ${maxIdPartida})`;
+                                con.query(query3, (error, results3) => {
+                                    if (error) {
+                                        reject(error);
+                                        con.end();
+                                    }
+                                    else if (results3.length === 0) {
+                                        resolve(-1); // Si no existe jugador
+                                        con.end();
+                                    }
+                                    else {
+                                        resolve(maxIdPartida);
+                                        con.end();
+                                    }
+                                });
+                            }
+                        });
                     }
-                  });
-                }
-              });
+                });
             }
-          });
-        }   
-      });
+        });
     });
-  }
-  
-  exports.crearPartida = crearPartida;
+}
+
+exports.crearPartida = crearPartida;
 
 
 
@@ -1473,7 +1473,7 @@ function sustituirJugadorPorBot(idJugador, idPartida) {
                     }
                 });
             }
-        }); 
+        });
     });
 }
 
@@ -1535,7 +1535,7 @@ function sustituirBotPorJugador(idJugador, idPartida) {
                     }
                 });
             }
-        }); 
+        });
     });
 }
 
@@ -1595,7 +1595,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                         const respuesta = [];
                                         const aux = [];
                                         aux[0] = results3[0].email;
-                                        if (results3[0].esBot || results3[0].esBotInicial){
+                                        if (results3[0].esBot || results3[0].esBotInicial) {
                                             aux[1] = 1;
                                         } else {
                                             aux[1] = 0;
@@ -1617,7 +1617,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                     }
                 });
             }
-        }); 
+        });
     });
 }
 
@@ -1683,17 +1683,17 @@ function propiedadesEdificar(idJugador, idPartida) {
                                         precioAux = fila.precio * (20 * fila.nCasas / 100)
                                         resultado += `${fila.propiedad}-${precioAux},`;
                                     });
-                                    if (i === 40){
+                                    if (i === 40) {
                                         con.end();
-                                        resolve(resultado.slice(0,-1))
+                                        resolve(resultado.slice(0, -1))
                                     }
                                 }
-                            });  
+                            });
                         }
                     }
                 });
             }
-        }); 
+        });
     });
 }
 
@@ -1702,7 +1702,7 @@ exports.propiedadesEdificar = propiedadesEdificar;
 
 
 
- /*
+/*
 =================== USUARIO EDIFICAR PROPIEDAD  =========================================================
 */
 // Devuelve el dinero que le queda al usuario despues edificar la propiedad IdPropiedad y
@@ -1717,7 +1717,7 @@ function edificarPropiedad(idJugador, idPartida, propiedad) {
         con.connect();
         let propiedadAux = "propiedad" + propiedad;
         let precioAux = "precioPropiedad" + propiedad;
-        let nCasasAux =  "nCasasPropiedad" + propiedad;
+        let nCasasAux = "nCasasPropiedad" + propiedad;
         const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
         con.query(query, (error, results) => {                                              // Caso -- Error
             if (error) {
@@ -1744,7 +1744,7 @@ function edificarPropiedad(idJugador, idPartida, propiedad) {
                                 reject(error);
                             } else {
 
-                                if (results3[0].propietario != idJugador || (results3[0].nCasas + 1) > 5){   
+                                if (results3[0].propietario != idJugador || (results3[0].nCasas + 1) > 5) {
                                     con.end();                                              // Caso -- Propiedad no es suya o ya ha edificado todo
                                     resolve(false);
                                 } else {                                                    // Caso -- Propiedad es suya
@@ -1792,14 +1792,14 @@ function edificarPropiedad(idJugador, idPartida, propiedad) {
                                             });
 
                                         }
-                                    });  
+                                    });
                                 }
                             }
                         });
                     }
                 });
             }
-        }); 
+        });
     });
 }
 
@@ -1812,154 +1812,154 @@ exports.edificarPropiedad = edificarPropiedad;
 */
 
 //Funcion que dado un comprador y un vendedor, verifica que la casa sea del vendedor y el comprador realiza la compra.
-function anyadirPropiedadCompradorVendedor(id_partida,id_jugador_comprador,id_jugador_vendedor,n_propiedad){
+function anyadirPropiedadCompradorVendedor(id_partida, id_jugador_comprador, id_jugador_vendedor, n_propiedad) {
     return new Promise((resolve, reject) => {
-      var con = db.crearConexion();
-      con.connect();
-      var concat = 'propiedad' + n_propiedad;
-      const query = `SELECT P.${concat} AS nombre_propietario, P.nCasasPropiedad${n_propiedad} AS num_casas_propiedad , J.numPropiedades AS num_propiedades_totales FROM Partida P INNER JOIN juega J ON P.idPartida=J.idPartida WHERE P.idPartida = '${id_partida}'`;
-      con.query(query, (error, results) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else if (results.length === 0) {
-          con.end();
-          console.log("hemos entrado en el lenght = 0");
-          resolve(-1);
-        } else {
-          let nombre_propietario = results[0].nombre_propietario; 
-          if(nombre_propietario === id_jugador_vendedor){
-            //la propiedad es del vendedor, con lo cual se la vamos a dar al comprador.
-            let n_propiedades = results[0].num_propiedades_totales;
-            n_propiedades--; 
-            const query2 = `UPDATE Juega SET numPropiedades = '${n_propiedades}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador_vendedor}'`;
-            con.query(query2, (error, results2) => {
-              if (error) {
+        var con = db.crearConexion();
+        con.connect();
+        var concat = 'propiedad' + n_propiedad;
+        const query = `SELECT P.${concat} AS nombre_propietario, P.nCasasPropiedad${n_propiedad} AS num_casas_propiedad , J.numPropiedades AS num_propiedades_totales FROM Partida P INNER JOIN juega J ON P.idPartida=J.idPartida WHERE P.idPartida = '${id_partida}'`;
+        con.query(query, (error, results) => {
+            if (error) {
+                con.end();
                 reject(error);
+            } else if (results.length === 0) {
                 con.end();
-              } else if (results2.affectedRows === 0) {
-                resolve(-2);
-                con.end();
-              } else {
-                //una vez actualizado el numero de propiedades del vendedor, ahora actualizaremos la propiedad para que sea del comprador.
-                //HAY QUE OBTENER EL NUMERO DE PROPIEDADES_TOTALES QUE TENIA ANTES DE COMPRAR ESTA PROPIEDAD EL COMPRADOR PARA PODER ACTUALIZARLO.
-                const query3 = `SELECT numPropiedades FROM juega WHERE idPartida = '${id_partida}' AND email = '${id_jugador_comprador}' `;
-                con.query(query3, (error, results3) => {
-                  if (error) {
-                    reject(error);
-                    con.end();
-                  } else if (results3.length === 0) {
-                    resolve(-3);
-                    con.end();
-                  } else {
-                    //Actualizamos el numero de propiedades del comprador en + 1.
-                    let total_propiedades_comprador = results3[0].numPropiedades;
-                    total_propiedades_comprador ++;
-                    const query4 = `UPDATE juega SET numPropiedades = '${total_propiedades_comprador}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador_comprador}' `;
-                    con.query(query4, (error, results4) => {
-                      if (error) {
-                        reject(error);
-                        con.end();
-                      } else if (results4.affectedRows === 0) {
-                        resolve(-4);
-                        con.end();
-                      } else {
-                        //Actualizamos la propiedad para que sea del comprador.
-                        let n_casas = results[0].num_casas_propiedad;     //ESTO ES LO QUE HAY QUE VER SI DEJAMOS EL NUMERO DE CASAS QUE YA ESTABA O EMPIEZA CON 1 CASA SOLO.
-                        const query5 = `UPDATE Partida SET nCasasPropiedad${n_propiedad} = '${n_casas}' WHERE idPartida = '${id_partida}' `;
-                        con.query(query5, (error, results5) => {
-                          if (error) {
+                console.log("hemos entrado en el lenght = 0");
+                resolve(-1);
+            } else {
+                let nombre_propietario = results[0].nombre_propietario;
+                if (nombre_propietario === id_jugador_vendedor) {
+                    //la propiedad es del vendedor, con lo cual se la vamos a dar al comprador.
+                    let n_propiedades = results[0].num_propiedades_totales;
+                    n_propiedades--;
+                    const query2 = `UPDATE Juega SET numPropiedades = '${n_propiedades}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador_vendedor}'`;
+                    con.query(query2, (error, results2) => {
+                        if (error) {
                             reject(error);
                             con.end();
-                          } else if (results5.affectedRows === 0) {
-                            resolve(-5);
+                        } else if (results2.affectedRows === 0) {
+                            resolve(-2);
                             con.end();
-                          } else {
-                            //Actualizamos la propiedad, para que aparezca como dueño el comprador.
-                            const query6 = `UPDATE Partida SET propiedad${n_propiedad} = '${id_jugador_comprador}' WHERE idPartida = '${id_partida}' `;
-                            con.query(query6, (error, results6) => {
-                              if (error) {
-                                reject(error);
-                                con.end();
-                              } else if (results5.affectedRows === 0) {
-                                resolve(-6);
-                                con.end();
-                              } else {
-                                //TODO HA SALIDO BIEN, DEVOLVEMOS 1.
-                                resolve(1);
-                                con.end();
-                              }
+                        } else {
+                            //una vez actualizado el numero de propiedades del vendedor, ahora actualizaremos la propiedad para que sea del comprador.
+                            //HAY QUE OBTENER EL NUMERO DE PROPIEDADES_TOTALES QUE TENIA ANTES DE COMPRAR ESTA PROPIEDAD EL COMPRADOR PARA PODER ACTUALIZARLO.
+                            const query3 = `SELECT numPropiedades FROM juega WHERE idPartida = '${id_partida}' AND email = '${id_jugador_comprador}' `;
+                            con.query(query3, (error, results3) => {
+                                if (error) {
+                                    reject(error);
+                                    con.end();
+                                } else if (results3.length === 0) {
+                                    resolve(-3);
+                                    con.end();
+                                } else {
+                                    //Actualizamos el numero de propiedades del comprador en + 1.
+                                    let total_propiedades_comprador = results3[0].numPropiedades;
+                                    total_propiedades_comprador++;
+                                    const query4 = `UPDATE juega SET numPropiedades = '${total_propiedades_comprador}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador_comprador}' `;
+                                    con.query(query4, (error, results4) => {
+                                        if (error) {
+                                            reject(error);
+                                            con.end();
+                                        } else if (results4.affectedRows === 0) {
+                                            resolve(-4);
+                                            con.end();
+                                        } else {
+                                            //Actualizamos la propiedad para que sea del comprador.
+                                            let n_casas = results[0].num_casas_propiedad;     //ESTO ES LO QUE HAY QUE VER SI DEJAMOS EL NUMERO DE CASAS QUE YA ESTABA O EMPIEZA CON 1 CASA SOLO.
+                                            const query5 = `UPDATE Partida SET nCasasPropiedad${n_propiedad} = '${n_casas}' WHERE idPartida = '${id_partida}' `;
+                                            con.query(query5, (error, results5) => {
+                                                if (error) {
+                                                    reject(error);
+                                                    con.end();
+                                                } else if (results5.affectedRows === 0) {
+                                                    resolve(-5);
+                                                    con.end();
+                                                } else {
+                                                    //Actualizamos la propiedad, para que aparezca como dueño el comprador.
+                                                    const query6 = `UPDATE Partida SET propiedad${n_propiedad} = '${id_jugador_comprador}' WHERE idPartida = '${id_partida}' `;
+                                                    con.query(query6, (error, results6) => {
+                                                        if (error) {
+                                                            reject(error);
+                                                            con.end();
+                                                        } else if (results5.affectedRows === 0) {
+                                                            resolve(-6);
+                                                            con.end();
+                                                        } else {
+                                                            //TODO HA SALIDO BIEN, DEVOLVEMOS 1.
+                                                            resolve(1);
+                                                            con.end();
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
                             });
-                          }
-                        });
-                      }
+                        }
                     });
-                  }
-                });
-              }
-            });
-          }
-          else{
-            //caso de no ser el propietario, directamente devolvemos -7.
-            resolve(-7);
-            con.end();
-          }
-        }
-      });
+                }
+                else {
+                    //caso de no ser el propietario, directamente devolvemos -7.
+                    resolve(-7);
+                    con.end();
+                }
+            }
+        });
     });
 }
-  
-  
-exports.anyadirPropiedadCompradorVendedor = anyadirPropiedadCompradorVendedor;
-  
-  
-  
-  /*
-  ===================VENDER PROPIEDAD A UN JUGADOR DADO===================
 
-  
-    El propietario de la vivienda pasara a ser el vendedor. 
-    Al comprador se le restara la cantidad y si es mayor que 0 el saldo aceptara la transferencia, 
-    en caso de que no haya dinero devolvera -1, en caso de que vaya todo bien, devolvera 1.
-  */
-  
-async function venderPropiedadJugador(id_partida, id_jugador_vendedor, id_jugador_comprador, cantidad, n_propiedad){
+
+exports.anyadirPropiedadCompradorVendedor = anyadirPropiedadCompradorVendedor;
+
+
+
+/*
+===================VENDER PROPIEDAD A UN JUGADOR DADO===================
+
+ 
+  El propietario de la vivienda pasara a ser el vendedor. 
+  Al comprador se le restara la cantidad y si es mayor que 0 el saldo aceptara la transferencia, 
+  en caso de que no haya dinero devolvera -1, en caso de que vaya todo bien, devolvera 1.
+*/
+
+async function venderPropiedadJugador(id_partida, id_jugador_vendedor, id_jugador_comprador, cantidad, n_propiedad) {
     //llamaremos a la funcion comprarPropiedad para que el id_jugador_comprador tenga su nueva propiedad.
     try {
-      const dinero = await dineroBanco(id_jugador_comprador,id_partida);
-      console.log("Dinero del comprador: ", dinero);
-      if(dinero >= cantidad){
-        //tiene dinero suficiente para comprarla. Primero le restamos el dinero y despues la compramos.
-        const res = await modificarDinero(id_partida,id_jugador_comprador,-cantidad);
-        console.log("Res1: ", res);
-        const res2 = await modificarDinero(id_partida,id_jugador_vendedor,cantidad);
-        console.log("Res2: ", res2);
-        const resultado = await anyadirPropiedadCompradorVendedor(id_partida,id_jugador_comprador,id_jugador_vendedor,n_propiedad);
-  
-        if(resultado == -7){
-          //no era del propietario, asi que volvemos a actualizar el dinero.
-          const res = await modificarDinero(id_partida,id_jugador_comprador,cantidad);
-          console.log("Res1: ", res);
-          const res2 = await modificarDinero(id_partida,id_jugador_vendedor,-cantidad);
-          console.log("Res2: ", res2);
+        const dinero = await dineroBanco(id_jugador_comprador, id_partida);
+        console.log("Dinero del comprador: ", dinero);
+        if (dinero >= cantidad) {
+            //tiene dinero suficiente para comprarla. Primero le restamos el dinero y despues la compramos.
+            const res = await modificarDinero(id_partida, id_jugador_comprador, -cantidad);
+            console.log("Res1: ", res);
+            const res2 = await modificarDinero(id_partida, id_jugador_vendedor, cantidad);
+            console.log("Res2: ", res2);
+            const resultado = await anyadirPropiedadCompradorVendedor(id_partida, id_jugador_comprador, id_jugador_vendedor, n_propiedad);
+
+            if (resultado == -7) {
+                //no era del propietario, asi que volvemos a actualizar el dinero.
+                const res = await modificarDinero(id_partida, id_jugador_comprador, cantidad);
+                console.log("Res1: ", res);
+                const res2 = await modificarDinero(id_partida, id_jugador_vendedor, -cantidad);
+                console.log("Res2: ", res2);
+            }
+            return resultado;
         }
-        return resultado;
-      }
-      else{
-        //no tenemos dinero suficiente, con lo cual devolvemos -1.
-        return -1;
-      }
-  
+        else {
+            //no tenemos dinero suficiente, con lo cual devolvemos -1.
+            return -1;
+        }
+
     } catch (error) {
-      // Si hay un error en la Promesa, devolvemos false.
-      console.error("Error en la Promesa: ", error);
-      return false;
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
 }
-  
+
 exports.venderPropiedadJugador = venderPropiedadJugador;
-  
-  
+
+
 
 /*
 =================== CREAR PARTIDA TORNEO =========================================
@@ -1967,37 +1967,37 @@ exports.venderPropiedadJugador = venderPropiedadJugador;
 
 //funcion la cual crea una partida y la enlaza con el torneo id_torneo.
 //El torneo tiene que existir y el jugador tambien.
-async function crearPartidaTorneo(id_jugador, id_torneo){
+async function crearPartidaTorneo(id_jugador, id_torneo) {
 
-    try{
-  
-      //llamamos a la funcion crearPartida.
-      let idPartidaCreada = await crearPartida(id_jugador);
-  
-      //actualizamos la partida para que pertenezca al torneo id_torneo.
-      const query = `UPDATE Partida SET perteneceTorneo = ${id_torneo} WHERE idPartida = ${idPartidaCreada}`;
-      con.query(query, (error, results) => {
-        if (error) {
-          reject(error);
-          con.end();
-        }
-        else if (results.length === 0) {
-          resolve(-1); // Si no existe jugador
-          con.end();
-        }
-        else{
-          resolve(true);
-          con.end();
-        }
-      });
-  
+    try {
+
+        //llamamos a la funcion crearPartida.
+        let idPartidaCreada = await crearPartida(id_jugador);
+
+        //actualizamos la partida para que pertenezca al torneo id_torneo.
+        const query = `UPDATE Partida SET perteneceTorneo = ${id_torneo} WHERE idPartida = ${idPartidaCreada}`;
+        con.query(query, (error, results) => {
+            if (error) {
+                reject(error);
+                con.end();
+            }
+            else if (results.length === 0) {
+                resolve(-1); // Si no existe jugador
+                con.end();
+            }
+            else {
+                resolve(true);
+                con.end();
+            }
+        });
+
     } catch (error) {
-      // Si hay un error en la Promesa, devolvemos false.
-      console.error("Error en la Promesa: ", error);
-      return false;
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
 }
-  
+
 exports.crearPartidaTorneo = crearPartidaTorneo;
 
 
@@ -2008,7 +2008,7 @@ exports.crearPartidaTorneo = crearPartidaTorneo;
 */
 // Establece el orden de los jugadores en la partida definida
 // En caso de que no existan los jugadores en juega devuelve faslse, sino true
-function establecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJugador4) {
+function establecerOrdenPartida(idPartida, idJugador1, idJugador2, idJugador3, idJugador4) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
@@ -2075,17 +2075,17 @@ function establecerOrdenPartida(idPartida,idJugador1,idJugador2,idJugador3,idJug
                                                                         con.end();
                                                                         resolve(true);
                                                                     }
-                                                                });     
+                                                                });
                                                             }
-                                                        });     
+                                                        });
                                                     }
                                                 });
                                             }
-                                        });     
+                                        });
                                     }
-                                });     
+                                });
                             }
-                        });     
+                        });
                     }
                 });
             }
@@ -2099,65 +2099,65 @@ exports.establecerOrdenPartida = establecerOrdenPartida;
 
 
 //devuelve el numero de jugadores de una partida.
-function comprobarJugadores(idPartida){
-    return new Promise((resolve, reject) => {
-      var con = db.crearConexion();
-      con.connect();
-      const query1 = `SELECT DISTINCT COUNT(email) as jugadores FROM juega WHERE idPartida='${idPartida}'`;
-      con.query(query1, (error, results1) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else if (results1.length === 0) {
-          con.end();
-          resolve(-1);
-        } 
-        else {
-          //devuelve el numero de jugadores de la partida
-          con.end();
-          resolve(results1[0].jugadores);
-        }
-      });
-    });
-  }
-  
-  
-  
-  //unir un jugador a una partida dada.
-  function unirBotPartida(idJugador, idPartida) {
-    return new Promise((resolve, reject) => {
-      var con = db.crearConexion();
-      con.connect();
-      const sql = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-        email, idPartida) VALUES (true, true, 0, 0.0, 0, 0, 0.0, 'default', 0 , '${idJugador}', ${idPartida})`;
-        con.query(sql, (error, results) => {      // Caso -- Error
-            if (error) {
-              console.log(sql);
-                con.end();
-                reject(error);
-            } else if (results.length == 0){
-              resolve(-1);
-            }
-             else {                                         // Caso -- Insert okay
-              con.end();
-              resolve(true);
-            }
-        });
-    });
-  }
-  
-  
-  
-exports.unirBotPartida = unirBotPartida;
-  
-  
-  
-//inicializamos la partida (enCurso=1).
-function inicializamosPartida(idPartida){
+function comprobarJugadores(idPartida) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
-        const query2 = `UPDATE partida SET enCurso='true' WHERE idPartida='${idPartida}'`;
+        const query1 = `SELECT DISTINCT COUNT(email) as jugadores FROM juega WHERE idPartida='${idPartida}'`;
+        con.query(query1, (error, results1) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results1.length === 0) {
+                con.end();
+                resolve(-1);
+            }
+            else {
+                //devuelve el numero de jugadores de la partida
+                con.end();
+                resolve(results1[0].jugadores);
+            }
+        });
+    });
+}
+
+
+
+//unir un jugador a una partida dada.
+function unirBotPartida(idJugador, idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const sql = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
+        email, idPartida) VALUES (true, true, 0, 0.0, 0, 0, 0.0, 'default', 0 , '${idJugador}', ${idPartida})`;
+        con.query(sql, (error, results) => {      // Caso -- Error
+            if (error) {
+                console.log(sql);
+                con.end();
+                reject(error);
+            } else if (results.length == 0) {
+                resolve(-1);
+            }
+            else {                                         // Caso -- Insert okay
+                con.end();
+                resolve(true);
+            }
+        });
+    });
+}
+
+
+
+exports.unirBotPartida = unirBotPartida;
+
+
+
+//inicializamos la partida (enCurso=1).
+function inicializamosPartida(idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query2 = `UPDATE Partida SET enCurso='1' WHERE idPartida='${idPartida}'`;
         con.query(query2, (error, results2) => {
             if (error) {
                 con.end();
@@ -2170,120 +2170,120 @@ function inicializamosPartida(idPartida){
                 con.end();
                 resolve(true);
             }
-        
+
         });
     });
 }
-  
+
 
 /*
 =================== INICIAR UNA PARTIDA =========================================================
 */
 //funcion la cual inicie una partida (poner a 1 enCurso). Si la partida tiene 4 jugadores la iniciamos normal, sino rellenamos con bots 
 //hasta llegar a 4 jugadores y la iniciamos.
-async function iniciarPartida(idPartida){
-    try{
-      //comprobamos el numero de jugadores de la partida.
-      let numJugadares = await comprobarJugadores(idPartida);
-      console.log(numJugadares);
-      if(numJugadares == 4){
-        //partida completa, la podemos inicializar.
-        let partidaIni = await inicializamosPartida(idPartida);
-        return partidaIni;
-      }
-      else{
-        let jugadoresRestantes = NUM_JUGADORES - numJugadares;
-        for(let i = 0; i < jugadoresRestantes; i++){
-          let randomNumber = Math.floor(Math.random() * 10000) + 1;
-          let email = `bot@bot${randomNumber}.com`;
-          let jugadorConcat = `bot${randomNumber}.com` +`,`+ 1234 +`,`+ email +`,`+ 0;
-          let resCrearJugador = await Jugador.insertarUsuario(jugadorConcat);
-          let resUnirPartida = await unirBotPartida(email,idPartida);
+async function iniciarPartida(idPartida) {
+    try {
+        //comprobamos el numero de jugadores de la partida.
+        let numJugadares = await comprobarJugadores(idPartida);
+        console.log(numJugadares);
+        if (numJugadares == 4) {
+            //partida completa, la podemos inicializar.
+            let partidaIni = await inicializamosPartida(idPartida);
+            return partidaIni;
         }
-        let partidaIni = await inicializamosPartida(idPartida);
-        return partidaIni;
-      }
-  
+        else {
+            let jugadoresRestantes = NUM_JUGADORES - numJugadares;
+            for (let i = 0; i < jugadoresRestantes; i++) {
+                let randomNumber = Math.floor(Math.random() * 10000) + 1;
+                let email = `bot@bot${randomNumber}.com`;
+                let jugadorConcat = `bot${randomNumber}.com` + `,` + 1234 + `,` + email + `,` + 0;
+                let resCrearJugador = await Jugador.insertarUsuario(jugadorConcat);
+                let resUnirPartida = await unirBotPartida(email, idPartida);
+            }
+            let partidaIni = await inicializamosPartida(idPartida);
+            return partidaIni;
+        }
+
     } catch (error) {
-      // Si hay un error en la Promesa, devolvemos false.
-      console.error("Error en la Promesa: ", error);
-      return false;
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
-  }
-  
-  exports.iniciarPartida = iniciarPartida;
+}
+
+exports.iniciarPartida = iniciarPartida;
 
 
 /*
 =================== ELIMINAR BOTS PARTIDA =========================================================
 */
 //se eliminan todos los bots los cuales han sido creados para la partida con id, idPartida.
-function eliminarBotsPartida(idPartida){
+function eliminarBotsPartida(idPartida) {
     return new Promise((resolve, reject) => {
-      var con = db.crearConexion();
-      con.connect();
-      //en la API de github hay que poner false en vez de 0.
-      const query = `SELECT * FROM juega WHERE email LIKE 'bot@bot%' AND idPartida ='${idPartida}'`;
-      con.query(query, (error, results) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else if (results.length === 0) {
-          con.end();
-          resolve(-1);
-        } else {
-          //todo ha ido bien, vamos a borrar de la tabla juega y de la tabla jugador los bots.
-          results.forEach((row, i) => {
-            con.query(`DELETE FROM juega WHERE email = '${results[i].email}' AND idPartida = '${idPartida}'`, (error, result) => {
-              if (error) {
+        var con = db.crearConexion();
+        con.connect();
+        //en la API de github hay que poner false en vez de 0.
+        const query = `SELECT * FROM juega WHERE email LIKE 'bot@bot%' AND idPartida ='${idPartida}'`;
+        con.query(query, (error, results) => {
+            if (error) {
                 con.end();
                 reject(error);
-              } else {
-                con.query(`DELETE FROM Jugador WHERE email = '${results[i].email}'`, (error, result) => {
-                  if (error) {
-                    con.end();
-                    reject(error);
-                  } else {
-                    // Si se eliminaron correctamente las instancias de ambas tablas, se pasa a la siguiente línea de results.
-                    if (i === results.length - 1) {
-                      con.end();
-                      resolve(true);
-                    }
-                  }
+            } else if (results.length === 0) {
+                con.end();
+                resolve(-1);
+            } else {
+                //todo ha ido bien, vamos a borrar de la tabla juega y de la tabla jugador los bots.
+                results.forEach((row, i) => {
+                    con.query(`DELETE FROM juega WHERE email = '${results[i].email}' AND idPartida = '${idPartida}'`, (error, result) => {
+                        if (error) {
+                            con.end();
+                            reject(error);
+                        } else {
+                            con.query(`DELETE FROM Jugador WHERE email = '${results[i].email}'`, (error, result) => {
+                                if (error) {
+                                    con.end();
+                                    reject(error);
+                                } else {
+                                    // Si se eliminaron correctamente las instancias de ambas tablas, se pasa a la siguiente línea de results.
+                                    if (i === results.length - 1) {
+                                        con.end();
+                                        resolve(true);
+                                    }
+                                }
+                            });
+                        }
+                    });
                 });
-              }
-            });
-          });
-        }    
-      });
+            }
+        });
     });
-  }
-  exports.eliminarBotsPartida = eliminarBotsPartida;
+}
+exports.eliminarBotsPartida = eliminarBotsPartida;
 
 
 /*
 =================== ACABAR PARTIDA =========================================================
 */
 //funcion la cual una vez acabada la partida, indica que dicha partida no esta en curso.
-function acabarPartida(idPartida){
+function acabarPartida(idPartida) {
     return new Promise((resolve, reject) => {
-      var con = db.crearConexion();
-      con.connect();
-      //en la API de github hay que poner false en vez de 0.
-      const query = `UPDATE partida SET enCurso='0' WHERE idPartida='${idPartida}'`;
-      con.query(query, (error, results) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else if (results.length === 0) {
-          con.end();
-          resolve(-1);
-        } else {
-          //todo ha ido bien, con lo que devolvemos true.
-          con.end();
-          resolve(true);
-        }    
-      });
+        var con = db.crearConexion();
+        con.connect();
+        //en la API de github hay que poner false en vez de 0.
+        const query = `UPDATE partida SET enCurso='0' WHERE idPartida='${idPartida}'`;
+        con.query(query, (error, results) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {
+                con.end();
+                resolve(-1);
+            } else {
+                //todo ha ido bien, con lo que devolvemos true.
+                con.end();
+                resolve(true);
+            }
+        });
     });
-  }
-  exports.acabarPartida = acabarPartida;
+}
+exports.acabarPartida = acabarPartida;
