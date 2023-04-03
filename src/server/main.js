@@ -10,6 +10,8 @@
 const funcionesPartidaTorneo = require('./funcionesPartidaTorneo');
 const funcionesJugador = require('./funcionesJugador');
 const funcionesTablero = require('./funcionesTablero');
+const funcionesSkin = require('./funcionesSkin');
+
 const conexion = require('./conexiones');
 
 
@@ -105,6 +107,7 @@ server.on("connection", (socket) => {
         // Si el mensaje es que se quiere comprar una propiedad
         if (mensaje[0] == "SI_COMPRAR_PROPIEDAD") {
             // Socket, ID_jugador,propiedad,ID_partida
+            // TODO: Que me pase el numero de la propiedad
             funcionesTablero.ComprarPropiedad(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
 
@@ -175,12 +178,16 @@ server.on("connection", (socket) => {
 
         // Se quiere comprar una skin
         if (mensaje[0] == "comprarSkin") {
-            // TODO:
+            // socket, ID_jugador, skin
+            funcionesSkin.ComprarSkin(socket, mensaje[1], mensaje[2]);
         }
 
-        // Se quiere ver las skins disponibles de un jugador
+        // Se quiere ver las skins disponibles para comprar
+        // Es decir, cuando se pulsa para ir a tienda
         if (mensaje[0] == "verSkins") {
             // TODO:
+            // socket, ID_jugador
+            funcionesSkin.VerSkins(socket, mensaje[1]);
         }
 
     });

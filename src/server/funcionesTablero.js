@@ -93,6 +93,14 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
         "Barcelona", "Treasure", "Zaragoza", "AeropuertoOrly", "Paris", "Banco", "Marsella",
         "Lyon", "IrCarcel", "Toronto", "Vancouver", "Treasure", "Ottawa", "AeropuertoDeLosAngeles",
         "NuevaYork", "LosAngeles", "LuxuryTax", "Chicago"];
+    
+    let posicionTablero = [];
+
+    // inicializamos el vector con números del 1 al 40
+    for (let i = 1; i <= 40; i++) {
+        posicionTablero.push(i);
+    }
+  
 
     // Comprobar si la nueva casilla es la de salida -> sumar 100$ + 200 de salida
     if (posicion == 1) {
@@ -236,7 +244,7 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
         // Obtener a quien pertenece la propiedad
         let IDjugador_propiedad;
         try {
-            IDjugador_propiedad = await API.obtenerJugadorPropiedad(tablero[posicion - 1], ID_partida);
+            IDjugador_propiedad = await API.obtenerJugadorPropiedad(posicionTablero[posicion - 1], ID_partida);
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -245,6 +253,7 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
         }
 
         let propiedad = tablero[posicion - 1];
+        let numPropiedad = posicionTablero[posicion - 1];
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad == -1) {
             // Dar opción de comprarla
@@ -262,11 +271,11 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
                 // obtenerPrecioPropiedad(propiedad, ID_partida)
                 // multiplicarlo por ECONOMIA
                 // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
-                let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
+                let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, numPropiedad);
                 // Multiplicamos el precio a pagar por la economía
                 let precio = precioPagar * ECONOMIA;
                 // Pagamos el alquiler con el nuevo precio
-                if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, propiedad, ID_partida, precio)) {
+                if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, numPropiedad, ID_partida, precio)) {
                     // obtener dinero de ambos jugadores
                     let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
                     let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
