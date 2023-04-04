@@ -2287,3 +2287,111 @@ function acabarPartida(idPartida) {
     });
 }
 exports.acabarPartida = acabarPartida;
+
+
+
+
+
+
+/*
+=================== OBTENER POSICION JUGADORES PARTIDA =========================================================
+*/
+// Devuelve el listado de jugadores y su posicion en la partida asi -> jugador1:posicion,jugaodr2:posicion ...
+//En caso de que no exista la aprtida entonces devuelve false
+function obtenerPosicionJugadores(idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT idPartida FROM Partida WHERE idPartida = '${idPartida}'`;
+        con.query(query, (error, results) => {                // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                  // Caso -- No existe ninguna partida
+                con.end();
+                resolve(false);
+            } else {                                            // Caso --  Existen la partida
+
+                const query2 = `SELECT email, posicion FROM juega WHERE idPartida = '${idPartida}'`;
+                con.query(query2, (error, results2) => {                // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else if (results2.length === 0) {                  // Caso -- No existe ninguna partida
+                        con.end();
+                        resolve(false);
+                    } else {                                            // Caso --  Existen la partida
+
+                        const respuesta = [];
+                        results2.forEach((row, i) => {
+                            let aux = [];
+                            aux[0] = row.email;
+                            aux[1] = row.posicion;
+                            respuesta[i] = aux.join(":");
+                        });
+
+                        let cadena = respuesta.join(",");
+                        con.end();
+                        resolve(cadena);
+                    }
+                });
+            }
+        });
+    });
+}
+
+
+exports.obtenerPosicionJugadores = obtenerPosicionJugadores;
+
+
+
+
+/*
+=================== OBTENER DINERO JUGADORES PARTIDA =========================================================
+*/
+// Devuelve el listado de jugadores y su dinero en la partida asi -> jugador1:dinero,jugaodr2:dinero ...
+//En caso de que no exista la aprtida entonces devuelve false
+function obtenerDineroJugadores(idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT idPartida FROM Partida WHERE idPartida = '${idPartida}'`;
+        con.query(query, (error, results) => {                // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                  // Caso -- No existe ninguna partida
+                con.end();
+                resolve(false);
+            } else {                                            // Caso --  Existen la partida
+
+                const query2 = `SELECT email, dinero FROM juega WHERE idPartida = '${idPartida}'`;
+                con.query(query2, (error, results2) => {                // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else if (results2.length === 0) {                  // Caso -- No existe ninguna partida
+                        con.end();
+                        resolve(false);
+                    } else {                                            // Caso --  Existen la partida
+
+                        const respuesta = [];
+                        results2.forEach((row, i) => {
+                            let aux = [];
+                            aux[0] = row.email;
+                            aux[1] = row.dinero;
+                            respuesta[i] = aux.join(":");
+                        });
+
+                        let cadena = respuesta.join(",");
+                        con.end();
+                        resolve(cadena);
+                    }
+                });
+            }
+        });
+    });
+}
+
+
+exports.obtenerDineroJugadores = obtenerDineroJugadores;
