@@ -1551,7 +1551,6 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         //const turno_siguiente = 0;
-        console.log(idJugador, idPartida);
         con.connect();
         const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
         con.query(query, (error, results) => {                          // Caso -- Error

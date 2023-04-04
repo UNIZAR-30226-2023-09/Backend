@@ -21,7 +21,6 @@ async function moverBot(IDJugador, IDpartida) {
     let dado1 = Math.ceil(Math.random() * 6);
     let dado2 = Math.ceil(Math.random() * 6);
     let sumaDados = dado1 + dado2;
-
     let estaCarcel = await API.verificarCarcel(IDJugador, IDpartida);
 
     // Si estás en la cárcel restamos un turno
@@ -41,11 +40,10 @@ async function moverBot(IDJugador, IDpartida) {
 
 // Funcion que automatiza la jugada de un bot
 async function jugar(IDusuario, IDpartida) {
-    console.log("| Partida:", IDpartida, " | Turno de bot:", IDusuario)
 
     try {
         let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverBot(IDusuario, IDpartida);
-
+        console.log("| Partida:", IDpartida, " | Turno de bot:", IDusuario, "| Posicion:", posicionNueva)
         // Comprobar si ha pasado por la casilla de salida en este turno
         if ((posicionNueva - sumaDados) <= 0) {
             // Si ha pasado, le sumamos 200$ al jugador
@@ -195,11 +193,13 @@ async function casillaActual(IDJugador, IDpartida, posicion) {
 
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad == -1) {
+            console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| Puede comprar propiedad:", propiedad);
             // Si tenemos dinero suficiente lo compramos
             ComprarPropiedad(IDJugador, posicion, IDpartida);
         }
         // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
         else if (IDjugador_propiedad != IDJugador) {
+            console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| Pagando alquiler a otro jugador");
             try {
                 let precioPagar = await API.obtenerPrecioPropiedad(IDpartida, propiedad);
                 // Multiplicamos el precio a pagar por la economía
@@ -223,7 +223,6 @@ async function ComprarPropiedad(IDJugador, propiedad, IDpartida) {
     try {
         let precioPropiedad = await API.obtenerPrecioPropiedad(IDpartida, propiedad);
         API.comprarPropiedad(IDpartida, IDJugador, propiedad, precioPropiedad);
-        // Se intenta comprar y ya
     }
     catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
