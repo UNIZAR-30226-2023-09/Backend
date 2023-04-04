@@ -344,8 +344,9 @@ function verificarCarcel(jugador, idPartida) {
                     } else {
                         //si ha ido bien devolvemos la posicion.
                         let turnosCarcel = results2[0].nTurnosCarcel;
-                        resolve(turnosCarcel);
                         con.end();
+                        resolve(turnosCarcel);
+                        
                     }
                 });
             }
