@@ -804,6 +804,38 @@ async function obtenerResultadoAcabarPartida(idPartida) {
       return false;
     }
 }
+
+
+//FUNCIONA OKEY.
+async function obtenerObtenerPosicionJugadores(idPartida){
+    try {
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.obtenerPosicionJugadores(idPartida);
+        console.log("El resultado obtenido de obtener posicion partida es:", resultado);
+        return resultado;
+  
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerObtenerDineroJugadores(idPartida){
+    try {
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.obtenerDineroJugadores(idPartida);
+        console.log("El resultado obtenido de obtener dinero partida es:", resultado);
+        return resultado;
+  
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+  }
   
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -888,6 +920,11 @@ async function obtenerResultadoAcabarPartida(idPartida) {
 // obtenerResultadoEliminarBotsPartida(2);
 
 // obtenerResultadoAcabarPartida(5);
+
+
+//obtenerObtenerPosicionJugadores(1);
+
+//obtenerObtenerDineroJugadores(1);
 
 
 

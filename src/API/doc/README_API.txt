@@ -240,3 +240,13 @@ function acabarPartida(idPartida);
 
 //se eliminan todos los bots los cuales han sido creados para la partida con id, idPartida.
 function eliminarBotsPartida(idPartida);
+
+
+// Devuelve el listado de jugadores y su posicion en la partida asi -> jugador1:posicion,jugaodr2:posicion ...
+//En caso de que no exista la aprtida entonces devuelve false
+function obtenerPosicionJugadores(idPartida);
+
+
+// Devuelve el listado de jugadores y su dinero en la partida asi -> jugador1:dinero,jugaodr2:dinero ...
+//En caso de que no exista la aprtida entonces devuelve false
+function obtenerDineroJugadores(idPartida) ;
