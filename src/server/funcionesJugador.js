@@ -7,7 +7,7 @@
  ---------------------------------------------------------------------------
 */
 
-const con = require('../API/db');
+// const con = require('../API/db');
 const API = require('../API/jugadorAPI');
 const APIpartida = require('../API/partidaAPI');
 const conexion = require('./conexiones');
@@ -91,7 +91,7 @@ async function FinTurno(ID_jugador, ID_partida) {
     }
     else {   // Es un jugador
         // Buscar jugadores en el pool 
-        let conexionUsuario = con.buscarUsuario(jugador);
+        let conexionUsuario = conexion.buscarUsuario(jugador);
         console.log("| Partida:", ID_partida, " | Turno de jugador:", ID_jugador);
         conexionUsuario.send(`TURNO,${jugador},${ID_partida}`);
     }

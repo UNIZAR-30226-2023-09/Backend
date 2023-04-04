@@ -346,7 +346,7 @@ function verificarCarcel(jugador, idPartida) {
                         let turnosCarcel = results2[0].nTurnosCarcel;
                         con.end();
                         resolve(turnosCarcel);
-                        
+
                     }
                 });
             }
@@ -766,14 +766,11 @@ function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad)
             } else if (results1.length === 0) {
                 resolve(-1);
             } else {
-                //devolvemos el dinero del usuario.
                 let propiet = results1[0].duenyo;
                 if (propiet != null) {
-                    //tiene dueño, con lo que devolvemos false
                     resolve(false);
                 }
                 else {
-                    //esta vacia, con lo que comprobamos que tenga saldo suficiente, y si es asi se lo resta al id_jugador y la compra.
                     const query2 = `SELECT dinero, numPropiedades FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
                     con.query(query2, (error, results2) => {
                         if (error) {
@@ -781,10 +778,8 @@ function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad)
                         } else if (results2.length === 0) {
                             resolve(-1);
                         } else {
-                            //devolvemos el dinero del usuario.
                             let moneyJugador = results2[0].dinero;
                             if (moneyJugador >= precio_propiedad) {
-                                //tiene suficiente dinero, con lo que la compra y se le descuenta el dinero.
                                 moneyJugador -= precio_propiedad;
                                 const query3 = `UPDATE juega SET dinero = ${moneyJugador} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
                                 con.query(query3, (error, results3) => {
@@ -793,7 +788,6 @@ function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad)
                                     } else if (results3.affectedRows === 0) {
                                         resolve(false);
                                     } else {
-                                        //una vez actualizado el dinero, actualizamos para que la propiedad sea del jugador y el numPropiedades del jugador ++.
                                         let prop = results2[0].numPropiedades;
                                         prop++;
                                         const query4 = `UPDATE juega SET numPropiedades = ${prop} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
@@ -803,24 +797,23 @@ function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad)
                                             } else if (results4.affectedRows === 0) {
                                                 resolve(false);
                                             } else {
-                                                //nos queda solamente actualizar la propieda con el nuevo propietario.
-                                                const query5 = `UPDATE Partida SET ${concat} = ${id_jugador} WHERE idPartida = '${id_partida}'`;
+                                                const query5 = `UPDATE Partida SET ${concat} = '${id_jugador}' WHERE idPartida = '${id_partida}'`;
                                                 con.query(query5, (error, results5) => {
                                                     if (error) {
                                                         reject(error);
                                                     } else if (results5.affectedRows === 0) {
                                                         resolve(false);
                                                     } else {
-                                                        //todo ha ido bien, asi que devolvemos true;
                                                         resolve(true);
                                                     }
+                                                    // Aquí cerramos la conexión
+                                                    con.end();
                                                 });
                                             }
                                         });
                                     }
                                 });
                             } else {
-                                //si no tiene suficiente dinero, devolvemos false.
                                 resolve(false);
                             }
                         }
@@ -828,9 +821,9 @@ function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad)
                 }
             }
         });
-        con.end();
     });
 }
+
 
 
 exports.comprarPropiedad = comprarPropiedad;
@@ -1557,7 +1550,6 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
         con.query(query, (error, results) => {                          // Caso -- Error
             if (error) {
                 con.end();
-                console.log("1");
                 reject(error);
             } else if (results.length === 0) {                          // Caso -- No existe el Jugador
                 con.end();
@@ -1567,7 +1559,6 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                 con.query(query2, (error, results2) => {                // Caso -- Error
                     if (error) {
                         con.end();
-                        console.log("2");
                         reject(error);
                     } else if (results2.length === 0) {                 // Caso -- No existe La partida
                         con.end();
@@ -1590,7 +1581,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                 const sql = `SELECT esBotInicial, esBot, email FROM juega WHERE idPartida = '${idPartida}' AND turno = '${turno_siguiente}'`;
                                 con.query(sql, (error, results3) => {        // Caso -- Error
                                     if (error) {
-                                        con.end;
+                                        con.end();
                                         reject(error);
                                     } else {
                                         const respuesta = [];
@@ -1609,7 +1600,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                         }
                                         let cadena = respuesta.join(",");
                                         con.end();
-                                        resolve(cadena)
+                                        resolve(cadena);
                                     }
                                 });
 
