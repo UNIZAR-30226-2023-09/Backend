@@ -82,7 +82,6 @@ function modificarDinero(idPartida, jugador, cantidad) {
         con.connect();
         // Comprobar si el jugador existe en la tabla "juega".
         const query = `SELECT dinero FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
-        console.log(query);
         con.query(query, (error, results) => {
             if (error) {
                 console.log("ERROR!!");
@@ -132,7 +131,6 @@ function pagarImpuestos(jugador, cantidad, idPartida) {
         con.connect();
         var con = db.crearConexion();
         const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
-        console.log(query);
         con.query(query, (error, results) => {
             if (error) {
                 con.end(); // Aquí se debe cerrar la conexión
@@ -375,7 +373,7 @@ function sumarDineroBote(cantidad, idPartida) {
         var con = db.crearConexion();
         con.connect();
         //Selecciona el bote de la partida.
-        const query = `SELECT bote FROM partida WHERE idPartida = '${idPartida}'`;
+        const query = `SELECT bote FROM Partida WHERE idPartida = '${idPartida}'`;
         con.query(query, (error, results) => {
             if (error) {
                 console.log("ERROR!!");
@@ -388,7 +386,7 @@ function sumarDineroBote(cantidad, idPartida) {
             }
             else {
                 // Realizar la consulta para modificar el dinero del jugador
-                const query = `UPDATE partida SET bote = ? WHERE idPartida = ?`;
+                const query = `UPDATE Partida SET bote = ? WHERE idPartida = ?`;
                 let bote = results[0].bote;
                 bote += cantidad;
                 const values = [bote, idPartida];
@@ -429,7 +427,6 @@ function obtenerDineroBote(id_jugador, id_partida) {
         con.connect();
         // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
         const query = `SELECT bote from partida where idPartida = '${id_partida}'`;
-        console.log(query);
         con.query(query, (error, results) => {
             if (error) {
                 console.log("ERROR!!");
@@ -1554,11 +1551,13 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         //const turno_siguiente = 0;
+        console.log(idJugador, idPartida);
         con.connect();
         const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
         con.query(query, (error, results) => {                          // Caso -- Error
             if (error) {
                 con.end();
+                console.log("1");
                 reject(error);
             } else if (results.length === 0) {                          // Caso -- No existe el Jugador
                 con.end();
@@ -1568,6 +1567,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                 con.query(query2, (error, results2) => {                // Caso -- Error
                     if (error) {
                         con.end();
+                        console.log("2");
                         reject(error);
                     } else if (results2.length === 0) {                 // Caso -- No existe La partida
                         con.end();
@@ -1577,6 +1577,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                         con.query(query2, (error, results2) => {        // Caso -- Error
                             if (error) {
                                 con.end();
+                                console.log("3");
                                 reject(error);
                             } else if (results2.length === 0) {         // Caso -- No existe el Jugador en esa partida
                                 con.end();

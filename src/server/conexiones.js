@@ -60,9 +60,9 @@ function eliminarUsuario(nombreUsuario) {
 function buscarUsuario(IDusuario) {
     const index = usuarios[IDusuario];
     if (index !== undefined) {
-        console.log('Se ha encontrado al socket del usuario:', IDusuario);
         return connections[index].socket;
     }
+    console.log('No se ha encontrado al socket del usuario:', IDusuario);
     return null;
 }
 
@@ -70,9 +70,9 @@ function buscarUsuario(IDusuario) {
 function buscarConexion(socket) {
     const index = connections.findIndex(conn => conn.socket === socket);
     if (index !== -1) {
-        console.log('Se ha encontrado al usuario');
         return connections[index].name;
     }
+    console.log('Se ha encontrado al usuario asociado al socket');
     return null;
 }
 

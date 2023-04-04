@@ -101,12 +101,7 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
         // Empezamos la partida 
         if (await APIpartida.iniciarPartida(ID_partida, ID_jugador)) {
 
-            // Dado un ID_partida que devuelva los jugadores de la partida, si es un bot que devuelva 'bot' como el jugador
-            // jugador1,jugador2,jugador3,jugador4
             let jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
-            console.log(jugadores);
-            //jugadores = jugadores + ",a2:1,a3:1,a4:1";
-            //console.log(jugadores);
             let jugadoresPartida = jugadores.split(",");
             let jugadores_struct = new Array(4);
             let aux;
@@ -115,8 +110,9 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                 jugadores_struct[i] = new Usuario(aux[0], aux[1]);
             }
 
-            mostrarJugadores(jugadores_struct);
+            mostrarJugadores(jugadores_struct, ID_partida);
 
+            // TODO: Hacer orden aleatorio
             // Ordenar aleatoriamente los jugadores de la partida
             // for (let i = jugadores_struct.length - 1; i > 0; i--) {
             //     const j = Math.floor(Math.random() * (i + 1)); // Seleccionamos un índice aleatorio
@@ -124,12 +120,10 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
             // }
 
             // TODO: Guardar en la base el orden de los jugadores funcion -> establecerOrdenPartida(ID_partida,jugadores_array[0], jugadores_array[1], jugadores_array[2], jugadores_array[3]);
-
+            APIpartida.establecerOrdenPartida(ID_partida, jugadores_struct[0].id, jugadores_struct[1].id, jugadores_struct[2].id, jugadores_struct[3].id)
             for (let i = 0; i < jugadores_struct.length; i++) {
-                console.log('pp');
                 // Si el jugador no es un bot
                 if (jugadores_struct[i].esBot === "0") {
-                    console.log('ppopo');
                     let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
                     if (conexionUsuario === null) {
                         console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
@@ -143,7 +137,6 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
             if (jugadores_struct[0].esBot === 1) {
                 bot.jugar(jugadores_struct[0].id, ID_partida);
             } else {
-                con.mostrarUsuarios();
                 let conexionUsuario = con.buscarUsuario(jugadores_struct[0].id);
                 if (conexionUsuario === null) {
                     console.log('NO SE ENCUENTRA ESE USUARIO');
@@ -171,10 +164,12 @@ function Usuario(id, esBot) {
     this.esBot = esBot;
 }
 
-function mostrarJugadores(jugadores_struct) {
-    console.log("Jugadores de la partida:");
+function mostrarJugadores(jugadores_struct, IDPartida) {
+    console.log("Jugadores de la partida:", IDPartida);
+    console.log("---------------------------------------");
     for (let i = 0; i < jugadores_struct.length; i++) {
         console.log(`Jugador ${i + 1}: ${jugadores_struct[i].id} (${jugadores_struct[i].esBot})`);
     }
+    console.log("---------------------------------------");
 }
 

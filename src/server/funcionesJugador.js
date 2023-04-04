@@ -79,9 +79,9 @@ async function FinTurno(ID_jugador, ID_partida) {
 
     // Llamar a la función de la api para obtener el siguiente jugador
     let siguienteJugador = await APIpartida.obtenerSiguienteJugador(ID_jugador, ID_partida);
-    console.log("Siguiente jugador: ", siguienteJugador);
+    console.log("BOLUDO", siguienteJugador);
     let resultado = siguienteJugador.split(",");
-    let resultado2 = resultado.split(":");
+    let resultado2 = resultado[0].split(":");
     let jugador = resultado2[0];
     let esBot = resultado2[1];
     let finRonda = resultado[1];
@@ -91,8 +91,9 @@ async function FinTurno(ID_jugador, ID_partida) {
     }
     else {   // Es un jugador
         // Buscar jugadores en el pool 
-        let conexionUsuario = con.buscarUsuario(siguienteJugador);
-        conexionUsuario.send(`TURNO,${siguienteJugador},${ID_partida}`);
+        let conexionUsuario = con.buscarUsuario(jugador);
+        console.log("| Partida:", ID_partida, " | Turno de jugador:", ID_jugador);
+        conexionUsuario.send(`TURNO,${jugador},${ID_partida}`);
     }
     // TODO: Enviar a los demas jugadores la info de que ha cambiado en mi estado(dinero, posicion, propiedades, etc)
 

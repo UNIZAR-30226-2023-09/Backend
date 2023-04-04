@@ -37,7 +37,7 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
         */
 
         // Comprobar si ha pasado por la casilla de salida en este turno
-        if ((posicionNueva - sumaDados) <= 0) {
+        if ((posicionNueva - sumaDados) < 0) {
             // Si ha pasado, le sumamos 200$ al jugador
             if (await API.modificarDinero(ID_partida, ID_jugador, 200)) {
                 let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
@@ -46,7 +46,7 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
         }
 
         // Comprobar la casilla y realizar la acción oportuna
-        comprobarCasilla(posicionNueva, ID_jugador, ID_partida);
+        comprobarCasilla(socket, posicionNueva, ID_jugador, ID_partida);
     }
     catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
@@ -86,21 +86,21 @@ async function moverJugador(ID_jugador, ID_partida) {
     return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
 
-async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
+async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     let tablero = ["Salida", "Monterrey", "Guadalajara", "Treasure", "Tax", "AeropuertoNarita",
         "Tokio", "Kioto", "Superpoder", "Osaka", "Carcel", "Roma", "Milan", "Casino", "Napoles",
         "Estacion", "Londres", "Superpoder", "Manchester", "Edimburgo", "Bote", "Madrid",
         "Barcelona", "Treasure", "Zaragoza", "AeropuertoOrly", "Paris", "Banco", "Marsella",
         "Lyon", "IrCarcel", "Toronto", "Vancouver", "Treasure", "Ottawa", "AeropuertoDeLosAngeles",
         "NuevaYork", "LosAngeles", "LuxuryTax", "Chicago"];
-    
+
     let posicionTablero = [];
 
     // inicializamos el vector con números del 1 al 40
     for (let i = 1; i <= 40; i++) {
         posicionTablero.push(i);
     }
-  
+
 
     // Comprobar si la nueva casilla es la de salida -> sumar 100$ + 200 de salida
     if (posicion == 1) {
@@ -267,6 +267,7 @@ async function comprobarCasilla(posicion, ID_jugador, ID_partida) {
         // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
         else if (IDjugador_propiedad != ID_jugador) {
             try {
+                console.log("AAAAA");
                 // Pagar al jugador que posee la propiedad
                 // obtenerPrecioPropiedad(propiedad, ID_partida)
                 // multiplicarlo por ECONOMIA

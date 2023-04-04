@@ -150,7 +150,7 @@ server.on("connection", (socket) => {
             //                      actualizar economía
             // Si es un jugador mando: TURNO,ID_jugador,ID_partida
             // socket, ID_jugador, ID_partida
-            funcionesJugador.FinTurno(socket, mensaje[1], mensaje[2]);
+            funcionesJugador.FinTurno(mensaje[1], mensaje[2]);
         }
 
         // Si el mensaje es que se quiere crear un torneo
