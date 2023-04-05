@@ -44,12 +44,15 @@ function moverJugador(jugador, posiciones, idPartida) {
             } else if (results.length === 0) {
                 // Si el jugador no existe, devolver 0.
                 con.end();
-                resolve(0);
+                resolve(-1);
             }
             else {
                 // Si el jugador existe, actualizar su posición
                 const partidaId = results[0].idPartida;
-                const nuevaPosicion = results[0].posicion + posiciones;
+                let nuevaPosicion = (results[0].posicion + posiciones) % 41;
+                if (nuevaPosicion === 0) {
+                    nuevaPosicion = 1;
+                }
                 const updateQuery = `UPDATE juega SET posicion = ? WHERE email = ? AND idPartida = ?`;
                 //si metes entre [] los valores, son los de la query que ponemos interrogantes.
                 con.query(updateQuery, [nuevaPosicion, jugador, partidaId], (error, results) => {
@@ -427,7 +430,7 @@ function obtenerDineroBote(id_jugador, id_partida) {
         var con = db.crearConexion();
         con.connect();
         // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
-        const query = `SELECT bote from partida where idPartida = '${id_partida}'`;
+        const query = `SELECT bote from Partida where idPartida = '${id_partida}'`;
         con.query(query, (error, results) => {
             if (error) {
                 console.log("ERROR!!");
@@ -462,7 +465,7 @@ function obtenerDineroBote(id_jugador, id_partida) {
                                     reject(error);
                                 } else {
                                     //ha ido todo bien, actualizamos el bote a 0.
-                                    const query4 = `UPDATE partida SET bote = ? WHERE idPartida = ?`;
+                                    const query4 = `UPDATE Partida SET bote = ? WHERE idPartida = ?`;
                                     var dineroCero = 0;
                                     const values2 = [dineroCero, id_partida];
                                     con.query(query4, values2, (error, results3) => {
@@ -755,6 +758,7 @@ exports.obtenerNumPropiedades = obtenerNumPropiedades;
 // Compra una propiedad la cual tiene QUE ESTAR VACIA SI O SI. devuelve true, si ha ido correcto devuelve true
 // y false en caso de que no haya sido posible comprarla. 
 function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad) {
+    console.log("COMPRAR", id_partida, id_jugador, n_propiedad, precio_propiedad);
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
@@ -910,8 +914,8 @@ function crearPartida(id_jugador) {
           precioPropiedad16,precioPropiedad17,precioPropiedad18,precioPropiedad19,precioPropiedad20,precioPropiedad21,precioPropiedad22,
           precioPropiedad23,precioPropiedad24,precioPropiedad25,precioPropiedad26,precioPropiedad27,precioPropiedad28,precioPropiedad29,
           precioPropiedad30,precioPropiedad31,precioPropiedad32,precioPropiedad33,precioPropiedad34,precioPropiedad35,precioPropiedad36,
-          precioPropiedad37,precioPropiedad38,precioPropiedad39,precioPropiedad40) VALUES (0, 0.0, 'Inicial', 0.0, 0.0, 1,1,1,1,1,1,1,1,
-          1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)`;
+          precioPropiedad37,precioPropiedad38,precioPropiedad39,precioPropiedad40) VALUES (0, 0.0, 'Inicial', 1.0, 0.0,60.0,60.0,0.0,0.0,200.0,100.0,100.0,
+          0.0,120.0,0.0,140.0,140.0,0.0,160.0,200.0,180.0,0.0,180.0,200.0,0.0,220.0,220.0,0.0,240.0,200.0,260.0,0.0,260.0,280.0,0.0,300.0,300.0,0.0,320.0,200.0,350.0,350.0,0.0,400.0)`;
                 con.query(query2, (error, results2) => {
                     if (error) {
                         reject(error);
@@ -937,7 +941,7 @@ function crearPartida(id_jugador) {
                                 //ahora hay que enlazarlo con la tabla juega
                                 let maxIdPartida = results3[0].maximo;  //id de la partida creada.
                                 const query3 = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-                  email, idPartida) VALUES (false, false, 0, 0.0, 0, 0, 0.0, 'default', 0 , '${id_jugador}', ${maxIdPartida})`;
+                  email, idPartida) VALUES (false, false, 0, 0.0, 0, 0, 1000.0, 'default', 0 , '${id_jugador}', ${maxIdPartida})`;
                                 con.query(query3, (error, results3) => {
                                     if (error) {
                                         reject(error);
@@ -1019,7 +1023,7 @@ function unirsePartida(idJugador, idPartida) {
                                     } else {                                            // Caso -- El jugador no esta jugando ninguna partida
                                         const sql = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, 
                                         dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-                                        const values = [false, false, 0, 0.0, 0, 0, 0.0, 'default', 0, idJugador, idPartida];
+                                        const values = [false, false, 0, 0.0, 0, 0, 1000.0, 'default', 0, idJugador, idPartida];
                                         con.query(sql, values, (error, results5) => {      // Caso -- Error
                                             if (error) {
                                                 con.end();
@@ -1212,7 +1216,7 @@ function obtenerNumCasasPropiedad(idPartida, propiedad) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
-        let numCasas = 'nCasasProp' + propiedad;
+        let numCasas = 'nCasasPropiedad' + propiedad;
         const query1 = `SELECT ${numCasas} as num_casas FROM Partida WHERE idPartida = '${idPartida}'`;
         con.query(query1, (error, results1) => {
             if (error) {
@@ -1239,7 +1243,7 @@ exports.obtenerNumCasasPropiedad = obtenerNumCasasPropiedad;
 function liberarPropiedadJugador(id_partida, id_jugador, propiedad, dineroJugador, dineroPropiedad) {
     return new Promise((resolve, reject) => {
         var concat = 'propiedad' + propiedad;
-        var concat2 = 'nCasasProp' + propiedad;
+        var concat2 = 'nCasasPropiedad' + propiedad;
         var con = db.crearConexion();
         con.connect();
         // Primero ponemos a null el propietario.
@@ -1286,17 +1290,20 @@ function obtenerPrecioPropiedad(idPartida, numPropiedades) {
         var con = db.crearConexion();
         con.connect();
         let precio = 'precioPropiedad' + numPropiedades;
-        const query1 = `SELECT ${precio} FROM Partida WHERE idPartida = '${idPartida}'`;
+        const query1 = `SELECT ${precio} as price FROM Partida WHERE idPartida = '${idPartida}'`;
         con.query(query1, (error, results) => {
             if (error) {
+                con.end();
                 reject(error);
             } else if (results.affectedRows === 0) {
+                con.end();
                 resolve(-1);
             } else {
                 //TODO HA SALIDO CORRECTO, CON LO CUAL DEVOLVEMOS TRUE.
-                resolve(true);
+                let precio = results[0].price;
+                resolve(precio);
+                con.end();
             }
-            con.end();
         });
     });
 }
@@ -2121,7 +2128,7 @@ function unirBotPartida(idJugador, idPartida) {
         var con = db.crearConexion();
         con.connect();
         const sql = `INSERT INTO juega (esBotInicial, esBot, numPropiedades, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-        email, idPartida) VALUES (true, true, 0, 0.0, 0, 0, 0.0, 'default', 0 , '${idJugador}', ${idPartida})`;
+        email, idPartida) VALUES (true, true, 0, 0.0, 0, 0, 1000.0, 'default', 0 , '${idJugador}', ${idPartida})`;
         con.query(sql, (error, results) => {      // Caso -- Error
             if (error) {
                 console.log(sql);

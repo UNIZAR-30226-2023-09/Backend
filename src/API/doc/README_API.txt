@@ -249,4 +249,4 @@ function obtenerPosicionJugadores(idPartida);
 
 // Devuelve el listado de jugadores y su dinero en la partida asi -> jugador1:dinero,jugaodr2:dinero ...
 //En caso de que no exista la aprtida entonces devuelve false
-function obtenerDineroJugadores(idPartida) ;
+function obtenerDineroJugadores(idPartida);

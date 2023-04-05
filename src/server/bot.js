@@ -9,6 +9,7 @@
 
 const API = require('../API/partidaAPI');
 const jugador = require('./funcionesJugador');
+const ECONOMIA = 1;
 
 /**
  * Realiza el movimiento de un bot.
@@ -202,11 +203,11 @@ async function casillaActual(IDJugador, IDpartida, posicion) {
         else if (IDjugador_propiedad != IDJugador) {
             console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| Pagando alquiler a otro jugador");
             try {
-                let precioPagar = await API.obtenerPrecioPropiedad(IDpartida, propiedad);
+                let precioPagar = await API.obtenerPrecioPropiedad(IDpartida, posicion);
                 // Multiplicamos el precio a pagar por la economía
                 let precio = precioPagar * ECONOMIA;
                 // Pagamos el alquiler con el nuevo precio
-                API.pagarAlquiler(IDJugador, IDjugador_propiedad, propiedad, IDpartida, precio);
+                API.pagarAlquiler(IDJugador, IDjugador_propiedad, posicion, IDpartida, precio);
             }
             catch (error) {
                 // Si hay un error en la Promesa, devolvemos false.

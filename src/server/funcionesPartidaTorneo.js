@@ -111,6 +111,8 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
             }
 
             mostrarJugadores(jugadores_struct, ID_partida);
+            let dineroA = await APIpartida.obtenerDinero(ID_jugador, ID_partida);
+            console.log("Dinero inicial a:", dineroA);
 
             // TODO: Hacer orden aleatorio
             // Ordenar aleatoriamente los jugadores de la partida
