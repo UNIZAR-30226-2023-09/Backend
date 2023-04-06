@@ -11,7 +11,8 @@
 const API = require('../API/jugadorAPI');
 const APIpartida = require('../API/partidaAPI');
 const conexion = require('./conexiones');
-const bot = require('./bot')
+const bot = require('./bot');
+const con = require('./conexiones');
 
 // Registra al jugador dado si es posible
 async function Registrarse(socket, email, contrasenya, nombre) {
@@ -94,6 +95,23 @@ async function FinTurno(ID_jugador, ID_partida) {
         console.log("| Partida:", ID_partida, " | Turno de jugador:", ID_jugador);
         conexionUsuario.send(`TURNO,${jugador},${ID_partida}`);
     }
+
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        // Si el jugador no es un bot
+        if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
+            let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
+            if (conexionUsuario === null) {
+                console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
+                return;
+            }
+            let dinero = await APIpartida.obtenerDinero(ID_jugador, ID_partida);
+            let casilla = await APIpartida.obtenerPosicion(ID_jugador, ID_partida);
+            let propiedades = await APIpartida.obtenerPropiedades(ID_partida, ID_jugador);
+            conexionUsuario.send(`ACTUALIZAR_USUARIO,${ID_jugador},${dinero},${casilla},${propiedades}`);
+        }
+    }
+
     // TODO: Enviar a los demas jugadores la info de que ha cambiado en mi estado(dinero, posicion, propiedades, etc)
 
     // Comprobar si es fin de ronda y realizar lo oportuno con esta
@@ -102,3 +120,21 @@ async function FinTurno(ID_jugador, ID_partida) {
     }
 }
 exports.FinTurno = FinTurno;
+
+async function obtenerJugadoresPartida(ID_partida) {
+    let jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
+    let jugadoresPartida = jugadores.split(",");
+    let jugadores_struct = new Array(4);
+    let aux;
+    for (let i = 0; i < 4; i++) {
+        aux = jugadoresPartida[i].split(":");
+        jugadores_struct[i] = new Usuario(aux[0], aux[1]);
+    }
+    return jugadores_struct
+}
+
+// Almacenar el usuario y si es un bot
+function Usuario(id, esBot) {
+    this.id = id;
+    this.esBot = esBot;
+}

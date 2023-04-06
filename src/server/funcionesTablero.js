@@ -69,9 +69,7 @@ async function moverJugador(ID_jugador, ID_partida) {
     let dado2 = Math.ceil(Math.random() * 6);
     let sumaDados = dado1 + dado2;
 
-    //let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
-    let estaCarcel = 0;
-    console.log("Salgo");
+    let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
     // Si estás en la cárcel restamos un turno
     if (estaCarcel > 0) {
         API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
@@ -83,7 +81,6 @@ async function moverJugador(ID_jugador, ID_partida) {
         estaCarcel = 0;
     }
     // Movemos al jugador -> obtenemos su nueva posición
-    console.log("PUTO");
     let posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
     return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
