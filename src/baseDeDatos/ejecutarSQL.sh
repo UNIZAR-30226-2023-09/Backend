@@ -231,6 +231,7 @@ then
 		turno           INT,
 		esBotInicial    BOOLEAN NOT NULL,
 		esBot           BOOLEAN NOT NULL,
+		jugadorVivo     BOOLEAN NOT NULL,
 		numPropiedades  INT NOT NULL,
 		dineroInvertido FLOAT NOT NULL,
 		nTurnosCarcel   INT NOT NULL,
