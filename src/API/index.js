@@ -836,6 +836,60 @@ async function obtenerObtenerPosicionJugadores(idPartida){
         return false;
     }
   }
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoEstadoJugadoresPartida(idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.estadoJugadoresPartida(idPartida);
+      console.log("El resultado obtenido de analizar el estado de la partida es:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoActualizarPosicionJugador(idJugador,idPartida,posiciones) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.actualizarPosicionJugador(idJugador,idPartida,posiciones);
+      console.log("El resultado obtenido de actualizar posicion de un jugador es:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoJugadorAcabadoPartida(idJugador,idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.jugadorAcabadoPartida(idJugador,idPartida);
+      console.log("El resultado obtenido de acabar partida para ujn jugador es:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
   
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -921,10 +975,15 @@ async function obtenerObtenerPosicionJugadores(idPartida){
 
 // obtenerResultadoAcabarPartida(5);
 
-
 //obtenerObtenerPosicionJugadores(1);
 
 //obtenerObtenerDineroJugadores(1);
+
+// obtenerResultadoEstadoJugadoresPartida(1);
+
+// obtenerResultadoActualizarPosicionJugador('juan@example.com',1,20);
+
+// obtenerResultadoJugadorAcabadoPartida('juan@example.com',1);
 
 
 
