@@ -68,20 +68,21 @@ async function moverJugador(ID_jugador, ID_partida) {
     let dado1 = Math.ceil(Math.random() * 6);
     let dado2 = Math.ceil(Math.random() * 6);
     let sumaDados = dado1 + dado2;
-
+    let posicionNueva;
     let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
-    // Si estás en la cárcel restamos un turno
-    if (estaCarcel > 0) {
-        API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
-    }
-
     // Si estás en la cárcel y has sacado dobles -> sales
     if (dado1 === dado2 && estaCarcel > 0) {
         API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
         estaCarcel = 0;
+        posicionNueva = await API.obtenerPosicion(ID_jugador, ID_partida);
+    } else if (estaCarcel > 0) {
+        // Si estás en la cárcel restamos un turno
+        API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
+        posicionNueva = await API.obtenerPosicion(ID_jugador, ID_partida);
+    } else {
+        // Movemos al jugador -> obtenemos su nueva posición
+        posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
     }
-    // Movemos al jugador -> obtenemos su nueva posición
-    let posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
     return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
 
@@ -139,7 +140,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     }
 
     // Comprobar si es la casilla del luxuryTax
-    else if (posicion == 38) {
+    else if (posicion == 39) {
         try {
             // 100€ + 50€ * número de propiedades
             let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
@@ -185,8 +186,9 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
 
     // Comprobar si es casilla de banco
     else if (posicion == 28) {
+        let dineroBanco = await API.dineroBanco(ID_jugador, ID_partida);
         // Mandar mensaje: Banco,cantidadEnElBanco
-        socket.send(`ACCION_BANCO,${ID_jugador},${ID_partida}`);
+        socket.send(`ACCION_BANCO,${ID_jugador},${ID_partida},${dineroBanco}`);
         // Responde con sacar/meter,cantidad
         // (función meterBanco/sacarBanco)
     }
@@ -255,8 +257,10 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
         let propiedad = tablero[posicion - 1];
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad == -1) {
+            // TODO: Modificar precio en funcion de la economia
+            let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
             // Dar opción de comprarla
-            socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida}`)
+            socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`)
             // Recibe mensaje: SI/NO
             //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
             //              (funcion ComprarPropiedad)
@@ -312,13 +316,13 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad) {
         else {
             let accion = Math.round(Math.random());
             // Si es 0 sumamos la cantidad
-            let nuevoDinero = 0;
             if (accion == 0) {
-                nuevoDinero = await API.modificarDinero(ID_partida, ID_jugador, cantidad);
+                await API.modificarDinero(ID_partida, ID_jugador, cantidad);
             }
             else { // Sino, se la restamos
-                nuevoDinero = await API.modificarDinero(ID_partida, ID_jugador, -cantidad);
+                await API.modificarDinero(ID_partida, ID_jugador, -cantidad);
             }
+            let nuevoDinero = API.obtenerDinero(ID_jugador, ID_partida);
             socket.send(`APOSTAR_OK,${ID_jugador},${nuevoDinero},${ID_partida}`);
         }
     }
@@ -336,6 +340,7 @@ exports.Apostar = Apostar;
 async function MeterBanco(socket, ID_jugador, ID_partida, cantidad) {
     try {
         let dineroJugadorBanco = await API.meterDineroBanco(ID_jugador, ID_partida, cantidad);
+        await API.modificarDinero(ID_partida, ID_jugador, -cantidad);
         let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
         socket.send(`METER_DINERO_BANCO,${ID_jugador},${ID_partida},${dineroJugadorBanco},${dineroJugador}`);
     }
@@ -351,7 +356,9 @@ exports.MeterBanco = MeterBanco;
 // Sacar el dinero dado del banco del jugador en la partida dada
 async function SacarBanco(socket, ID_jugador, ID_partida, cantidad) {
     try {
-        let dineroJugadorBanco = await API.sacarDineroBancoAPartida(ID_partida, ID_jugador, cantidad);
+        let cantidadInt = parseInt(cantidad);
+        let dineroJugadorBanco = await API.sacarDineroBancoAPartida(ID_partida, ID_jugador, cantidadInt);
+        console.log(ID_partida, ID_jugador, cantidadInt, dineroJugadorBanco);
         if (dineroJugadorBanco === -2) {
             // No ha podido sacarlo porque la cantidad era mayor al dinero del jugador en el banco
             socket.send(`SACAR_DINERO_BANCO_NO_OK,${ID_jugador},${ID_partida}`);

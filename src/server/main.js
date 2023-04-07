@@ -92,7 +92,7 @@ server.on("connection", (socket) => {
         // En caso de que el jugador haya apostado
         if (mensaje[0] == "APOSTAR") {
             // socket, ID_jugador, ID_partida, cantidad
-            funcionesTablero.Apostar(socket, mensaje[1], mensaje[2]);
+            funcionesTablero.Apostar(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
 
         // En caso de caer en la casilla del banco, realizar la acción oportuna si se desea

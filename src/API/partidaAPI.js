@@ -1369,10 +1369,13 @@ function sacarDineroBancoAPartida(id_partida, id_jugador, cantidad) {
             else {
                 //comparamos y vemos si la cantidad a sacar es menor que el dinero del banco, sino es asi devolvemos -1.
                 let dineroBanco = results[0].dineroInvertido;
+                console.log("Dinero antes", dineroBanco);
                 let dineroJugador = results[0].dinero;
+                console.log("Dinero antes jugador", dineroJugador);
                 if (cantidad <= dineroBanco) {
                     //actualizamos el dinero del banco y del jugador en la partida.
                     dineroJugador += cantidad;
+                    console.log("Dinero despues de suma jugador", dineroJugador);
                     const query2 = `UPDATE juega SET dinero = ${dineroJugador} WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
                     con.query(query2, (error, results2) => {
                         if (error) {

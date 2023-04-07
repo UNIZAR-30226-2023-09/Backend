@@ -35,7 +35,6 @@ async function moverBot(IDJugador, IDpartida) {
         estaCarcel = 0;
     }
     // Movemos al jugador -> obtenemos su nueva posición
-    console.log("Mover jugador");
     let posicionNueva = await API.moverJugador(IDJugador, sumaDados, IDpartida);
     return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
@@ -45,7 +44,8 @@ async function jugar(IDusuario, IDpartida) {
 
     try {
         let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverBot(IDusuario, IDpartida);
-        console.log("| Partida:", IDpartida, " | Turno de bot:", IDusuario, "| Posicion:", posicionNueva)
+        let dadosDobles = (dado1 === dado2);
+        console.log("| Partida:", IDpartida, " | Turno de bot:", IDusuario, "| Posicion:", posicionNueva, "| Dados:", dado1, ",", dado2);
         // Comprobar si ha pasado por la casilla de salida en este turno
         if ((posicionNueva - sumaDados) <= 0) {
             // Si ha pasado, le sumamos 200$ al jugador
@@ -55,7 +55,7 @@ async function jugar(IDusuario, IDpartida) {
         }
 
         if (!estaCarcel) {
-            casillaActual(IDusuario, IDpartida, posicionNueva);
+            casillaActual(IDusuario, IDpartida, posicionNueva, dadosDobles);
         }
 
     } catch (error) {
@@ -66,7 +66,7 @@ async function jugar(IDusuario, IDpartida) {
 }
 exports.Jugar = jugar;
 
-async function casillaActual(IDJugador, IDpartida, posicion) {
+async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     let tablero = ["Salida", "Monterrey", "Guadalajara", "Treasure", "Tax", "AeropuertoNarita",
         "Tokio", "Kioto", "Superpoder", "Osaka", "Carcel", "Roma", "Milan", "Casino", "Napoles",
         "Estacion", "Londres", "Superpoder", "Manchester", "Edimburgo", "Bote", "Madrid",
@@ -217,7 +217,12 @@ async function casillaActual(IDJugador, IDpartida, posicion) {
         }
     }
 
-    jugador.FinTurno(IDJugador, IDpartida);
+    if (dadosDobles) {
+        jugar(IDJugador, IDpartida);
+    }
+    else {
+        jugador.FinTurno(IDJugador, IDpartida);
+    }
 }
 
 // Realizar lo oportuno cuando se quiera comprar una propiedad
