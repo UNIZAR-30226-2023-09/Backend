@@ -250,3 +250,13 @@ function obtenerPosicionJugadores(idPartida);
 // Devuelve el listado de jugadores y su dinero en la partida asi -> jugador1:dinero,jugaodr2:dinero ...
 //En caso de que no exista la aprtida entonces devuelve false
 function obtenerDineroJugadores(idPartida);
+
+//funcion la cual determina que un jugador ya esta acabado de la partida.(jugadorVivo = 0).
+function jugadorAcabadoPartida(email, idPartida);
+
+//funcion la cual devuelve el jugador en la posicion establecida de la partida idPartida. Devuelve -1 si hay algo mal y la posicion actualizada si todo ha ido bien. 
+//Devuelve -2 si estaba en la carcel y no actualiza la posicion.
+function actualizarPosicionJugador(idJugador, idPartida, posicion);
+
+//funcion la cual devuelve los jugadores de la partida unidos con : y 1 si esta vivo y 0 sino esta vivo.
+function estadoJugadoresPartida(idPartida);
