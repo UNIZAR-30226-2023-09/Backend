@@ -322,7 +322,7 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad) {
             else { // Sino, se la restamos
                 await API.modificarDinero(ID_partida, ID_jugador, -cantidad);
             }
-            let nuevoDinero = API.obtenerDinero(ID_jugador, ID_partida);
+            let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
             socket.send(`APOSTAR_OK,${ID_jugador},${nuevoDinero},${ID_partida}`);
         }
     }
@@ -471,4 +471,3 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
 
 }
 exports.EdificarPropiedad = EdificarPropiedad;
-
