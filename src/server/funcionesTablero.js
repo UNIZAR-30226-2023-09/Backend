@@ -11,6 +11,17 @@ const ECONOMIA = 1;
 
 const API = require('../API/partidaAPI');
 
+const gruposDePropiedades = {
+    mexico: ["Monterrey", "Guadalajara"],
+    japon: ["Tokio", "Kioto", "Osaka"],
+    italia: ["Roma", "Milan", "Napoles"],
+    inglaterra: ["Londres", "Manchester", "Edimburgo"],
+    francia: ["Paris", "Marsella", "Lyon"],
+    canada: ["Toronto", "Vancouver", "Ottawa"],
+    estadosUnidos: ["NuevaYork", "LosAngeles", "Chicago"],
+    espana: ["Madrid", "Barcelona", "Zaragoza"]
+};
+
 async function LanzarDados(socket, ID_jugador, ID_partida) {
     try {
         // Calculamos el valor de los dados
@@ -310,17 +321,18 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad) {
         // Generar num aleatorio entre 0-1, si es 0 sumar cantidad a su cuenta
         //                                  si es 1 restar cantidad a su cuenta 
         let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
-        if (dineroJugador < cantidad) {
+        let cantidadInt = parseInt(cantidad);
+        if (dineroJugador < cantidadInt) {
             socket.send(`APOSTAR_NOOK,${ID_jugador},${ID_partida}`);
         }
         else {
             let accion = Math.round(Math.random());
             // Si es 0 sumamos la cantidad
             if (accion == 0) {
-                await API.modificarDinero(ID_partida, ID_jugador, cantidad);
+                await API.modificarDinero(ID_partida, ID_jugador, cantidadInt);
             }
             else { // Sino, se la restamos
-                await API.modificarDinero(ID_partida, ID_jugador, -cantidad);
+                await API.modificarDinero(ID_partida, ID_jugador, -cantidadInt);
             }
             let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
             socket.send(`APOSTAR_OK,${ID_jugador},${nuevoDinero},${ID_partida}`);
@@ -427,17 +439,39 @@ exports.VenderPropiedad = VenderPropiedad;
 // Se obtiene la lista de posibles casas a edificar con su precio y se devuelve al cliente
 async function PropiedadesDispEdificar(socket, ID_jugador, ID_partida) {
     let propiedadesDisponibles;
+    let tablero = ["Salida", "Monterrey", "Guadalajara", "Treasure", "Tax", "AeropuertoNarita", // 6
+        "Tokio", "Kioto", "Superpoder", "Osaka", "Carcel", "Roma", "Milan", "Casino", "Napoles", // 15
+        "Aeropuerto Heathrow", "Londres", "Superpoder", "Manchester", "Edimburgo", "Bote", "Madrid", // 22
+        "Barcelona", "Treasure", "Zaragoza", "AeropuertoOrly", "Paris", "Banco", "Marsella", // 29
+        "Lyon", "IrCarcel", "Toronto", "Vancouver", "Treasure", "Ottawa", "AeropuertoDeLosAngeles", // 36
+        "NuevaYork", "LosAngeles", "LuxuryTax", "Chicago"];
     try {
-        propiedadesDisponibles = await API.propiedadesEdificar(ID_jugador, ID_partida);
+        propiedadesDisponibles = await API.obtenerPropiedades(ID_partida, ID_jugador);
     }
     catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
-    // PropiedadesDisponibles en un string de propiedad1-precio1,propiedad2-precio2...
-    // Lo mandamos tal cual lo recibimos
-    socket.send(`EDIFICAR,${ID_jugador},${propiedadesDisponibles}`);
+
+    if (propiedadesDisponibles === null) {
+        socket.send(`EDIFICAR,${ID_jugador}`);
+        return;
+    }
+    // Obtener una lista de los nombres de las propiedades (en string concatenado)
+    let nombresPropiedades = obtenerNombresDePropiedades(propiedadesDisponibles, tablero);
+
+    let propiedadesParaConstruir = propiedadesParaEdificar(tablero, nombresPropiedades);
+    if (propiedadesParaConstruir.length === 0) {
+        socket.send(`EDIFICAR,${ID_jugador}`);
+        return;
+    }
+
+    // propiedadesParaConstruir tiene los nombres de las propiedades en las que se puede edificar
+    let costes = calcularCosteEdificacion(tablero, propiedadesParaConstruir);
+    let indicesPropiedades = obtenerIndicePropiedades(tablero, propiedadesParaConstruir)
+    let resultadoFinal = concatenarArrays(indicesPropiedades, costes);
+    socket.send(`EDIFICAR,${ID_jugador},${resultadoFinal}`);
 
 }
 exports.PropiedadesDispEdificar = PropiedadesDispEdificar;
@@ -457,7 +491,7 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
 
     let lista = propiedadPrecio.split('-');
     let propiedad = lista[0];
-    let precioProp = lista[1];
+    let precioProp = parseInt(lista[1]);
     // Comprobamos si el jugador tiene suficiente dinero para edificar
     if (dineroJugador < precioProp) {
         // No tiene suficiente dinero -> no se edifica
@@ -471,3 +505,79 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
 
 }
 exports.EdificarPropiedad = EdificarPropiedad;
+
+// Dado un string que contiene las propiedades de un jugador concatenadas con comas,
+// devuelve un array con aquellas propiedades en las que puede edificar
+function propiedadesParaEdificar(tablero, propiedades) {
+    const propiedadesParaConstruir = [];
+    const propiedadesArray = propiedades.split(","); // convertimos la cadena de propiedades en un array
+
+    for (let grupo in gruposDePropiedades) {
+        const propiedadesDelGrupo = gruposDePropiedades[grupo];
+        const propiedadesFaltantes = propiedadesDelGrupo.filter(p => !propiedadesArray.includes(p));
+        if (propiedadesFaltantes.length === 0 && propiedadesArray.some(p => propiedadesDelGrupo.includes(p))) {
+            propiedadesDelGrupo.forEach(p => {
+                if (tablero.includes(p)) {
+                    propiedadesParaConstruir.push(p);
+                }
+            });
+        }
+    }
+
+    return propiedadesParaConstruir;
+}
+
+
+function obtenerIndicePropiedades(tablero, propiedades) {
+    const indicePropiedades = [];
+    for (let i = 0; i < tablero.length; i++) {
+        if (propiedades.includes(tablero[i])) {
+            let indice = i + 1;
+            indicePropiedades.push(`propiedad${indice}`);
+        }
+    }
+    return indicePropiedades.join(",");
+}
+
+// Devuelve un string con las propiedades con sus nombres reales
+function obtenerNombresDePropiedades(stringPropiedades, tablero) {
+    const indices = stringPropiedades.split(",").map(x => parseInt(x.replace("propiedad", "")) - 1);
+    return indices.map(i => tablero[i]).join(",");
+}
+
+// Devuelve un array con los costes de edificar en cada propiedad
+function calcularCosteEdificacion(tablero, propiedadesArray) {
+    let preciosPropiedades = [];
+    for (let i = 0; i < tablero.length; i++) {
+        if (propiedadesArray.includes(tablero[i])) {
+            if (i < 10) {
+                preciosPropiedades.push(50);
+            } else if (i < 20) {
+                preciosPropiedades.push(100);
+            } else if (i < 30) {
+                preciosPropiedades.push(150);
+            } else {
+                preciosPropiedades.push(200);
+            }
+        }
+    }
+    return preciosPropiedades;
+}
+
+// Concatena uno a uno los elementos de los arrays utilizando el separador "-"
+function concatenarArrays(propiedades, arr2) {
+    let arr1 = propiedades.split(",");
+    console.log(arr1);
+    console.log(arr2);
+    if (arr1.length !== arr2.length) {
+        throw new Error("Los arrays deben tener la misma longitud");
+    }
+
+    const resultado = [];
+
+    for (let i = 0; i < arr1.length; i++) {
+        resultado.push(`${arr1[i]}-${arr2[i]}`);
+    }
+
+    return resultado;
+}

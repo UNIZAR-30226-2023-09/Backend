@@ -847,7 +847,7 @@ function obtenerPropiedades(id_partida, id_jugador) {
         let propiedades = [];
         let n_propiedad = NUM_MINIMO_PROPIEDAD;
 
-        for (; n_propiedad < NUM_MAX_PROPIEDAD; n_propiedad++) {
+        for (; n_propiedad <= NUM_MAX_PROPIEDAD; n_propiedad++) {
             let concat = 'propiedad' + n_propiedad;
             const query = `SELECT ${concat} AS propiedad FROM Partida WHERE idPartida = '${id_partida}'`;
             con.query(query, (error, results) => {
@@ -915,8 +915,14 @@ function crearPartida(id_jugador) {
           precioPropiedad16,precioPropiedad17,precioPropiedad18,precioPropiedad19,precioPropiedad20,precioPropiedad21,precioPropiedad22,
           precioPropiedad23,precioPropiedad24,precioPropiedad25,precioPropiedad26,precioPropiedad27,precioPropiedad28,precioPropiedad29,
           precioPropiedad30,precioPropiedad31,precioPropiedad32,precioPropiedad33,precioPropiedad34,precioPropiedad35,precioPropiedad36,
-          precioPropiedad37,precioPropiedad38,precioPropiedad39,precioPropiedad40) VALUES (0, 0.0, 'Inicial', 1.0, 0.0,60.0,60.0,0.0,0.0,200.0,100.0,100.0,
-          0.0,120.0,0.0,140.0,140.0,0.0,160.0,200.0,180.0,0.0,180.0,200.0,0.0,220.0,220.0,0.0,240.0,200.0,260.0,0.0,260.0,280.0,0.0,300.0,300.0,0.0,320.0,200.0,350.0,350.0,0.0,400.0)`;
+          precioPropiedad37,precioPropiedad38,precioPropiedad39,precioPropiedad40,nCasasPropiedad1,nCasasPropiedad2,nCasasPropiedad3,
+          nCasasPropiedad4,nCasasPropiedad5,nCasasPropiedad6,nCasasPropiedad7,nCasasPropiedad8,nCasasPropiedad9,nCasasPropiedad10,
+          nCasasPropiedad11,nCasasPropiedad12,nCasasPropiedad13,nCasasPropiedad14,nCasasPropiedad15,nCasasPropiedad16,nCasasPropiedad17,
+          nCasasPropiedad18,nCasasPropiedad19,nCasasPropiedad20,nCasasPropiedad21,nCasasPropiedad22,nCasasPropiedad23,nCasasPropiedad24,
+          nCasasPropiedad25,nCasasPropiedad26,nCasasPropiedad27,nCasasPropiedad28,nCasasPropiedad29,nCasasPropiedad30,nCasasPropiedad31,
+          nCasasPropiedad32,nCasasPropiedad33,nCasasPropiedad34,nCasasPropiedad35,nCasasPropiedad36,nCasasPropiedad37,nCasasPropiedad38,
+          nCasasPropiedad39,nCasasPropiedad40) VALUES (0, 0.0, 'Inicial', 1.0, 0.0,60.0,60.0,0.0,0.0,200.0,100.0,100.0,
+          0.0,120.0,0.0,140.0,140.0,0.0,160.0,200.0,180.0,0.0,180.0,200.0,0.0,220.0,220.0,0.0,240.0,200.0,260.0,0.0,260.0,280.0,0.0,300.0,300.0,0.0,320.0,200.0,350.0,350.0,0.0,400.0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)`;
                 con.query(query2, (error, results2) => {
                     if (error) {
                         reject(error);
@@ -942,7 +948,7 @@ function crearPartida(id_jugador) {
                                 //ahora hay que enlazarlo con la tabla juega
                                 let maxIdPartida = results3[0].maximo;  //id de la partida creada.
                                 const query3 = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-                  email, idPartida) VALUES ( false, false, 0, true, 0.0, 0, 0, 1000.0, 'default', 0 , '${id_jugador}', ${maxIdPartida})`;
+                  email, idPartida) VALUES ( false, false, 0, true, 0.0, 0, 1, 1000.0, 'default', 0 , '${id_jugador}', ${maxIdPartida})`;
                                 con.query(query3, (error, results3) => {
                                     if (error) {
                                         reject(error);
@@ -1024,7 +1030,7 @@ function unirsePartida(idJugador, idPartida) {
                                     } else {                                            // Caso -- El jugador no esta jugando ninguna partida
                                         const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades,jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, 
                                         dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                        const values = [false, false, 0, true, 0.0, 0, 0, 1000.0, 'default', 0, idJugador, idPartida];
+                                        const values = [false, false, 0, true, 0.0, 0, 1, 1000.0, 'default', 0, idJugador, idPartida];
                                         con.query(sql, values, (error, results5) => {      // Caso -- Error
                                             if (error) {
                                                 con.end();
@@ -1768,8 +1774,6 @@ function edificarPropiedad(idJugador, idPartida, propiedad) {
                                                     con.end();
                                                     reject(error);                          // Caso -- Se ha modificado el numero de casas
                                                 } else {
-
-                                                    console.log("dinero", dineroQuitar);
                                                     const sql2 = `UPDATE juega SET dinero = dinero - ${dineroQuitar} WHERE idPartida = '${idPartida}' 
                                                     AND email = '${idJugador}'`;
                                                     con.query(sql2, (error, results5) => {  // Caso -- Error
@@ -2132,7 +2136,7 @@ function unirBotPartida(idJugador, idPartida) {
         var con = db.crearConexion();
         con.connect();
         const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-        email, idPartida) VALUES ( true, true, 0, true, 0.0, 0, 0, 1000.0, 'default', 0 , '${idJugador}', ${idPartida})`;
+        email, idPartida) VALUES ( true, true, 0, true, 0.0, 0, 1, 1000.0, 'default', 0 , '${idJugador}', ${idPartida})`;
         con.query(sql, (error, results) => {      // Caso -- Error
             if (error) {
                 console.log(sql);

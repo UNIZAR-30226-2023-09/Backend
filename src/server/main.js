@@ -81,14 +81,6 @@ server.on("connection", (socket) => {
             funcionesTablero.LanzarDados(socket, mensaje[1], mensaje[2]);
         }
 
-        // Si el mensaje es que se han lanzado los dados
-        if (mensaje[0] === "lanzarDados2") {
-            // Mandar dinero actual a todos (lo mismo que iria al fin del turno)
-            // TODO:
-            // Y volvemos a mirar la función de lanzarDados
-            funcionesTablero.LanzarDados(socket, mensaje[1], mensaje[2]);
-        }
-
         // En caso de que el jugador haya apostado
         if (mensaje[0] == "APOSTAR") {
             // socket, ID_jugador, ID_partida, cantidad
