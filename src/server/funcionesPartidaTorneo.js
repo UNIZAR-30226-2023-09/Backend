@@ -101,23 +101,16 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
         // Empezamos la partida 
         if (await APIpartida.iniciarPartida(ID_partida, ID_jugador)) {
 
-            let jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
-            let jugadoresPartida = jugadores.split(",");
-            let jugadores_struct = new Array(4);
-            let aux;
-            for (let i = 0; i < 4; i++) {
-                aux = jugadoresPartida[i].split(":");
-                jugadores_struct[i] = new Usuario(aux[0], aux[1]);
-            }
+            let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
 
             mostrarJugadores(jugadores_struct, ID_partida);
 
             // TODO: Hacer orden aleatorio
             // Ordenar aleatoriamente los jugadores de la partida
-            // for (let i = jugadores_struct.length - 1; i > 0; i--) {
-            //     const j = Math.floor(Math.random() * (i + 1)); // Seleccionamos un índice aleatorio
-            //     [jugadores_struct[i], jugadores_struct[j]] = [jugadores_struct[j], jugadores_struct[i]]; // Intercambiamos las cadenas
-            // }
+            for (let i = jugadores_struct.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1)); // Seleccionamos un índice aleatorio
+                [jugadores_struct[i], jugadores_struct[j]] = [jugadores_struct[j], jugadores_struct[i]]; // Intercambiamos las cadenas
+            }
             // TODO: AL establecer el orden de los jugadores mandarselo a cada jugador
             APIpartida.establecerOrdenPartida(ID_partida, jugadores_struct[0].id, jugadores_struct[1].id, jugadores_struct[2].id, jugadores_struct[3].id)
             for (let i = 0; i < jugadores_struct.length; i++) {
@@ -133,8 +126,8 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
             }
 
             // Damos el turno al primer jugador
-            if (jugadores_struct[0].esBot === 1) {
-                bot.jugar(jugadores_struct[0].id, ID_partida);
+            if (jugadores_struct[0].esBot === "1") {
+                bot.Jugar(jugadores_struct[0].id, ID_partida);
             } else {
                 let conexionUsuario = con.buscarUsuario(jugadores_struct[0].id);
                 if (conexionUsuario === null) {
@@ -156,6 +149,37 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
     }
 }
 exports.EmpezarPartida = EmpezarPartida;
+
+async function obtenerJugadoresPartida(ID_partida) {
+    let jugadores;
+    try {
+        jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+
+    let jugadoresPartida = jugadores.split(",");
+    let jugadores_struct = new Array(4);
+    let aux;
+    for (let i = 0; i < 4; i++) {
+        aux = jugadoresPartida[i].split(":");
+        jugadores_struct[i] = new Usuario(aux[0], aux[1]);
+    }
+    return jugadores_struct;
+}
+
+async function Chatear(ID_jugador, ID_partida, mensaje) {
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].esBot === 0) {
+            let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
+            conexionUsuario.send(`CHAT,"${ID_jugador}, ${mensaje}`);
+        }
+    }
+}
+exports.Chatear = Chatear;
 
 // Almacenar el usuario y si es un bot
 function Usuario(id, esBot) {

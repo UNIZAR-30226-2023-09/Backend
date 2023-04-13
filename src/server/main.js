@@ -182,6 +182,10 @@ server.on("connection", (socket) => {
             funcionesSkin.VerSkins(socket, mensaje[1]);
         }
 
+        if (mensaje[0] == "chat") {
+            funcionesPartidaTorneo.Chatear(mensaje[1], mensaje[2], mensaje[3]);
+        }
+
     });
 
     socket.on("close", () => {
