@@ -9,6 +9,7 @@
 
 const API = require('../API/partidaAPI');
 const jugador = require('./funcionesJugador');
+const tablero = require('./funcionesTablero');
 const ECONOMIA = 1;
 
 /**
@@ -92,7 +93,12 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
             let cantidad = 50 + 20 * numPropiedades;
             await API.sumarDineroBote(cantidad, IDpartida);
-            API.modificarDinero(IDpartida, IDJugador, -cantidad);
+            let nuevoDinero = API.modificarDinero(IDpartida, IDJugador, -cantidad);
+            let sigueEnPartida = tablero.sigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+            if (!sigueEnPartida) {
+                await API.jugadorAcabadoPartida(IDJugador, IDpartida);
+                await enviarJugadorMuertoPartida(IDJugador, IDpartida);
+            }
         }
 
         catch (error) {
@@ -109,7 +115,12 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
             let cantidad = 100 + 50 * numPropiedades;
             let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
-            API.modificarDinero(IDpartida, IDJugador, -cantidad);
+            let nuevoDinero = API.modificarDinero(IDpartida, IDJugador, -cantidad);
+            let sigueEnPartida = tablero.sigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+            if (!sigueEnPartida) {
+                await API.jugadorAcabadoPartida(IDJugador, IDpartida);
+                await enviarJugadorMuertoPartida(IDJugador, IDpartida);
+            }
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -158,7 +169,12 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             // Obtener dinero aleatorio entre -250 y 250
             // Generar un número aleatorio entre -250 y 250
             let cantidad = Math.floor(Math.random() * 501) - 250;
-            await API.modificarDinero(IDpartida, IDJugador, cantidad);
+            let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, cantidad);
+            let sigueEnPartida = tablero.sigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+            if (!sigueEnPartida) {
+                await API.jugadorAcabadoPartida(IDJugador, IDpartida);
+                await enviarJugadorMuertoPartida(IDJugador, IDpartida);
+            }
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -207,7 +223,14 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
                 // Multiplicamos el precio a pagar por la economía
                 let precio = precioPagar * ECONOMIA;
                 // Pagamos el alquiler con el nuevo precio
-                API.pagarAlquiler(IDJugador, IDjugador_propiedad, posicion, IDpartida, precio);
+                if (API.pagarAlquiler(IDJugador, IDjugador_propiedad, posicion, IDpartida, precio)) {
+                    let dineroJugadorPaga = await API.obtenerDinero(IDJugador, IDpartida);
+                    let sigueEnPartida = sigueEnPartida(IDJugador, IDpartida, dineroJugadorPaga);
+                    if (!sigueEnPartida) {
+                        await API.jugadorAcabadoPartida(IDJugador, IDpartida);
+                        await enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                    }
+                }
             }
             catch (error) {
                 // Si hay un error en la Promesa, devolvemos false.

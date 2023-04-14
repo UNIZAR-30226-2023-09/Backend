@@ -113,7 +113,6 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
         posicionTablero.push(i);
     }
 
-
     // Comprobar si la nueva casilla es la de salida -> sumar 100$ + 200 de salida
     if (posicion == 1) {
         try {
@@ -667,6 +666,7 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
 function sigueEnPartida(ID_jugador, ID_partida, dinero) {
     return dinero > 0;
 }
+exports.sigueEnPartida = sigueEnPartida;
 
 // Almacenar el usuario y si es un bot
 function Usuario(id, esBot) {
