@@ -127,11 +127,6 @@ server.on("connection", (socket) => {
             funcionesTablero.EdificarPropiedad(socket, mensaje[1], mensaje[2], mensaje[3])
         }
 
-        // Si el mensaje es que se quiere usar una carta
-        if (mensaje[0] == "usarCarta") {
-            // TODO:
-        }
-
         // Si el mensaje es que se quiere acabar el turno
         if (mensaje[0] === "finTurno") {
             // TODO: MIRAR ESTA 
@@ -160,11 +155,6 @@ server.on("connection", (socket) => {
         /*------------------------------------------------------*/
         // Se solicita hacer un intercambio
         if (mensaje[0] == "intercambio") {
-            // TODO:
-        }
-
-        // Se inicia una subasta
-        if (mensaje[0] == "iniciarSubasta") {
             // TODO:
         }
 
