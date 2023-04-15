@@ -124,9 +124,9 @@ exports.FinTurno = FinTurno;
 async function obtenerJugadoresPartida(ID_partida) {
     let jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
     let jugadoresPartida = jugadores.split(",");
-    let jugadores_struct = new Array(4);
+    let jugadores_struct = new Array(jugadoresPartida.length);
     let aux;
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < jugadoresPartida.length; i++) {
         aux = jugadoresPartida[i].split(":");
         jugadores_struct[i] = new Usuario(aux[0], aux[1]);
     }

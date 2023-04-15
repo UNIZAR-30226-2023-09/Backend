@@ -9,7 +9,7 @@
 
 const API = require('../API/partidaAPI');
 const jugador = require('./funcionesJugador');
-const tablero = require('./funcionesTablero');
+const Tablero = require('./funcionesTablero');
 const ECONOMIA = 1;
 
 /**
@@ -93,11 +93,11 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
             let cantidad = 50 + 20 * numPropiedades;
             await API.sumarDineroBote(cantidad, IDpartida);
-            let nuevoDinero = API.modificarDinero(IDpartida, IDJugador, -cantidad);
-            let sigueEnPartida = tablero.sigueEnPartida(IDJugador, IDpartida, nuevoDinero);
-            if (!sigueEnPartida) {
+            let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, -cantidad);
+            let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+            if (!sigue) {
                 await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-                await enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
             }
         }
 
@@ -116,10 +116,10 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             let cantidad = 100 + 50 * numPropiedades;
             let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
             let nuevoDinero = API.modificarDinero(IDpartida, IDJugador, -cantidad);
-            let sigueEnPartida = tablero.sigueEnPartida(IDJugador, IDpartida, nuevoDinero);
-            if (!sigueEnPartida) {
+            let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+            if (!sigue) {
                 await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-                await enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
             }
         }
         catch (error) {
@@ -170,10 +170,10 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             // Generar un número aleatorio entre -250 y 250
             let cantidad = Math.floor(Math.random() * 501) - 250;
             let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, cantidad);
-            let sigueEnPartida = tablero.sigueEnPartida(IDJugador, IDpartida, nuevoDinero);
-            if (!sigueEnPartida) {
+            let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+            if (!sigue) {
                 await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-                await enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
             }
         }
         catch (error) {
@@ -225,12 +225,12 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
                 // Pagamos el alquiler con el nuevo precio
                 if (API.pagarAlquiler(IDJugador, IDjugador_propiedad, posicion, IDpartida, precio)) {
                     let dineroJugadorPaga = await API.obtenerDinero(IDJugador, IDpartida);
-                    let sigueEnPartida = sigueEnPartida(IDJugador, IDpartida, dineroJugadorPaga);
-                    if (!sigueEnPartida) {
+                    let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, dineroJugadorPaga);
+                    if (!sigue) {
                         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-                        await enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                        await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
                     }
-                    if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
+                    if (API.jugadorEsBot(IDjugador_propiedad, IDpartida) === 0) {
                         let conexion = con.buscarUsuario(IDjugador_propiedad);
                         conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${IDjugador_propiedad},${dineroJugadorPaga}`)
                     }

@@ -1642,7 +1642,6 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                         con.query(query2, (error, results2) => {        // Caso -- Error
                             if (error) {
                                 con.end();
-                                console.log("3");
                                 reject(error);
                             } else if (results2.length === 0) {         // Caso -- No existe el Jugador en esa partida
                                 con.end();
@@ -1652,7 +1651,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                 if (turno_siguiente === 0) {
                                     turno_siguiente = 4;
                                 }
-                                const sql = `SELECT esBotInicial, esBot, email FROM juega WHERE idPartida = '${idPartida}' AND turno = '${turno_siguiente}'`;
+                                const sql = `SELECT esBotInicial, esBot, email FROM juega WHERE idPartida = '${idPartida}' AND turno = '${turno_siguiente} AND jugadorVivo = true'`;
                                 con.query(sql, (error, results3) => {        // Caso -- Error
                                     if (error) {
                                         con.end();
@@ -2334,7 +2333,7 @@ function acabarPartida(idPartida) {
         var con = db.crearConexion();
         con.connect();
         //en la API de github hay que poner false en vez de 0.
-        const query = `UPDATE partida SET enCurso='0' WHERE idPartida='${idPartida}'`;
+        const query = `UPDATE Partida SET enCurso='0' WHERE idPartida='${idPartida}'`;
         con.query(query, (error, results) => {
             if (error) {
                 con.end();
@@ -2584,176 +2583,175 @@ exports.actualizarPosicionJugador = actualizarPosicionJugador;
 
 function jugadorAcabadoPartida(email, idPartida) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Consulta SQL para actualizar el estado del jugador a "acabado" en la partida
-      const query = `UPDATE juega SET jugadorVivo = false WHERE email = '${email}' AND idPartida = '${idPartida}'`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else if (result.affectedRows === 0) {
-          // Si no se afectó ninguna fila en la actualización, significa que el jugador no estaba en la partida
-          con.end();
-          resolve(false);
-        } else {
-          // Si se afectó una fila en la actualización, significa que el jugador está acabado en la partida
-          // Consultamos la posición más baja de los jugadores vivos en la partida
-          const queryPosicion = `SELECT MAX(posicion) AS posicion FROM juega WHERE idPartida = '${idPartida}'`;
-          con.query(queryPosicion, (errorPosicion, resultPosicion) => {
-            if (errorPosicion) {
-              con.end();
-              reject(errorPosicion);
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Consulta SQL para actualizar el estado del jugador a "acabado" en la partida
+        const query = `UPDATE juega SET jugadorVivo = false WHERE email = '${email}' AND idPartida = '${idPartida}'`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (result.affectedRows === 0) {
+                // Si no se afectó ninguna fila en la actualización, significa que el jugador no estaba en la partida
+                con.end();
+                resolve(false);
             } else {
-              let nuevaPosicion;
-              console.log(resultPosicion[0].posicion);
-              if (resultPosicion.length > 0 && resultPosicion[0].posicion === 4) {
-                nuevaPosicion = 3;
-              } else if (resultPosicion.length > 0 && resultPosicion[0].posicion === 3) {
-                nuevaPosicion = 2;
-              } else if (resultPosicion.length > 0 && resultPosicion[0].posicion === 2) {
-                nuevaPosicion = 1;
-              } else {
-                nuevaPosicion = 4;
-              }
-              const queryActualizarPosicion = `UPDATE juega SET posicion = ${nuevaPosicion} WHERE email = '${email}' AND idPartida = '${idPartida}'`;
-              con.query(queryActualizarPosicion, (errorActualizar, resultActualizar) => {
-                if (errorActualizar) {
-                  con.end();
-                  reject(errorActualizar);
-                } else {
-                  con.end();
-                  resolve(true);
-                }
-              });
+                // Si se afectó una fila en la actualización, significa que el jugador está acabado en la partida
+                // Consultamos la posición más baja de los jugadores vivos en la partida
+                const queryPosicion = `SELECT MAX(posicion) AS posicion FROM juega WHERE idPartida = '${idPartida}'`;
+                con.query(queryPosicion, (errorPosicion, resultPosicion) => {
+                    if (errorPosicion) {
+                        con.end();
+                        reject(errorPosicion);
+                    } else {
+                        let nuevaPosicion;
+                        console.log(resultPosicion[0].posicion);
+                        if (resultPosicion.length > 0 && resultPosicion[0].posicion === 4) {
+                            nuevaPosicion = 3;
+                        } else if (resultPosicion.length > 0 && resultPosicion[0].posicion === 3) {
+                            nuevaPosicion = 2;
+                        } else if (resultPosicion.length > 0 && resultPosicion[0].posicion === 2) {
+                            nuevaPosicion = 1;
+                        } else {
+                            nuevaPosicion = 4;
+                        }
+                        const queryActualizarPosicion = `UPDATE juega SET posicion = ${nuevaPosicion} WHERE email = '${email}' AND idPartida = '${idPartida}'`;
+                        con.query(queryActualizarPosicion, (errorActualizar, resultActualizar) => {
+                            if (errorActualizar) {
+                                con.end();
+                                reject(errorActualizar);
+                            } else {
+                                con.end();
+                                resolve(true);
+                            }
+                        });
+                    }
+                });
             }
-          });
-        }
-      });
+        });
     });
-  }
-  
-  // Exportamos la función para que pueda ser utilizada en otros archivos
-  exports.jugadorAcabadoPartida = jugadorAcabadoPartida;
-  
-  
-  
+}
+
+// Exportamos la función para que pueda ser utilizada en otros archivos
+exports.jugadorAcabadoPartida = jugadorAcabadoPartida;
+
+
+
 /*
 =================== RESULTADO  PARTIDA =========================================================
 */
 
-  //funcion que devuelva cada jugador y en que posicion ha quedado cada uno al acabar dicha partida. (jugador1:posicion,jugador2:posicion)
-  function resultadoPartida(idPartida) {
+//funcion que devuelva cada jugador y en que posicion ha quedado cada uno al acabar dicha partida. (jugador1:posicion,jugador2:posicion)
+function resultadoPartida(idPartida) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      let resultado = ""; // Variable para guardar el resultado como un string
-  
-      // Consulta SQL para obtener el nombre del jugador y la posicion de cada jugador en la partida.
-      const query = `SELECT posicion, email FROM juega WHERE idPartida='${idPartida}'`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else if (result.affectedRows === 0) {
-          // Si no se afectó ninguna fila en la actualización, significa que el jugador no estaba en la partida
-          con.end();
-          resolve(false);
-        } else {
-          // Concatenamos el nombre y la posición de cada jugador en la variable 'resultado'
-          result.forEach((row) => {
-            resultado += row.email + ":" + row.posicion + ",";
-          });
-          // Quitamos la última coma que se agrega en el ciclo forEach
-          resultado = resultado.slice(0, -1);
-          con.end();
-          resolve(resultado);
-        }
-      });
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        let resultado = ""; // Variable para guardar el resultado como un string
+
+        // Consulta SQL para obtener el nombre del jugador y la posicion de cada jugador en la partida.
+        const query = `SELECT posicion, email FROM juega WHERE idPartida='${idPartida}'`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (result.affectedRows === 0) {
+                // Si no se afectó ninguna fila en la actualización, significa que el jugador no estaba en la partida
+                con.end();
+                resolve(false);
+            } else {
+                // Concatenamos el nombre y la posición de cada jugador en la variable 'resultado'
+                result.forEach((row) => {
+                    resultado += row.email + ":" + row.posicion + ",";
+                });
+                // Quitamos la última coma que se agrega en el ciclo forEach
+                resultado = resultado.slice(0, -1);
+                con.end();
+                resolve(resultado);
+            }
+        });
     });
-  }
-  exports.resultadoPartida = resultadoPartida;
-  
+}
+exports.resultadoPartida = resultadoPartida;
+
 /*
 =================== MODIFICAR GEMAS PARTIDA =========================================================
 */
 
-  //modificar las gemas del usuario.
-  function modificarGemas(ID_usuario, cantidad) {
+//modificar las gemas del usuario.
+function modificarGemas(ID_usuario, cantidad) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Consulta SQL para obtener la cantidad actual de gemas del jugador
-      const selectQuery = `SELECT gemas FROM Jugador WHERE email = '${ID_usuario}'`;
-      con.query(selectQuery, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        }else if(result[0].length === 0){
-          resolve(-1);
-        } 
-        else {
-          let gemasActuales = result[0].gemas;
-          console.log(gemasActuales);
-          let gemasNuevas = gemasActuales + cantidad;
-          // Consulta SQL para actualizar las gemas del jugador
-          const updateQuery = `UPDATE Jugador SET gemas = ${gemasNuevas} WHERE email = '${ID_usuario}'`;
-  
-          con.query(updateQuery, (error, result2) => {
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Consulta SQL para obtener la cantidad actual de gemas del jugador
+        const selectQuery = `SELECT gemas FROM Jugador WHERE email = '${ID_usuario}'`;
+        con.query(selectQuery, (error, result) => {
             if (error) {
-              con.end();
-              reject(error);
-            } else {
-              // Se actualizó correctamente el valor de las gemas
-              con.end();
-              resolve(true);
+                con.end();
+                reject(error);
+            } else if (result[0].length === 0) {
+                resolve(-1);
             }
-          });
-        }
-      });
+            else {
+                let gemasActuales = result[0].gemas;
+                console.log(gemasActuales);
+                let gemasNuevas = gemasActuales + cantidad;
+                // Consulta SQL para actualizar las gemas del jugador
+                const updateQuery = `UPDATE Jugador SET gemas = ${gemasNuevas} WHERE email = '${ID_usuario}'`;
+
+                con.query(updateQuery, (error, result2) => {
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else {
+                        // Se actualizó correctamente el valor de las gemas
+                        con.end();
+                        resolve(true);
+                    }
+                });
+            }
+        });
     });
-  }
-  exports.modificarGemas = modificarGemas;
-  
-  
+}
+exports.modificarGemas = modificarGemas;
+
+
 /*
 =================== JUGADOR ES BOT =========================================================
 */
-  
-  //devuelve 1 si es un bot y 0 si es un jugador
-  function jugadorEsBot(ID_jugador, ID_partida) {
+
+//devuelve 1 si es un bot y 0 si es un jugador
+function jugadorEsBot(ID_jugador, ID_partida) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Consulta SQL para obtener la información del jugador en la partida especificada
-      const query = `SELECT esBot FROM juega WHERE idPartida = '${ID_partida}' AND email = '${ID_jugador}'`;
-  
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          // Si se encontró el jugador en la partida, devolvemos el valor de la columna "esBot"
-          if (result.length > 0) {
-            const esBot = result[0].esBot;
-            con.end();
-            resolve(esBot);
-          } else {
-            // Si no se encontró el jugador en la partida, devolvemos false
-            con.end();
-            resolve(-1);
-          }
-        }
-      });
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Consulta SQL para obtener la información del jugador en la partida especificada
+        const query = `SELECT esBot FROM juega WHERE idPartida = '${ID_partida}' AND email = '${ID_jugador}'`;
+
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else {
+                // Si se encontró el jugador en la partida, devolvemos el valor de la columna "esBot"
+                if (result.length > 0) {
+                    const esBot = result[0].esBot;
+                    con.end();
+                    resolve(esBot);
+                } else {
+                    // Si no se encontró el jugador en la partida, devolvemos false
+                    con.end();
+                    resolve(-1);
+                }
+            }
+        });
     });
-  }
-  exports.jugadorEsBot=jugadorEsBot;
-  
+}
+exports.jugadorEsBot = jugadorEsBot;
