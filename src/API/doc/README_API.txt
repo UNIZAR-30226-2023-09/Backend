@@ -260,3 +260,15 @@ function actualizarPosicionJugador(idJugador, idPartida, posicion);
 
 //funcion la cual devuelve los jugadores de la partida unidos con : y 1 si esta vivo y 0 sino esta vivo.
 function estadoJugadoresPartida(idPartida);
+
+//devuelve 1 si es un bot y 0 si es un jugador
+function jugadorEsBot(ID_jugador, ID_partida);
+
+//modificar las gemas del usuario.
+function modificarGemas(ID_usuario, cantidad);
+
+//funcion que devuelva cada jugador y en que posicion ha quedado cada uno al acabar dicha partida. (jugador1:posicion,jugador2:posicion)
+function resultadoPartida(idPartida);
+
+//jugador acaba partida.
+function jugadorAcabadoPartida(email, idPartida);

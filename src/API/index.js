@@ -874,13 +874,67 @@ async function obtenerResultadoEstadoJugadoresPartida(idPartida) {
   }
   
   
-  //FUNCIONA OKEY.
-  async function obtenerResultadoJugadorAcabadoPartida(idJugador,idPartida) {
+//FUNCIONA OKEY.
+async function obtenerResultadoJugadorAcabadoPartida(idJugador,idPartida) {
     try {
       // Hacemos la llamada a la función que devuelve una Promesa.
       let resultado;
       resultado = await test.jugadorAcabadoPartida(idJugador,idPartida);
       console.log("El resultado obtenido de acabar partida para ujn jugador es:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  //-----------------------------------------------------------------------------------------
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoPartida(idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.resultadoPartida(idPartida);
+      console.log("El resultado obtenido de la partida es:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoModificarGemas(ID_usuario, cantidad) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.modificarGemas(ID_usuario, cantidad);
+      console.log("El resultado obtenido de modificar gemas:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoJugadorEsBot(idJugador,idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.jugadorEsBot(idJugador,idPartida);
+      console.log("El resultado obtenido de :", resultado);
   
       return resultado;
   
@@ -984,6 +1038,12 @@ async function obtenerResultadoEstadoJugadoresPartida(idPartida) {
 // obtenerResultadoActualizarPosicionJugador('juan@example.com',1,20);
 
 // obtenerResultadoJugadorAcabadoPartida('juan@example.com',1);
+
+// obtenerResultadoPartida(1);
+
+// obtenerResultadoModificarGemas('juan@example.com',30);
+
+// obtenerResultadoJugadorEsBot('juan@example.com',1);
 
 
 

@@ -163,9 +163,6 @@ CREATE TABLE Partida (
     nCasasPropiedad38       INT,
     nCasasPropiedad39       INT,
     nCasasPropiedad40       INT,
-    
-    carta1          VARCHAR(255),
-    carta2          VARCHAR(255),
     turno           VARCHAR(255),
     
     
@@ -212,8 +209,6 @@ CREATE TABLE Partida (
     FOREIGN KEY (propiedad38) REFERENCES Jugador(email),
     FOREIGN KEY (propiedad39) REFERENCES Jugador(email),
     FOREIGN KEY (propiedad40) REFERENCES Jugador(email),
-    FOREIGN KEY (carta1) REFERENCES Jugador(email),
-    FOREIGN KEY (carta2) REFERENCES Jugador(email),
     FOREIGN KEY (turno) REFERENCES Jugador(email),
     FOREIGN KEY (perteneceTorneo) REFERENCES Torneo(idTorneo)
 );
