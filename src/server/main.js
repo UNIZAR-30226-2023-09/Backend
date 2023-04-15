@@ -84,7 +84,7 @@ server.on("connection", (socket) => {
         // En caso de que el jugador haya apostado
         if (mensaje[0] == "APOSTAR") {
             // socket, ID_jugador, ID_partida, cantidad
-            funcionesTablero.Apostar(socket, mensaje[1], mensaje[2], mensaje[3]);
+            funcionesTablero.Apostar(socket, mensaje[1], mensaje[2], mensaje[3], mensaje[4]);
         }
 
         // En caso de caer en la casilla del banco, realizar la acción oportuna si se desea
@@ -138,6 +138,10 @@ server.on("connection", (socket) => {
             // Si es un jugador mando: TURNO,ID_jugador,ID_partida
             // socket, ID_jugador, ID_partida
             funcionesJugador.FinTurno(mensaje[1], mensaje[2]);
+        }
+
+        if (mensaje[0] === "DESPLAZARSE_CASILLA") {
+            funcionesTablero.DesplazarJugador(mensaje[1], mensaje[2], mensaje[3]);
         }
 
         // Si el mensaje es que se quiere crear un torneo

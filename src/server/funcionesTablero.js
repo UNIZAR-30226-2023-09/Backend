@@ -267,7 +267,46 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     // Comprobar si es casilla de superpoder
     else if (posicion == 9 || posicion == 18) {
         // Obtener carta
-        // TODO:
+        let superPoder = Math.ceil(Math.random() * 6) + 1;
+        socket.send(`SUPERPODER,${superPoder}`);
+        let posicion;
+        switch (superPoder) {
+            case 1:
+                // Elegir que vas a sacar en la proxima tirada
+                socket.send(`ELEGIR_CASILLA`);
+                break;
+            case 2:
+                // Ir a la casilla del banco
+                socket.send(`DESPLAZAR_JUGADOR,28`);
+                posicion = 28;
+                await API.moverJugador(ID_jugador, posicion, ID_partida);
+                break;
+            case 3:
+                // Ir a la casilla del casino
+                socket.send(`DESPLAZAR_JUGADOR,14`);
+                posicion = 14;
+                await API.moverJugador(ID_jugador, posicion, ID_partida);
+                break;
+            case 4:
+                // Ir a la casilla de salida
+                socket.send(`DESPLAZAR_JUGADOR,1`);
+                posicion = 28;
+                await API.moverJugador(ID_jugador, posicion, ID_partida);
+                break;
+            case 5:
+                // Volver 3 casillas atras
+                let nuevaPosicion = posicion - 3;
+                socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
+                await API.moverJugador(ID_jugador, nuevaPosicion, ID_partida);
+                break;
+            case 6:
+                // "Aumentar" la suerte en el casino
+                socket.send(`AUMENTAR_SUERTE`);
+                break;
+            default:
+                break;
+        }
+
 
         socket.send(`NADA`);
     }
@@ -325,10 +364,12 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                         await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                         await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
                     }
-                    // TODO: SABER SI ES UN BOT
-                    // TODO: COMPLETAAAAR con funcion API
-                    // let conexion = con.buscarUsuario(IDjugador_propiedad);
-                    // conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${dineroJugadorPaga}`)
+
+                    // Mandarle al jugador de la propiedad en la que has caido la actualizacion
+                    if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
+                        let conexion = con.buscarUsuario(IDjugador_propiedad);
+                        conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
+                    }
                 }
             }
 
@@ -348,7 +389,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
 }
 
 // Realiza la acción de apostar dinero
-async function Apostar(socket, ID_jugador, ID_partida, cantidad) {
+async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
     try {
         // Recibir dinero: Cantidad (APOSTAR, cantidad)
         // Comprobar si cantidad es menor que dinero tiene jugador
@@ -360,7 +401,13 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad) {
             socket.send(`APOSTAR_NOOK,${ID_jugador},${ID_partida}`);
         }
         else {
-            let accion = Math.round(Math.random());
+            let accion;
+            if (suerte == "1") { // Si la suerte es 1, generar un número aleatorio entre 0 y 9
+                let randomNum = Math.floor(Math.random() * 10);
+                accion = randomNum < 8 ? 0 : 1; // 80% de probabilidad de apostar bien (accion = 0)
+            } else { // Si la suerte no es 1, generar un número aleatorio normal
+                accion = Math.round(Math.random());
+            }
             // Si es 0 sumamos la cantidad
             if (accion == 0) {
                 await API.modificarDinero(ID_partida, ID_jugador, cantidadInt);
@@ -372,6 +419,7 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad) {
             sigueEnPartida = sigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
             if (sigueEnPartida) {
                 socket.send(`APOSTAR_OK,${ID_jugador},${nuevoDinero},${ID_partida}`);
+                socket.send(`REINICIAR_SUERTE`);
             } else {
                 socket.send(`ELIMINADO`);
                 await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
@@ -642,7 +690,10 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
 
     if (jugadores_struct.length == 1) {
         // Es el ultimo jugador
-        let clasificacion = await API.acabarPartida(ID_partida); // TODO: Que acabar partida me devuelva la clasificacion
+        await API.acabarPartida(ID_partida);
+        let clasificacion = await API.resultadoPartida(ID_partida);
+        console.log(clasificacion);
+        // TODO: ACABAR CLASIFICACION 
     }
 
     for (let i = 0; i < jugadores_struct.length; i++) {
@@ -653,10 +704,11 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
             num_bots++;
         }
     }
-    // TODO: Comprobar tambien que los jugadores sean > 1
     if (num_bots === jugadores_struct.length) {
         // Solo quedan bots en la partida
-        let clasificacion = await API.acabarPartida(ID_partida); // TODO: Que acabar partida me devuelva la clasificacion
+        await API.acabarPartida(ID_partida);
+        let clasificacion = await API.resultadoPartida(ID_partida);
+
         // TODO: Segun la clasificacion que haya salido enviar las gemas a cada uno.
         return false;
     }
@@ -673,3 +725,9 @@ function Usuario(id, esBot) {
     this.id = id;
     this.esBot = esBot;
 }
+
+async function DesplazarJugador(ID_jugador, ID_partida, posicion) {
+    socket.send(`DESPLAZAR_JUGADOR,${posicion}`);
+    await API.moverJugador(ID_jugador, posicion, ID_partida);
+}
+exports.DesplazarJugador = DesplazarJugador;

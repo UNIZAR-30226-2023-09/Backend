@@ -230,6 +230,10 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
                         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
                         await enviarJugadorMuertoPartida(IDJugador, IDpartida);
                     }
+                    if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
+                        let conexion = con.buscarUsuario(IDjugador_propiedad);
+                        conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${IDjugador_propiedad},${dineroJugadorPaga}`)
+                    }
                 }
             }
             catch (error) {

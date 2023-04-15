@@ -269,6 +269,3 @@ function modificarGemas(ID_usuario, cantidad);
 
 //funcion que devuelva cada jugador y en que posicion ha quedado cada uno al acabar dicha partida. (jugador1:posicion,jugador2:posicion)
 function resultadoPartida(idPartida);
-
-//jugador acaba partida.
-function jugadorAcabadoPartida(email, idPartida);
