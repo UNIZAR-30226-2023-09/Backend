@@ -944,6 +944,23 @@ async function obtenerResultadoJugadorAcabadoPartida(idJugador,idPartida) {
       return false;
     }
   }
+
+  //FUNCIONA OKEY.
+  async function obtenerResultadoExpropiarJugador(idPartida, idJugador, propiedad) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.expropieseSeñorAlcalde(idPartida, idJugador, propiedad);
+      console.log("El resultado obtenido de exporpiar es :", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
   
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -1044,6 +1061,8 @@ async function obtenerResultadoJugadorAcabadoPartida(idJugador,idPartida) {
 // obtenerResultadoModificarGemas('juan@example.com',30);
 
 // obtenerResultadoJugadorEsBot('juan@example.com',1);
+
+// obtenerResultadoExpropiarJugador(2,'maria@example.com',2);
 
 
 

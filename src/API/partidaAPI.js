@@ -2755,3 +2755,49 @@ function jugadorEsBot(ID_jugador, ID_partida) {
     });
 }
 exports.jugadorEsBot = jugadorEsBot;
+
+
+/*
+=================== EXPROPIAR JUGADOR PROPIEDAD =========================================================
+*/
+
+//funcion la cual dado un jugador, una propiedad y una partida, te devuelve dicha propiedad cambiando el jugador que habia por el nuevo jugador.
+//devuelve true si ha ido todo bien, -1 si has intentado cambiar el propietario por el mismo que ya esta y false si algo ha ido mal.
+function expropieseSeñorAlcalde(idPartida, idJugador, propiedad) {
+    return new Promise((resolve, reject) => {
+      // Creamos una conexión a la base de datos
+      const con = db.crearConexion();
+      con.connect();
+  
+      const nombrePropiedad = `propiedad${propiedad}`;
+  
+      // Comprobamos si el jugador actual ya es dueño de la propiedad
+      const query = `SELECT ${nombrePropiedad} FROM Partida WHERE idPartida = ${idPartida}`;
+      con.query(query, (error, result) => {
+        if (error) {
+          con.end();
+          reject(error);
+        } else {
+          const propietarioActual = result[0][nombrePropiedad];
+          if (propietarioActual === idJugador) {
+            con.end();
+            resolve(-1); // El jugador ya es dueño de la propiedad
+          } else {
+            // Actualizamos la propiedad con el nuevo dueño
+            const query = `UPDATE Partida SET ${nombrePropiedad} = '${idJugador}' WHERE idPartida = ${idPartida}`;
+            con.query(query, (error, result) => {
+              if (error) {
+                con.end();
+                reject(error);
+              } else {
+                con.end();
+                resolve(true); // La propiedad ha sido actualizada con éxito
+              }
+            });
+          }
+        }
+      });
+    });
+  }
+  
+  exports.expropieseSeñorAlcalde = expropieseSeñorAlcalde;

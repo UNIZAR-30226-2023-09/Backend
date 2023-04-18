@@ -269,3 +269,7 @@ function modificarGemas(ID_usuario, cantidad);
 
 //funcion que devuelva cada jugador y en que posicion ha quedado cada uno al acabar dicha partida. (jugador1:posicion,jugador2:posicion)
 function resultadoPartida(idPartida);
+
+//funcion la cual dado un jugador, una propiedad y una partida, te devuelve dicha propiedad cambiando el jugador que habia por el nuevo jugador.
+//devuelve true si ha ido todo bien, -1 si has intentado cambiar el propietario por el mismo que ya esta y false si algo ha ido mal.
+function expropieseSeñorAlcalde(idPartida, idJugador, propiedad);
