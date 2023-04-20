@@ -1651,7 +1651,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                 if (turno_siguiente === 0) {
                                     turno_siguiente = 4;
                                 }
-                                const sql = `SELECT esBotInicial, esBot, email FROM juega WHERE idPartida = '${idPartida}' AND turno = '${turno_siguiente} AND jugadorVivo = true'`;
+                                const sql = `SELECT esBotInicial, esBot, email FROM juega WHERE idPartida = '${idPartida}' AND turno = '${turno_siguiente}' AND jugadorVivo = true`;
                                 con.query(sql, (error, results3) => {        // Caso -- Error
                                     if (error) {
                                         con.end();
