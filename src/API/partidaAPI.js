@@ -1609,6 +1609,37 @@ exports.sustituirBotPorJugador = sustituirBotPorJugador;
 
 
 
+
+/*
+=================== FUNCION AUXILIAR ->  OBTENER SIGUIENTE JUGADOR =====================================
+*/
+// De un vector con los turnos posibles, se busca el siguiente mayor al turno dado pero usando 
+// algebra modular
+//
+function encontrarNumeroMayor(vector, numero) {
+    var encontrado = false;
+    var indice = -1;
+  
+    for (var i = 0; i < vector.length; i++) {
+      if (vector[i] > numero && !encontrado) {
+        encontrado = true;
+        indice = i;
+      }
+    }
+  
+    if (encontrado) {
+      return vector[indice];
+    } else {
+        var ultimoNumero = vector[vector.length - 1];
+        if (numero > ultimoNumero){
+            return vector[0];
+        } else {
+            return null;
+        }
+    }
+  }
+  
+
 /*
 =================== OBTENER SIGUIENTE JUGADOR =========================================================
 */
@@ -1647,34 +1678,71 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                 con.end();
                                 resolve(false);
                             } else {
-                                let turno_siguiente = (results2[0].turno + 1) % 4;
-                                if (turno_siguiente === 0) {
-                                    turno_siguiente = 4;
-                                }
-                                const sql = `SELECT esBotInicial, esBot, email FROM juega WHERE idPartida = '${idPartida}' AND turno = '${turno_siguiente}' AND jugadorVivo = true`;
+
+                                let turno_siguiente = results2[0].turno;
+
+                                const sql = `SELECT turno, esBotInicial, esBot, jugadorVivo, email FROM juega WHERE idPartida = '${idPartida}'`;
                                 con.query(sql, (error, results3) => {        // Caso -- Error
                                     if (error) {
-                                        con.end();
+                                        con.end;
                                         reject(error);
                                     } else {
-                                        const respuesta = [];
-                                        const aux = [];
-                                        aux[0] = results3[0].email;
-                                        if (results3[0].esBot || results3[0].esBotInicial) {
-                                            aux[1] = 1;
-                                        } else {
-                                            aux[1] = 0;
+
+                                        let encontrado = false;
+                                        let email = "";
+                                        let esBot = "";
+                                        let esBotInicial = "";
+                                        let turno_next = "";
+
+                                        let numeros = []; // inicializa un vector vacío donde meter los turnos de jugadores vivos
+
+                                        // En este bucle guardamos los turnos de jugadores vivos
+                                        results3.forEach((fila) => {
+                                            if(fila.jugadorVivo && fila.turno != turno_siguiente){
+                                                encontrado = true;
+                                                numeros.push(fila.turno); // agrega el número 5 al final del vector
+                                            }
+                                        });
+
+                                        // Encontramos el siguiente turno mayor(Algebra modular) al que se acaba de ejecutar
+                                        let indice = encontrarNumeroMayor(numeros, turno_siguiente);
+
+                                        // Con este bucle buscamos con el turno el resto de datos del jugador
+                                        results3.forEach((fila) => {
+                                            if(fila.turno === indice){
+                                                encontrado = true;
+                                                email = fila.email;
+                                                esBot = fila.esBot;
+                                                esBotInicial = fila.esBotInicial;
+                                                turno_next = fila.turno;
+                                            }
+                                        });
+
+                                        // Si se ha encontrado un turno siguiente se mandan los datos
+                                        if(encontrado){
+                                            const respuesta = [];
+                                            const aux = [];
+                                            aux[0] = email;
+                                            if (esBot || esBotInicial){
+                                                aux[1] = 1;
+                                            } else {
+                                                aux[1] = 0;
+                                            }
+                                            respuesta[0] = aux.join(":");
+                                            if (turno_next === 4) {
+                                                respuesta[1] = 1;
+                                            } else {
+                                                respuesta[1] = 0;
+                                            }
+                                            let cadena = respuesta.join(",");
+                                            con.end();
+                                            resolve(cadena);
+                                        } else {    // Si no se ha encontrado ningun turno pues devolvemos false
+                                            con.end();
+                                            resolve(false);
                                         }
-                                        respuesta[0] = aux.join(":");
-                                        if (turno_siguiente === 4) {
-                                            respuesta[1] = 1;
-                                        } else {
-                                            respuesta[1] = 0;
-                                        }
-                                        let cadena = respuesta.join(",");
-                                        con.end();
-                                        resolve(cadena);
                                     }
+                                    
                                 });
 
                             }
@@ -1682,13 +1750,12 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                     }
                 });
             }
-        });
+        }); 
     });
 }
 
 
 exports.obtenerSiguienteJugador = obtenerSiguienteJugador;
-
 
 
 
