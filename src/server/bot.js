@@ -210,7 +210,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
         let propiedad = tablero[posicion - 1];
 
         // Comprobamos si la propiedad no pertenece a ningún jugador
-        if (IDjugador_propiedad == -1) {
+        if (IDjugador_propiedad === -1) {
             let dineroJugador = await API.obtenerDinero(IDJugador, IDpartida);
             if (dineroJugador > 400) {
                 // Comprar la propiedad

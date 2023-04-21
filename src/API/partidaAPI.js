@@ -132,8 +132,8 @@ exports.modificarDinero = modificarDinero;
 */
 function pagarImpuestos(jugador, cantidad, idPartida) {
     return new Promise((resolve, reject) => {
-        con.connect();
         var con = db.crearConexion();
+        con.connect();
         const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
         con.query(query, (error, results) => {
             if (error) {
