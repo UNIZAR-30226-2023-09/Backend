@@ -211,9 +211,16 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
 
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad == -1) {
-            console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| Puede comprar propiedad:", propiedad);
-            // Si tenemos dinero suficiente lo compramos
-            ComprarPropiedad(IDJugador, posicion, IDpartida);
+            let dineroJugador = await API.obtenerDinero(IDJugador, IDpartida);
+            if (dineroJugador > 400) {
+                // Comprar la propiedad
+                console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| Compra propiedad:", propiedad);
+                ComprarPropiedad(IDJugador, posicion, IDpartida);
+            } else {
+                console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| No compra propiedad:", propiedad);
+            }
+
+
         }
         // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
         else if (IDjugador_propiedad != IDJugador) {

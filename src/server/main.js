@@ -141,7 +141,7 @@ server.on("connection", (socket) => {
         }
 
         if (mensaje[0] === "DESPLAZARSE_CASILLA") {
-            funcionesTablero.DesplazarJugador(mensaje[1], mensaje[2], mensaje[3]);
+            funcionesTablero.DesplazarJugador(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
 
         // Si el mensaje es que se quiere crear un torneo

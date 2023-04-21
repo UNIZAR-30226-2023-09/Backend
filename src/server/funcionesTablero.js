@@ -743,7 +743,7 @@ function Usuario(id, esBot) {
     this.esBot = esBot;
 }
 
-async function DesplazarJugador(ID_jugador, ID_partida, posicion) {
+async function DesplazarJugador(socket, ID_jugador, ID_partida, posicion) {
     socket.send(`DESPLAZAR_JUGADOR,${posicion}`);
     await API.moverJugador(ID_jugador, posicion, ID_partida);
 }
