@@ -282,3 +282,8 @@ function expropieseSeñorAlcalde(idPartida, idJugador, propiedad);
 // algebra modular
 //
 function encontrarNumeroMayor(vector, numero)
+
+
+// Devuelve el listado de skins y si las tienje el jugador dado con email idJugador (1 si la tiene, 0 si no)
+//  con el siguiente formato, ->    skin1:0,skin2:1
+function obtenerSkinsJugador(idJugador)
