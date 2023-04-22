@@ -18,6 +18,9 @@ function comprobarInicioSesion(email, contrasenya);
 // Devuelve la nueva posición del jugador en caso de que vaya correcto y devuelve 0 si algo no ha ido bien.
 moverJugador(jugador, numero);
 
+// Funcion que dado un jugador y una partida desplaza al jugador a la casilla indicada.
+desplazarJugadorACasilla(jugador, casilla, idPartida);
+
 
 // Modificar el dinero del jugador en la cantidad proporcionada, (la cantidad puede
 // ser positiva o negativa). Devuelve true si ha ido todo bien, en caso de que haya ido algo mal

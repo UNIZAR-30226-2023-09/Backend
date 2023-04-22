@@ -74,6 +74,44 @@ function moverJugador(jugador, posiciones, idPartida) {
 exports.moverJugador = moverJugador;
 
 
+// Funcion que dado un jugador y una partida desplaza al jugador a la casilla indicada.
+function desplazarJugadorACasilla(jugador, casilla, idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        // Comprobar si el jugador existe en la tabla "juega".
+        const query = `SELECT * FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
+        con.query(query, (error, results) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {
+                // Si el jugador no existe, devolver 0.
+                con.end();
+                resolve(-1);
+            }
+            else {
+                // Si el jugador existe, actualizar su posición
+                const partidaId = results[0].idPartida;
+                let nuevaPosicion = casilla
+                const updateQuery = `UPDATE juega SET posicion = ? WHERE email = ? AND idPartida = ?`;
+                //si metes entre [] los valores, son los de la query que ponemos interrogantes.
+                con.query(updateQuery, [nuevaPosicion, jugador, partidaId], (error, results) => {
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else {
+                        // Devolver la nueva posicion si todo ha ido bien.
+                        con.end();
+                        resolve(nuevaPosicion);
+                    }
+                });
+            }
+        });
+    });
+}
+
+exports.desplazarJugadorACasilla = desplazarJugadorACasilla;
 
 /*
 ===================MODIFICAR DINERO JUGADOR DEL MONOPOLY===================
@@ -84,6 +122,8 @@ function modificarDinero(idPartida, jugador, cantidad) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
+        // Convertir la cantidad a un número entero
+        cantidad = parseInt(cantidad);
         // Comprobar si el jugador existe en la tabla "juega".
         const query = `SELECT dinero FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
         con.query(query, (error, results) => {
@@ -542,6 +582,8 @@ function meterDineroBanco(idJugador, idPartida, cantidad) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
+        // Convertir la cantidad a entero.
+        cantidad = parseInt(cantidad);
         //comprobando que está en la partida, obtenemos el dinero del banco del jugador.
         const query = 'SELECT dineroInvertido FROM juega WHERE email = ? AND idPartida = ?';
         const values = [idJugador, idPartida];

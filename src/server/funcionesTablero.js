@@ -271,6 +271,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     else if (posicion == 9 || posicion == 18) {
         // Obtener carta
         let superPoder = Math.ceil(Math.random() * 5) + 1;
+        let nuevaPosicion;
         socket.send(`SUPERPODER,${superPoder}`);
         switch (superPoder) {
             case 1:
@@ -280,23 +281,23 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             case 2:
                 // Ir a la casilla del banco
                 socket.send(`DESPLAZAR_JUGADOR,28`);
-                posicion = 28;
-                await API.moverJugador(ID_jugador, posicion, ID_partida);
+                nuevaPosicion = 28;
+                await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
                 let dineroBanco = await API.dineroBanco(ID_jugador, ID_partida);
                 socket.send(`ACCION_BANCO,${ID_jugador},${ID_partida},${dineroBanco}`);
                 break;
             case 3:
                 // Ir a la casilla del casino
                 socket.send(`DESPLAZAR_JUGADOR,14`);
-                posicion = 14;
-                await API.moverJugador(ID_jugador, posicion, ID_partida);
+                nuevaPosicion = 14;
+                await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
                 socket.send(`DINERO_APOSTAR,${ID_jugador}`);
                 break;
             case 4:
                 // Ir a la casilla de salida
                 socket.send(`DESPLAZAR_JUGADOR,1`);
-                posicion = 28;
-                await API.moverJugador(ID_jugador, posicion, ID_partida);
+                nuevaPosicion = 1;
+                await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
                 if (await API.modificarDinero(ID_partida, ID_jugador, 300)) {
                     let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
                     socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
@@ -304,9 +305,9 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 break;
             case 5:
                 // Volver 3 casillas atras
-                let nuevaPosicion = posicion - 3;
+                nuevaPosicion = posicion - 3;
                 socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
-                await API.moverJugador(ID_jugador, nuevaPosicion, ID_partida);
+                await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
                 // Si estaba en la primera casilla de superPoder va al aeropuerto
                 CaerCasilla(socket, ID_jugador, ID_partida, nuevaPosicion);
 
