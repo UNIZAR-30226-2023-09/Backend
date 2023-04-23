@@ -31,7 +31,7 @@ server.on("connection", (socket) => {
 
     // Nuevo mensaje recibido
     socket.on("message", (message) => {
-        console.log('\u001b[32m' + `Mensaje recibido: ${message}` + '\u001b[0m');
+        console.log('\x1b[32m' + `Mensaje recibido: ${message}` + '\x1b[0m');
 
         let mensaje = "";
         // Obtenemos el mensaje solicitado comprobando si contiene una coma

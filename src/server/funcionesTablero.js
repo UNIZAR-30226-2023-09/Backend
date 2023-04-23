@@ -11,6 +11,7 @@ const ECONOMIA = 1;
 
 const API = require('../API/partidaAPI');
 const con = require('./conexiones');
+const fs = require('fs');
 
 const gruposDePropiedades = {
     mexico: ["Monterrey", "Guadalajara"],
@@ -119,6 +120,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             if (await API.modificarDinero(ID_partida, ID_jugador, 100)) {
                 let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
                 socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+                escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de salida");
             }
         }
         catch (error) {
@@ -142,11 +144,13 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
                 if (sigue) {
                     socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de impuestos");
                 } else {
                     socket.send(`ELIMINADO`);
                     console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
                     await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                     partidaContinua = await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
                 }
             }
             if (sigue && partidaContinua) {
@@ -179,6 +183,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                     console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
                     await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                     partidaContinua = await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
                 }
             }
             if (sigue && partidaContinua) {
@@ -208,6 +213,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
         try {
             let dineroBote = await API.obtenerDineroBote(ID_jugador, ID_partida);
             socket.send(`OBTENER_BOTE,${ID_jugador},${dineroBote}`);
+            escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla del bote en la partida " + ID_partida);
         }
 
         catch (error) {
@@ -222,6 +228,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
         let dineroBanco = await API.dineroBanco(ID_jugador, ID_partida);
         // Mandar mensaje: Banco,cantidadEnElBanco
         socket.send(`ACCION_BANCO,${ID_jugador},${ID_partida},${dineroBanco}`);
+        escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla del banco en la partida " + ID_partida);
         // Responde con sacar/meter,cantidad
         // (función meterBanco/sacarBanco)
     }
@@ -231,6 +238,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
         try {
             API.enviarCarcel(ID_jugador, ID_partida);
             socket.send(`DENTRO_CARCEL,${ID_jugador}`);
+            escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de ir a la carcel en la partida " + ID_partida);
         }
 
         catch (error) {
@@ -256,8 +264,10 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                     console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
                     await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                     await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
                 }
             }
+            escribirEnArchivo("El jugador " + ID_jugador + " ha obtenido " + cantidad + "€" + "por caer en la casilla de Treasure en la partida " + ID_partida);
         }
 
         catch (error) {
@@ -320,6 +330,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 break;
         }
 
+        escribirEnArchivo("El jugador " + ID_jugador + " ha sacado la carta de superpoder " + superPoder + "en la partida " + ID_partida);
 
         socket.send(`NADA`);
     }
@@ -328,6 +339,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     else if (posicion == 11) {
         // No se hace nada, se pasa turno y ya
         socket.send(`NADA`);
+        escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de la carcel de visita en la partida " + ID_partida);
     }
 
     // Si no es ninguna de las anteriores -> es casilla de propiedad
@@ -349,6 +361,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
             // Dar opción de comprarla
             socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`)
+            escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
             // Recibe mensaje: SI/NO
             //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
             //              (funcion ComprarPropiedad)
@@ -372,11 +385,13 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                     let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
                     if (sigue) {
                         socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
+                        escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + "en la partida " + ID_partida);
                     } else {
                         socket.send(`ELIMINADO`);
                         console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
                         await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                         await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
+                        escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
                     }
 
                     // Mandarle al jugador de la propiedad en la que has caido la actualizacion
@@ -419,7 +434,9 @@ async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
         // TODO: Modificar precio en funcion de la economia
         let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
         // Dar opción de comprarla
-        socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`)
+        socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`);
+        escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
+
         // Recibe mensaje: SI/NO
         //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
         //              (funcion ComprarPropiedad)
@@ -443,11 +460,13 @@ async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
                 let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
                 if (sigue) {
                     socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion);
                 } else {
                     socket.send(`ELIMINADO`);
                     console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
                     await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                     await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
                 }
 
                 // Mandarle al jugador de la propiedad en la que has caido la actualizacion
@@ -507,6 +526,7 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
                 console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
                 await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                 await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
+                escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
             }
         }
     }
@@ -780,6 +800,7 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
         await API.acabarPartida(ID_partida);
         let conexion = con.buscarUsuario(jugadores_struct[0].id);
         conexion.send(`FinPartida,${ID_partida}`);
+        escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
     }
 
     for (let i = 0; i < jugadores_struct.length; i++) {
@@ -826,6 +847,7 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
             conexion.send(`FinPartida,${ID_partida},${gemas[i]}`);
         }
 
+        escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
         return false;
     }
     return true;
@@ -861,3 +883,11 @@ async function asignarGemas(clasificacion) {
     }
 }
 
+// Escribe en el archivo logs.txt el mensaje que se le pasa.
+function escribirEnArchivo(datos) {
+    fs.writeFile("logs.txt", datos, (error) => {
+        if (error) {
+            console.error(`Error al escribir en el archivo logs.txt: ${error}`);
+        }
+    });
+}

@@ -13,6 +13,8 @@ const APIpartida = require('../API/partidaAPI');
 const conexion = require('./conexiones');
 const bot = require('./bot');
 const con = require('./conexiones');
+const fs = require('fs');
+
 
 // Registra al jugador dado si es posible
 async function Registrarse(socket, email, contrasenya, nombre) {
@@ -21,10 +23,12 @@ async function Registrarse(socket, email, contrasenya, nombre) {
         let insert = nombre + "," + contrasenya + "," + email + "," + 0;
         if (await API.insertarUsuario(insert)) {
             socket.send("REGISTRO_OK");
+            escribirEnArchivo("Registro correcto" + "Nombre: " + nombre + "Contraseña: " + contrasenya + "Email: " + email);
         }
         else {
             // TODO: Habría que ver como mirar el motivo de por qué ha ido mal el registro
             socket.send("REGISTRO_NO_OK");
+            escribirEnArchivo("Registro incorrecto" + "Nombre: " + nombre + "Contraseña: " + contrasenya + "Email: " + email);
         }
 
     } catch (error) {
@@ -53,13 +57,13 @@ async function IniciarSesion(socket, email, contrasenya) {
                 // Mandar los datos de la partida para mostrarlos
                 //socket.send();
 
-                // TODO: temporal, hay que modificarlo
-
             }
             socket.send(`INICIO_OK,${email},${gemas}`);
+            escribirEnArchivo("Inicio sesion correcto" + "Email: " + email + "Contraseña: " + contrasenya);
         }
         else {
             socket.send(`INICIO_NO_OK`);
+            escribirEnArchivo("Inicio sesion incorrecto" + "Email: " + email + "Contraseña: " + contrasenya);
         }
 
     } catch (error) {
@@ -113,7 +117,7 @@ async function FinTurno(ID_jugador, ID_partida) {
         }
     }
 
-    // TODO: Enviar a los demas jugadores la info de que ha cambiado en mi estado(dinero, posicion, propiedades, etc)
+    escribirEnArchivo("Fin de turno de jugador: " + ID_jugador + "Partida: " + ID_partida + "Siguiente jugador: " + jugador + "Fin de ronda: " + finRonda);
 
     // Comprobar si es fin de ronda y realizar lo oportuno con esta
     if (finRonda == 1) {
@@ -138,4 +142,13 @@ async function obtenerJugadoresPartida(ID_partida) {
 function Usuario(id, esBot) {
     this.id = id;
     this.esBot = esBot;
+}
+
+// Escribe en el archivo logs.txt el mensaje que se le pasa.
+function escribirEnArchivo(datos) {
+    fs.writeFile("logs.txt", datos, (error) => {
+        if (error) {
+            console.error(`Error al escribir en el archivo logs.txt: ${error}`);
+        }
+    });
 }
