@@ -961,6 +961,22 @@ async function obtenerResultadoJugadorAcabadoPartida(idJugador,idPartida) {
       return false;
     }
   }
+
+
+  //FUNCIONA OKEY.
+async function obtenerObtenerSkinsJugador(idJugador){
+    try {
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.obtenerSkinsJugador(idJugador);
+        console.log("El resultado obtenido las skins de jugador es:", resultado);
+        return resultado;
+  
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+  }
   
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
@@ -1094,3 +1110,4 @@ async function obtenerResultadoJugadorAcabadoPartida(idJugador,idPartida) {
 // Probar Skins
 //obtenerResultadoObtenerListadoSkins();
 //obtenerComprarSkin('AEoooo@gmail.com', 'default2');
+// obtenerObtenerSkinsJugador('jugador1@example.com');

@@ -128,3 +128,84 @@ function comprarSkin(idJugador, idSkin) {
 
 
 exports.comprarSkin = comprarSkin;
+
+
+
+
+/*
+=================== OBTENER LISTADO SKINS DE JUGADOR =========================================================
+*/
+// Devuelve el listado de skins y si las tienje el jugador dado con email idJugador (1 si la tiene, 0 si no)
+//  con el siguiente formato, ->    skin1:0,skin2:1
+function obtenerSkinsJugador(idJugador) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT email FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query, (error, results) => {                // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                  // Caso -- No existe Jugador
+                con.end();
+                resolve(false);
+            } else {                                            // Caso --  Existe Jugador
+
+                const query = `SELECT idSkin FROM tieneSkins WHERE email = '${idJugador}'`;
+                con.query(query, (error, results2) => {                // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else {                                            // Caso --  Existe Jugador
+
+                        let skinsJugador = [];
+
+                        results2.forEach((fila) => {
+                            skinsJugador.push(fila.idSkin);
+                        });
+
+                        if(results.length === 0){
+                            con.end();
+                            resolve(false);
+                        } else {
+
+                            const query = `SELECT idSkin FROM Skins`;
+                            con.query(query, (error, results3) => {                // Caso -- Error
+                                if (error) {
+                                    con.end();
+                                    reject(error);
+                                } else {                                            // Caso --  Existe Jugador
+
+                                    const respuesta = [];
+
+                                    results3.forEach((fila, i) => {
+                                        if(skinsJugador.includes(fila.idSkin)){
+                                            let aux = [];
+                                            aux[0] = fila.idSkin;
+                                            aux[1] = 1;
+                                            respuesta[i] = aux.join(":");
+                                        } else {
+                                            let aux = [];
+                                            aux[0] = fila.idSkin;
+                                            aux[1] = 0;
+                                            respuesta[i] = aux.join(":");
+                                        } 
+                                    });
+
+                                    let cadena = respuesta.join(",");
+                                    con.end();
+                                    resolve(cadena);
+                                }
+                            });
+
+                        }
+                    }
+                });
+
+            }
+        });
+    });
+}
+
+
+exports.obtenerSkinsJugador = obtenerSkinsJugador;
