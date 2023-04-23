@@ -80,6 +80,7 @@ async function FinTurno(ID_jugador, ID_partida) {
 
     // Llamar a la función de la api para obtener el siguiente jugador
     let siguienteJugador = await APIpartida.obtenerSiguienteJugador(ID_jugador, ID_partida);
+    console.log("Siguiente jugador: ", siguienteJugador);
     let resultado = siguienteJugador.split(",");
     let resultado2 = resultado[0].split(":");
     let jugador = resultado2[0];

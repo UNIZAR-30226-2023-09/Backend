@@ -1661,26 +1661,26 @@ exports.sustituirBotPorJugador = sustituirBotPorJugador;
 function encontrarNumeroMayor(vector, numero) {
     var encontrado = false;
     var indice = -1;
-  
+
     for (var i = 0; i < vector.length; i++) {
-      if (vector[i] > numero && !encontrado) {
-        encontrado = true;
-        indice = i;
-      }
+        if (vector[i] > numero && !encontrado) {
+            encontrado = true;
+            indice = i;
+        }
     }
-  
+
     if (encontrado) {
-      return vector[indice];
+        return vector[indice];
     } else {
         var ultimoNumero = vector[vector.length - 1];
-        if (numero > ultimoNumero){
+        if (numero > ultimoNumero) {
             return vector[0];
         } else {
             return null;
         }
     }
-  }
-  
+}
+
 
 /*
 =================== OBTENER SIGUIENTE JUGADOR =========================================================
@@ -1740,7 +1740,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
 
                                         // En este bucle guardamos los turnos de jugadores vivos
                                         results3.forEach((fila) => {
-                                            if(fila.jugadorVivo && fila.turno != turno_siguiente){
+                                            if (fila.jugadorVivo && fila.turno != turno_siguiente) {
                                                 encontrado = true;
                                                 numeros.push(fila.turno); // agrega el número 5 al final del vector
                                             }
@@ -1751,7 +1751,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
 
                                         // Con este bucle buscamos con el turno el resto de datos del jugador
                                         results3.forEach((fila) => {
-                                            if(fila.turno === indice){
+                                            if (fila.turno === indice) {
                                                 encontrado = true;
                                                 email = fila.email;
                                                 esBot = fila.esBot;
@@ -1761,11 +1761,11 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                         });
 
                                         // Si se ha encontrado un turno siguiente se mandan los datos
-                                        if(encontrado){
+                                        if (encontrado) {
                                             const respuesta = [];
                                             const aux = [];
                                             aux[0] = email;
-                                            if (esBot || esBotInicial){
+                                            if (esBot || esBotInicial) {
                                                 aux[1] = 1;
                                             } else {
                                                 aux[1] = 0;
@@ -1784,7 +1784,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                             resolve(false);
                                         }
                                     }
-                                    
+
                                 });
 
                             }
@@ -1792,7 +1792,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                     }
                 });
             }
-        }); 
+        });
     });
 }
 
