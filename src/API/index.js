@@ -1067,6 +1067,41 @@ async function obtenerResultadoObtenerEvento(idPartida) {
     }
   }
 
+  //FUNCIONA OKEY.
+  async function obtenerResultadoActualizarEconomia(idPartida, economia) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.actualizarEconomia(idPartida, economia);
+      console.log("El resultado obtenido de actualizar la economia es :", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoObtenerEconomia(idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.obtenerEconomia(idPartida);
+      console.log("El resultado obtenido de obtener la economia es :", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+
   
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
