@@ -76,7 +76,7 @@ async function IniciarSesion(socket, email, contrasenya) {
 exports.IniciarSesion = IniciarSesion;
 
 async function FinTurno(ID_jugador, ID_partida) {
-    // TODO: Comprobar si es fin de ronda para lo de los eventos, para actualizar saldos bancos                 actualizar economía
+    // TODO: Comprobar si es fin de ronda para lo de los eventos, para actualizar saldos bancos, actualizar economía
     // Si es un jugador mando: TURNO,ID_jugador,ID_partida
 
 
@@ -132,13 +132,11 @@ async function actualizarFinRonda(jugadores_struct, ID_partida) {
     for (let i = 0; i < jugadores_struct.length; i++) {
         // Comprobar si el jugador tiene dinero en el banco y si es así, multiplicar 
         // por el interés y actualizar el saldo del banco
-        let dineroBanco = await APIpartida.dineroBanco(jugadores_struct[i].id, ID_partida);
-        if (dineroBanco > 0) {
-            let economia = await APIpartida.obtenerEconomia(ID_partida);
-            let interes = economia * 1.2;
-            let dinero = dineroBanco * interes;
-            await APIpartida.meterDineroBanco(jugadores_struct[i].id, ID_partida, dinero);
-        }
+        await ActualizarInteresesBanco(jugadores_struct, i, ID_partida);
+
+        // Actualizar la economia de la partida sumando o restando de manera aleatoria 
+        // 0.1 hasta un minimo de 0.7 y un maximo de 1.3
+        await modificarEconomiaPartida(ID_partida);
 
         // Obtener la ronda en la que esta la partida y si es ronda par y mayor que 10, 
         // generar evento aleatorio
@@ -150,6 +148,36 @@ async function actualizarFinRonda(jugadores_struct, ID_partida) {
         }
 
     }
+}
+
+// Función que actualiza los intereses de los bancos de los jugadores de la partida.
+async function ActualizarInteresesBanco(jugadores_struct, i, ID_partida) {
+    let dineroBanco = await APIpartida.dineroBanco(jugadores_struct[i].id, ID_partida);
+    if (dineroBanco > 0) {
+        let economia = await APIpartida.obtenerEconomia(ID_partida);
+        let interes = economia * 1.2;
+        let dinero = dineroBanco * interes;
+        await APIpartida.meterDineroBanco(jugadores_struct[i].id, ID_partida, dinero);
+    }
+}
+
+// Actualizar la economia de la partida sumando o restando de manera aleatoria 
+// 0.1 hasta un minimo de 0.7 y un maximo de 1.3
+async function modificarEconomiaPartida(ID_partida) {
+    let economia = await APIpartida.obtenerEconomia(ID_partida);
+    let aleatorio = Math.random() * 0.2;
+    let aleatorio2 = Math.random();
+    if (aleatorio2 < 0.5) {
+        economia = economia - aleatorio;
+    } else {
+        economia = economia + aleatorio;
+    }
+    if (economia < 0.7) {
+        economia = 0.8;
+    } else if (economia > 1.3) {
+        economia = 1.2;
+    }
+    await APIpartida.actualizarEconomia(ID_partida, economia);
 }
 
 // Funcion que dada una partida genera un evento aleatorio entre 1 y 5, almacenandolo 

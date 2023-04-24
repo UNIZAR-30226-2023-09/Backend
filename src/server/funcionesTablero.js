@@ -355,8 +355,12 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
 
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad == -1) {
-            // TODO: Modificar precio en funcion de la economia
             let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
+
+            // Actualizar el precio de la propiedad en funcion de la economia
+            let economia = await API.obtenerEconomia(ID_partida);
+            precio = precio * economia;
+
             // Dar opción de comprarla
             socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`)
             escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
@@ -370,11 +374,11 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             try {
                 // Pagar al jugador que posee la propiedad
                 // obtenerPrecioPropiedad(propiedad, ID_partida)
-                // multiplicarlo por ECONOMIA
+                // 
                 // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
                 let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, posicion);
-                // Multiplicamos el precio a pagar por la economía
-                let precio = precioPagar * ECONOMIA;
+                // 
+                let precio = precioPagar
                 // Pagamos el alquiler con el nuevo precio
                 if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio)) {
                     // obtener dinero de ambos jugadores
@@ -429,8 +433,10 @@ async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
 
     // Comprobamos si la propiedad no pertenece a ningún jugador
     if (IDjugador_propiedad == -1) {
-        // TODO: Modificar precio en funcion de la economia
+        // Modificar precio en funcion de la economia
         let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
+        let economia = await API.obtenerEconomia(ID_partida);
+        precio = precio * economia;
         // Dar opción de comprarla
         socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`);
         escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
@@ -445,11 +451,11 @@ async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
         try {
             // Pagar al jugador que posee la propiedad
             // obtenerPrecioPropiedad(propiedad, ID_partida)
-            // multiplicarlo por ECONOMIA
+            // 
             // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
             let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, posicion);
-            // Multiplicamos el precio a pagar por la economía
-            let precio = precioPagar * ECONOMIA;
+            // 
+            let precio = precioPagar;
             // Pagamos el alquiler con el nuevo precio
             if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio)) {
                 // obtener dinero de ambos jugadores
