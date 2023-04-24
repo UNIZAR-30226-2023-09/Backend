@@ -963,7 +963,7 @@ function crearPartida(id_jugador) {
           nCasasPropiedad18,nCasasPropiedad19,nCasasPropiedad20,nCasasPropiedad21,nCasasPropiedad22,nCasasPropiedad23,nCasasPropiedad24,
           nCasasPropiedad25,nCasasPropiedad26,nCasasPropiedad27,nCasasPropiedad28,nCasasPropiedad29,nCasasPropiedad30,nCasasPropiedad31,
           nCasasPropiedad32,nCasasPropiedad33,nCasasPropiedad34,nCasasPropiedad35,nCasasPropiedad36,nCasasPropiedad37,nCasasPropiedad38,
-          nCasasPropiedad39,nCasasPropiedad40) VALUES (0, 0.0, 'Ninguno', 1.0, 0.0,60.0,60.0,0.0,0.0,200.0,100.0,100.0,
+          nCasasPropiedad39,nCasasPropiedad40) VALUES (1, 0.0, 'Ninguno', 1.0, 0.0,60.0,60.0,0.0,0.0,200.0,100.0,100.0,
           0.0,120.0,0.0,140.0,140.0,0.0,160.0,200.0,180.0,0.0,180.0,200.0,0.0,220.0,220.0,0.0,240.0,200.0,260.0,0.0,260.0,280.0,0.0,300.0,300.0,0.0,320.0,200.0,350.0,350.0,0.0,400.0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)`;
                 con.query(query2, (error, results2) => {
                     if (error) {
