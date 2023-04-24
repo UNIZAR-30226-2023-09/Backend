@@ -305,3 +305,6 @@ function obtenerRonda(idPartida);
 
 // Dado el id de la partida y una ronda, la actualiza 
 function actualizarRonda(idPartida, ronda);
+
+//Dado un idPartida, un idJugador y una cantidad actualice la cantidad de dinero de dicho jugador en el banco.
+function modificarDineroBanco(idPartida, idJugador, cantidad);
