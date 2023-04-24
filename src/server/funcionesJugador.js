@@ -76,11 +76,9 @@ async function IniciarSesion(socket, email, contrasenya) {
 exports.IniciarSesion = IniciarSesion;
 
 async function FinTurno(ID_jugador, ID_partida) {
-    // TODO: Comprobar si es fin de ronda para lo de los eventos, para actualizar saldos bancos, actualizar economía
+    // Comprobar si es fin de ronda para lo de los eventos, para actualizar saldos bancos, actualizar economía
     // Si es un jugador mando: TURNO,ID_jugador,ID_partida
-
-
-    // TODO: Buscar todos los jugadores de la partida y si no son bots, enviar la info actualizada de su jugada a los demas jugadores
+    // Buscar todos los jugadores de la partida y si no son bots, enviar la info actualizada de su jugada a los demas jugadores
 
     // Llamar a la función de la api para obtener el siguiente jugador
     let siguienteJugador = await APIpartida.obtenerSiguienteJugador(ID_jugador, ID_partida);
@@ -187,31 +185,31 @@ async function generarEventoAleatorio(ID_partida, jugadores_struct) {
     switch (evento) {
         case 1:
             // El banco quiebra y se le quita el dinero a los usuarios
-            await eventoBancaRota(efecto, ID_partida, jugadores_struct);
+            await eventoBancaRota(ID_partida, jugadores_struct);
             break;
         case 2:
             // El banco se dispara y se multiplica el dinero del banco de los 
             // usuarios por 3
-            await eventoBancoDispara(efecto, ID_partida, jugadores_struct);
+            await eventoBancoDispara(ID_partida, jugadores_struct);
             break;
         case 3:
             // Los dados esta ronda se multiplican por 2
-            await eventoDadosDobles(efecto, ID_partida, jugadores_struct);
+            await eventoDadosDobles(ID_partida, jugadores_struct);
             break;
         case 4:
             // Los dados esta ronda se dividen por 2
-            await eventoDadosMitad(efecto, ID_partida, jugadores_struct);
+            await eventoDadosMitad(ID_partida, jugadores_struct);
             break;
         case 5:
             // La economia se vuelve inestable y puede ser muy alta o muy baja
-            await eventoEconomiaInestable(efecto, ID_partida, jugadores_struct);
+            await eventoEconomiaInestable(ID_partida, jugadores_struct);
             break;
     }
 }
 
 // Evento que hace que el banco pierda todo su dinero.
-async function eventoBancaRota(efecto, ID_partida, jugadores_struct) {
-    efecto = "BancaRota";
+async function eventoBancaRota(ID_partida, jugadores_struct) {
+    let efecto = "BancaRota";
     await APIpartida.actualizarEvento(ID_partida, efecto);
     // Actualizar el dinero de los bancos de todos los jugadores a 0
     for (let i = 0; i < jugadores_struct.length; i++) {
@@ -230,7 +228,7 @@ async function eventoBancaRota(efecto, ID_partida, jugadores_struct) {
 }
 
 // Evento que multiplica el dinero del banco de los jugadores por 3
-async function eventoBancoDispara(efecto, ID_partida, jugadores_struct) {
+async function eventoBancoDispara(ID_partida, jugadores_struct) {
     efecto = "BancoDispara";
     await APIpartida.actualizarEvento(ID_partida, efecto);
     for (let i = 0; i < jugadores_struct.length; i++) {
@@ -251,8 +249,8 @@ async function eventoBancoDispara(efecto, ID_partida, jugadores_struct) {
 }
 
 // Evento que multiplica los dados de los jugadores por 2
-async function eventoDadosDobles(efecto, ID_partida, jugadores_struct) {
-    efecto = "DadosDobles";
+async function eventoDadosDobles(ID_partida, jugadores_struct) {
+    let efecto = "DadosDobles";
     await APIpartida.actualizarEvento(ID_partida, efecto);
     for (let i = 0; i < jugadores_struct.length; i++) {
         if (jugadores_struct[i].esBot === "0") {
@@ -268,8 +266,8 @@ async function eventoDadosDobles(efecto, ID_partida, jugadores_struct) {
 }
 
 // Evento que divide los dados de los jugadores por 2
-async function eventoDadosMitad(efecto, ID_partida, jugadores_struct) {
-    efecto = "DadosMitad";
+async function eventoDadosMitad(ID_partida, jugadores_struct) {
+    let efecto = "DadosMitad";
     await APIpartida.actualizarEvento(ID_partida, efecto);
     for (let i = 0; i < jugadores_struct.length; i++) {
         if (jugadores_struct[i].esBot === "0") {
@@ -285,8 +283,8 @@ async function eventoDadosMitad(efecto, ID_partida, jugadores_struct) {
 }
 
 // Evento que hace que la economia sea inestable y puede ser muy alta o muy baja
-async function eventoEconomiaInestable(efecto, ID_partida, jugadores_struct) {
-    efecto = "EconomiaInestable";
+async function eventoEconomiaInestable(ID_partida, jugadores_struct) {
+    let efecto = "EconomiaInestable";
     await APIpartida.actualizarEvento(ID_partida, efecto);
     // La economía será o 0.5 o 2
     let economia = Math.floor(Math.random() * 2) + 1;

@@ -1686,7 +1686,7 @@ function encontrarNumeroMayor(vector, numero) {
 =================== OBTENER SIGUIENTE JUGADOR =========================================================
 */
 // Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
-// Devuelve el id del siguiente jugador y si es bot y si es fin de partida
+// Devuelve el id del siguiente jugador y si es bot y si es fin de ronda
 // ejemplo jugador bot y no fin --> pedro@gmail.com : 1 , 0
 function obtenerSiguienteJugador(idJugador, idPartida) {
     return new Promise((resolve, reject) => {
@@ -2920,208 +2920,207 @@ exports.expropieseSeñorAlcalde = expropieseSeñorAlcalde;
 // Devuelve la economía de la partida dado el id de la partida
 function obtenerEconomia(idPartida) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Realizamos la consulta para obtener la economía de la partida
-      const query = `SELECT economia FROM Partida WHERE idPartida = ${idPartida}`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          con.end();
-          resolve(parseFloat(result[0].economia));
-        }
-      });
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Realizamos la consulta para obtener la economía de la partida
+        const query = `SELECT economia FROM Partida WHERE idPartida = ${idPartida}`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else {
+                con.end();
+                resolve(parseFloat(result[0].economia));
+            }
+        });
     });
-  }
-  
-  exports.obtenerEconomia = obtenerEconomia;
-  
-  
-  /*
+}
+
+exports.obtenerEconomia = obtenerEconomia;
+
+
+/*
 =================== ACTUALIZAR ECONOMIA PARTIDA =========================================================
 */
 
-  
-  // Dado el id de la partida y una economia la actualiza 
-  function actualizarEconomia(idPartida, economia) {
-    return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Actualizamos la economía de la partida
-      const query = `UPDATE Partida SET economia = ${parseFloat(economia)} WHERE idPartida = ${idPartida}`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          con.end();
-          resolve(true); // La economía ha sido actualizada con éxito
-        }
-      });
-    });
-  }
-  
-  exports.actualizarEconomia = actualizarEconomia;
-  
 
-  /*
+// Dado el id de la partida y una economia la actualiza 
+function actualizarEconomia(idPartida, economia) {
+    return new Promise((resolve, reject) => {
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Actualizamos la economía de la partida
+        const query = `UPDATE Partida SET economia = ${parseFloat(economia)} WHERE idPartida = ${idPartida}`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else {
+                con.end();
+                resolve(true); // La economía ha sido actualizada con éxito
+            }
+        });
+    });
+}
+
+exports.actualizarEconomia = actualizarEconomia;
+
+
+/*
 =================== OBTENER EVENTO PARTIDA =========================================================
 */
 
-  
-  // Devuelve el evento de la partida dado el id de la partida
-  function obtenerEvento(idPartida) {
-    return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Obtenemos el evento de la partida
-      const query = `SELECT evento FROM Partida WHERE idPartida = ${idPartida}`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          con.end();
-          resolve(result[0].evento.toString());
-        }
-      });
-    });
-  }
-  
-  exports.obtenerEvento = obtenerEvento;
 
-  /*
+// Devuelve el evento de la partida dado el id de la partida
+function obtenerEvento(idPartida) {
+    return new Promise((resolve, reject) => {
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Obtenemos el evento de la partida
+        const query = `SELECT evento FROM Partida WHERE idPartida = ${idPartida}`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else {
+                con.end();
+                resolve(result[0].evento.toString());
+            }
+        });
+    });
+}
+
+exports.obtenerEvento = obtenerEvento;
+
+/*
 =================== ACTUALIZAR EVENTO PARTIDA =========================================================
 */
 
-  
-  // Dado el id de la partida y un evento, lo actualiza 
-  function actualizarEvento(idPartida, evento) {
+
+// Dado el id de la partida y un evento, lo actualiza 
+function actualizarEvento(idPartida, evento) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Actualizamos el evento de la partida
-      const query = `UPDATE Partida SET evento = '${evento.toString()}' WHERE idPartida = ${idPartida}`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          con.end();
-          resolve(true); // El evento ha sido actualizado con éxito
-        }
-      });
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Actualizamos el evento de la partida
+        const query = `UPDATE Partida SET evento = '${evento.toString()}' WHERE idPartida = ${idPartida}`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else {
+                con.end();
+                resolve(true); // El evento ha sido actualizado con éxito
+            }
+        });
     });
-  }
-  
-  exports.actualizarEvento = actualizarEvento;
-  
-  
-  /*
+}
+
+exports.actualizarEvento = actualizarEvento;
+
+
+/*
 =================== OBTENER RONDA PARTIDA =========================================================
 */
 
-  // Devuelve la ronda de la partida dado el id de la partida
-  function obtenerRonda(idPartida) {
+// Devuelve la ronda de la partida dado el id de la partida
+function obtenerRonda(idPartida) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Obtenemos la ronda de la partida
-      const query = `SELECT ronda FROM Partida WHERE idPartida = ${idPartida}`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          con.end();
-          const ronda = parseInt(result[0].ronda); // Convertimos la ronda a entero
-          resolve(ronda);
-        }
-      });
-    });
-  }
-  
-  exports.obtenerRonda = obtenerRonda;
-  
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
 
-  /*
+        // Obtenemos la ronda de la partida
+        const query = `SELECT ronda FROM Partida WHERE idPartida = ${idPartida}`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else {
+                con.end();
+                const ronda = parseInt(result[0].ronda); // Convertimos la ronda a entero
+                resolve(ronda);
+            }
+        });
+    });
+}
+
+exports.obtenerRonda = obtenerRonda;
+
+
+/*
 =================== ACTUALIZAR RONDA PARTIDA =========================================================
- */
+*/
 
-  
-  // Dado el id de la partida y una ronda, la actualiza 
-  function actualizarRonda(idPartida, ronda) {
+
+// Dado el id de la partida y una ronda, la actualiza 
+function actualizarRonda(idPartida, ronda) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Actualizamos la ronda de la partida
-      const query = `UPDATE Partida SET ronda = ${parseInt(ronda)} WHERE idPartida = ${idPartida}`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          con.end();
-          resolve(true); // La ronda ha sido actualizada con éxito
-        }
-      });
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Actualizamos la ronda de la partida
+        const query = `UPDATE Partida SET ronda = ${parseInt(ronda)} WHERE idPartida = ${idPartida}`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else {
+                con.end();
+                resolve(true); // La ronda ha sido actualizada con éxito
+            }
+        });
     });
-  }
-  
-  exports.actualizarRonda = actualizarRonda;
-  
-  
-  /*
+}
+
+exports.actualizarRonda = actualizarRonda;
+
+
+/*
 =================== MODIFICAR DINERO JUGADOR EN PARTIDA =========================================================
 */
 
-  
-  //Dado un idPartida, un idJugador y una cantidad actualice la cantidad de dinero de dicho jugador en el banco.
-  function modificarDineroBanco(idPartida, idJugador, cantidad) {
+
+//Dado un idPartida, un idJugador y una cantidad actualice la cantidad de dinero de dicho jugador en el banco.
+function modificarDineroBanco(idPartida, idJugador, cantidad) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-  
-      // Obtenemos la cantidad de dinero actual del jugador en el banco
-      const query = `SELECT dineroInvertido FROM juega WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          let dineroActual = result[0].dineroInvertido;
-          dineroActual += parseInt(cantidad); // Añadimos la cantidad al dinero actual del jugador en el banco
-  
-          // Actualizamos la cantidad de dinero del jugador en el banco
-          const updateQuery = `UPDATE juega SET dineroInvertido = ${dineroActual} WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
-          con.query(updateQuery, (error, result2) => {
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Obtenemos la cantidad de dinero actual del jugador en el banco
+        const query = `SELECT dineroInvertido FROM juega WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
+        con.query(query, (error, result) => {
             if (error) {
-              con.end();
-              reject(error);
+                con.end();
+                reject(error);
             } else {
-              con.end();
-              resolve(true); // El dinero ha sido actualizado con éxito
+                let dineroActual = result[0].dineroInvertido;
+                dineroActual += parseInt(cantidad); // Añadimos la cantidad al dinero actual del jugador en el banco
+
+                // Actualizamos la cantidad de dinero del jugador en el banco
+                const updateQuery = `UPDATE juega SET dineroInvertido = ${dineroActual} WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
+                con.query(updateQuery, (error, result2) => {
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else {
+                        con.end();
+                        resolve(true); // El dinero ha sido actualizado con éxito
+                    }
+                });
             }
-          });
-        }
-      });
+        });
     });
-  }
-  
-  exports.modificarDineroBanco = modificarDineroBanco;
-  
+}
+
+exports.modificarDineroBanco = modificarDineroBanco;
