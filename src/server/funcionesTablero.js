@@ -7,8 +7,6 @@
  --------------------------------------------------------------------------------
 */
 
-const ECONOMIA = 1;
-
 const API = require('../API/partidaAPI');
 const con = require('./conexiones');
 const fs = require('fs');

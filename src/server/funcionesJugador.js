@@ -122,9 +122,27 @@ async function FinTurno(ID_jugador, ID_partida) {
     // Comprobar si es fin de ronda y realizar lo oportuno con esta
     if (finRonda == 1) {
         // TODO: Hacer lo necesario con los eventos, actualizar saldos de los bancos, economía
+        await actualizarDinerosBanco(jugadores_struct, ID_partida);
+
+
     }
 }
 exports.FinTurno = FinTurno;
+
+async function actualizarDinerosBanco(jugadores_struct, ID_partida) {
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        // Comprobar si el jugador tiene dinero en el banco y si es así, multiplicar 
+        // por el interés y actualizar el saldo del banco
+        let dineroBanco = await APIpartida.dineroBanco(jugadores_struct[i].id, ID_partida);
+        if (dineroBanco > 0) {
+            let economia = await APIpartida.obtenerEconomia(ID_partida);
+            let interes = economia * 1.3;
+            let dinero = dineroBanco * interes;
+            await APIpartida.meterDineroBanco(jugadores_struct[i].id, ID_partida, dinero);
+        }
+
+    }
+}
 
 async function obtenerJugadoresPartida(ID_partida) {
     let jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);

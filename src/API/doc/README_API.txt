@@ -287,3 +287,21 @@ function encontrarNumeroMayor(vector, numero)
 // Devuelve el listado de skins y si las tienje el jugador dado con email idJugador (1 si la tiene, 0 si no)
 //  con el siguiente formato, ->    skin1:0,skin2:1
 function obtenerSkinsJugador(idJugador)
+
+// Devuelve la economía de la partida dado el id de la partida
+function obtenerEconomia(idPartida);
+
+// Dado el id de la partida y una economia la actualiza 
+function actualizarEconomia(idPartida, economia);
+
+// Devuelve el evento de la partida dado el id de la partida
+function obtenerEvento(idPartida);
+
+// Dado el id de la partida y un evento, lo actualiza 
+function actualizarEvento(idPartida, evento);
+
+// Devuelve la ronda de la partida dado el id de la partida
+function obtenerRonda(idPartida);
+
+// Dado el id de la partida y una ronda, la actualiza 
+function actualizarRonda(idPartida, ronda);
