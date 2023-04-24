@@ -76,9 +76,20 @@ exports.LanzarDados = LanzarDados;
  * @param {int} ID_partida - El ID de la partida en la que está jugando el jugador.
  */
 async function moverJugador(ID_jugador, ID_partida) {
+
+    // Calculamos los valores de los dados en funcion del evento actual 
     let dado1 = Math.ceil(Math.random() * 6);
     let dado2 = Math.ceil(Math.random() * 6);
-    let sumaDados = dado1 + dado2;
+    let evento = await API.obtenerEvento(ID_partida);
+    let sumaDados;
+    if (evento === "dadoDoble") {
+        sumaDados = (dado1 + dado2) * 2;
+    } else if (evento === "dadoMitad") {
+        sumaDados = (dado1 + dado2) / 2;
+    } else {
+        sumaDados = dado1 + dado2;
+    }
+
     let posicionNueva;
     let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
     // Si estás en la cárcel y has sacado dobles -> sales
