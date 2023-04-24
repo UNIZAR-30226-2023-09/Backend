@@ -891,7 +891,6 @@ async function obtenerResultadoJugadorAcabadoPartida(idJugador,idPartida) {
     }
   }
   
-  //-----------------------------------------------------------------------------------------
   
   //FUNCIONA OKEY.
   async function obtenerResultadoPartida(idPartida) {
@@ -978,6 +977,98 @@ async function obtenerObtenerSkinsJugador(idJugador){
     }
   }
   
+
+  //FUNCIONA OKEY.
+async function obtenerResultadoObtenerEvento(idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.obtenerEvento(idPartida);
+      console.log("El resultado obtenido de obtener el evento es :", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoActualizarEvento(idPartida, evento) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.actualizarEvento(idPartida, evento);
+      console.log("El resultado obtenido de actualizar el evento es :", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoObtenerRonda(idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.obtenerRonda(idPartida);
+      console.log("El resultado obtenido de obtener la ronda es :", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoActualizarRondao(idPartida, ronda) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.actualizarRonda(idPartida, ronda);
+      console.log("El resultado obtenido de actualizar la ronda es :", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoModificarDineroBanco(idPartida, idJugador, cantidad) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.modificarDineroBanco(idPartida, idJugador, cantidad);
+      console.log("El resultado obtenido de modificar el dinero es:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+
+  
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -1079,6 +1170,20 @@ async function obtenerObtenerSkinsJugador(idJugador){
 // obtenerResultadoJugadorEsBot('juan@example.com',1);
 
 // obtenerResultadoExpropiarJugador(2,'maria@example.com',2);
+
+// obtenerResultadoObtenerEconomia(1);
+
+// obtenerResultadoActualizarEconomia(1,500);
+
+// obtenerResultadoObtenerEvento(1);
+
+// obtenerResultadoActualizarEvento(1,'Sexo');
+
+// obtenerResultadoObtenerRonda(1);
+
+// obtenerResultadoActualizarRondao(1,4)
+
+// obtenerResultadoModificarDineroBanco(1,'juan@example.com',500)
 
 
 
