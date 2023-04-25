@@ -17,8 +17,8 @@ elif [ "$1" = "start" ]; then
   if pgrep -f "main.js" > /dev/null; then
     echo "El archivo 'main.js' ya se está ejecutando"
   else
-    echo "Descargando última versión..."
-    bash /usr/local/bin/github.sh
+    #echo "Descargando última versión..."
+    #bash /usr/local/bin/github.sh
     echo "Iniciando 'main.js'"
     node /home/psbackend2023/Backend/src/server/main.js &
   fi
