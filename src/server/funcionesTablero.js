@@ -900,9 +900,14 @@ async function asignarGemas(clasificacion) {
 
 // Escribe en el archivo logs.txt el mensaje que se le pasa.
 function escribirEnArchivo(datos) {
-    fs.appendFile()("logs.txt", datos, (error) => {
+    // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual
+    datos = new Date().toLocaleString() + datos + " " + "\n";
+
+    // Escribir datos al final del archivo logs.txt
+    fs.appendFile("logs.txt", datos, (error) => {
         if (error) {
             console.error(`Error al escribir en el archivo logs.txt: ${error}`);
         }
     });
 }
+
