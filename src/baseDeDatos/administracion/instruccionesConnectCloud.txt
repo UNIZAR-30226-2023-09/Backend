@@ -2,3 +2,8 @@ Bienvenidos al video tutorial
 1. ssh-keygen -t rsa -f ~/.ssh/rsa_google -C psbackend2023
 2. Pasarme vuestra clave publica, para que la meta al google cloud
 3. Conectarme: ssh -i ~/.ssh/rsa_google psbackend2023@34.175.156.130
+
+Nuevo servidor
+1. ssh-keygen -t rsa -f ~/.ssh/rsa_google_psoft -C psoftserver
+2. Pasarme vuestra clave publica, para que la meta al google cloud
+3. Conectarme: ssh -i ~/.ssh/rsa_google_psoft psoftserver@34.175.172.53
