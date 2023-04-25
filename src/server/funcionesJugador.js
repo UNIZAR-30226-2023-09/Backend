@@ -364,7 +364,7 @@ function Usuario(id, esBot) {
 function escribirEnArchivo(datos) {
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al dia y la hora actual
     datos = new Date().toLocaleString() + datos + " " + "\n";
-    fs.writeFile("logs.txt", datos, (error) => {
+    fs.appendFile()("logs.txt", datos, (error) => {
         if (error) {
             console.error(`Error al escribir en el archivo logs.txt: ${error}`);
         }

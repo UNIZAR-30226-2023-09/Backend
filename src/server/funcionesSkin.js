@@ -17,11 +17,13 @@ async function ComprarSkin(socket, ID_jugador, skin) {
         // Compramos la skin
         if (await API.comprarSkin(ID_jugador, skin)) {
             // TODO: obtener las nuevas gemas del jugador y mandarlas 
-            //let gemas = API.obtenerGemas(ID_jugador);
-            // socket.send(`COMPRADA_OK,${ID_jugador},${gemas}`);
+            let info = API.obtenerInformacionJugador(ID_jugador);
+            let aux = info.split(",");
+            let gemas = aux[1];
+            socket.send(`SKIN_COMPRADA_OK,${ID_jugador},${gemas}`);
         }
         else {
-            // socket.send(`COMPRADA_NOOK,${ID_jugador},${skin}`);
+            socket.send(`SKIN_COMPRADA_NOOK,${ID_jugador},${skin}`);
         }
     }
 

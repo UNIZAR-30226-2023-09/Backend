@@ -900,7 +900,7 @@ async function asignarGemas(clasificacion) {
 
 // Escribe en el archivo logs.txt el mensaje que se le pasa.
 function escribirEnArchivo(datos) {
-    fs.writeFile("logs.txt", datos, (error) => {
+    fs.appendFile()("logs.txt", datos, (error) => {
         if (error) {
             console.error(`Error al escribir en el archivo logs.txt: ${error}`);
         }
