@@ -310,7 +310,6 @@ function obtenerRonda(idPartida);
 // Dado el id de la partida y una ronda, la actualiza 
 function actualizarRonda(idPartida, ronda);
 
-TODO: ACABAR ESTAS FUNCIONES
 
 // Dado el id de la partida, el id de jugador y el numero de propiedad, vende una casa de esa propiedad 
 function venderCasa(idPartida, idJugador, n_propiedad);
