@@ -3124,3 +3124,71 @@ function modificarDineroBanco(idPartida, idJugador, cantidad) {
 }
 
 exports.modificarDineroBanco = modificarDineroBanco;
+
+
+
+
+
+/*
+=================== ACTUALIZAR RONDA PARTIDA =========================================================
+*/
+
+
+// Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
+// Devuelve el id del siguiente jugador y si es bot y si es fin de ronda
+// ejemplo jugador bot y no fin --> pedro@gmail.com : 1 , 0
+function obtenerSiguienteJugador(idJugador, idPartida) {
+  return new Promise((resolve, reject) => {
+    const con = db.crearConexion();
+    con.connect();
+    const query = `SELECT turno FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+    con.query(query, (error, results) => {
+      if (error) {
+        con.end();
+        reject(error);
+      } else if (results.length === 0) {
+        con.end();
+        resolve(false);
+      } else {
+        const turno = results[0].turno;
+        let siguienteTurno = (turno + 1) % 5;
+        let anteriorTurno;
+        let finRonda = 0;
+
+        const consultarSiguienteJugador = () => {
+          const query2 = `SELECT email, esBot, turno FROM juega WHERE idPartida = '${idPartida}' AND turno = '${siguienteTurno}' AND jugadorVivo = true`;
+          con.query(query2, (error, results2) => {
+            if (error) {
+              con.end();
+              reject(error);
+            } else if (results2.length === 0) {
+              anteriorTurno = siguienteTurno;
+              siguienteTurno = (siguienteTurno + 1) % 5;
+              if (siguienteTurno === 0) {
+                siguienteTurno = 1;
+              }
+              consultarSiguienteJugador();
+            } else {
+              const siguienteJugador = results2[0].email;
+              const esBot = results2[0].esBot;
+              const turnoSiguiente = results2[0].turno;
+
+              if (turnoSiguiente < turno) {
+                finRonda = 1;
+              } else {
+                finRonda = 0;
+              }
+
+              let res = siguienteJugador + ":" + esBot + "," + finRonda;
+              con.end();
+              resolve(res);
+            }
+          });
+        };
+        consultarSiguienteJugador();
+      }
+    });
+  });
+}
+exports.obtenerSiguienteJugador = obtenerSiguienteJugador;
+
