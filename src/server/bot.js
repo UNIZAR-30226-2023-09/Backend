@@ -314,7 +314,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
 async function ComprarPropiedad(IDJugador, propiedad, IDpartida) {
     try {
         let precioPropiedad = await API.obtenerPrecioPropiedad(IDpartida, propiedad);
-        let economia = await API.obtenerEconomia(ID_partida);
+        let economia = await API.obtenerEconomia(IDpartida);
         let precio = precioPropiedad * economia;
         // redondear el precio para que no tenga decimales
         precio = Math.round(precio);
