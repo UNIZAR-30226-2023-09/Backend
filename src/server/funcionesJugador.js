@@ -177,6 +177,16 @@ async function ActualizarInteresesBanco(jugadores_struct, i, ID_partida) {
         let interes = economia * 1.2;
         let dinero = dineroBanco * interes;
         await APIpartida.meterDineroBanco(jugadores_struct[i].id, ID_partida, dinero);
+        // Enviar a los jugadores la nueva economia
+        if (jugadores_struct[i].esBot === "0") {
+            let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
+            if (conexionUsuario === null) {
+                console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
+            } else {
+                // Enviar al usuario el nuevo dinero que tiene en el banco
+                conexionUsuario.send(`ACTUALIZAR_BANCO,${dinero}`)
+            }
+        }
     }
 }
 

@@ -178,6 +178,10 @@ server.on("connection", (socket) => {
             funcionesPartidaTorneo.Chatear(mensaje[1], mensaje[2], mensaje[3]);
         }
 
+        if (mensaje[0] == "venderEdificio") {
+            funcionesTablero.VenderEdificio(socket, mensaje[1], mensaje[2], mensaje[3]);
+        }
+
     });
 
     socket.on("close", () => {

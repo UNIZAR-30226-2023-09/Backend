@@ -259,7 +259,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad === -1) {
             let dineroJugador = await API.obtenerDinero(IDJugador, IDpartida);
-            if (dineroJugador > 400) {
+            if (dineroJugador > 500) {
                 // Comprar la propiedad
                 console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| Compra propiedad:", propiedad);
                 ComprarPropiedad(IDJugador, posicion, IDpartida);
@@ -314,7 +314,11 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
 async function ComprarPropiedad(IDJugador, propiedad, IDpartida) {
     try {
         let precioPropiedad = await API.obtenerPrecioPropiedad(IDpartida, propiedad);
-        API.comprarPropiedad(IDpartida, IDJugador, propiedad, precioPropiedad);
+        let economia = await API.obtenerEconomia(ID_partida);
+        let precio = precioPropiedad * economia;
+        // redondear el precio para que no tenga decimales
+        precio = Math.round(precio);
+        API.comprarPropiedad(IDpartida, IDJugador, propiedad, precio);
     }
     catch (error) {
         // Si hay un error en la Promesa, devolvemos false.

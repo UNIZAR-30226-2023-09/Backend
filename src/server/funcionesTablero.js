@@ -370,6 +370,8 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             // Actualizar el precio de la propiedad en funcion de la economia
             let economia = await API.obtenerEconomia(ID_partida);
             precio = precio * economia;
+            // redondear el precio para que no tenga decimales
+            precio = Math.round(precio);
 
             // Dar opción de comprarla
             socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`)
@@ -447,6 +449,7 @@ async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
         let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
         let economia = await API.obtenerEconomia(ID_partida);
         precio = precio * economia;
+        precio = Math.round(precio);
         // Dar opción de comprarla
         socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`);
         escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
@@ -599,7 +602,11 @@ exports.SacarBanco = SacarBanco;
 async function ComprarPropiedad(socket, ID_jugador, propiedad, ID_partida) {
     try {
         let precioPropiedad = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
-        let correcto = await API.comprarPropiedad(ID_partida, ID_jugador, propiedad, precioPropiedad);
+        let economia = await API.obtenerEconomia(ID_partida);
+        let precio = precioPropiedad * economia;
+        // redondear el precio para que no tenga decimales
+        precio = Math.round(precio);
+        let correcto = await API.comprarPropiedad(ID_partida, ID_jugador, propiedad, precio);
         let dinero = await API.obtenerDinero(ID_jugador, ID_partida);
         if (correcto === false) { // No se ha podido comprar
             socket.send(`COMPRAR_NO_OK,${ID_jugador},${propiedad},${ID_partida}`)
@@ -626,11 +633,13 @@ async function VenderPropiedad(socket, ID_jugador, propiedad, ID_partida) {
         // Obtener precio jugador
         let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
         let dinero = await API.liberarPropiedadJugador(ID_partida, ID_jugador, propiedad, dineroJugador, dineroPropiedad);
-        if (dinero == -1) { // No se ha podido vender
+        if (dinero === -1) { // No se ha podido vender
             socket.send(`VENDER_NO_OK,${ID_jugador},${propiedad}`)
+            escribirEnArchivo("El jugador " + ID_jugador + " no ha podido vender la propiedad " + propiedad);
         }
         else { // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
             socket.send(`VENDER_OK,${propiedad},${dinero}`);
+            escribirEnArchivo("El jugador " + ID_jugador + " ha vendido la propiedad " + propiedad);
         }
     }
 
@@ -641,6 +650,32 @@ async function VenderPropiedad(socket, ID_jugador, propiedad, ID_partida) {
     }
 }
 exports.VenderPropiedad = VenderPropiedad;
+
+// Funcion que vende una edificacion de una propiedad dada la partida y el jugador
+async function VenderEdificacion(socket, ID_jugador, propiedad, ID_partida) {
+    try {
+        // Obtener precio propiedad
+        let dineroPropiedad = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
+        // Obtener precio jugador
+        let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
+        let dinero = await API.venderEdificacion(ID_partida, ID_jugador, propiedad, dineroJugador, dineroPropiedad);
+        if (dinero === -1) { // No se ha podido vender
+            socket.send(`VENDER_EDIFICACION_NO_OK,${ID_jugador},${propiedad}`)
+            escribirEnArchivo("El jugador " + ID_jugador + " no ha podido vender la edificacion de la propiedad " + propiedad);
+        }
+        else { // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
+            socket.send(`VENDER_EDIFICACION_OK,${propiedad},${dinero}`);
+            escribirEnArchivo("El jugador " + ID_jugador + " ha vendido la edificacion de la propiedad " + propiedad);
+        }
+    }
+
+    catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+}
+exports.VenderEdificacion = VenderEdificacion;
 
 // Se obtiene la lista de posibles casas a edificar con su precio y se devuelve al cliente
 async function PropiedadesDispEdificar(socket, ID_jugador, ID_partida) {
