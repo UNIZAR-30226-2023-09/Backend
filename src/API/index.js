@@ -1119,6 +1119,22 @@ async function obtenerResultadoObtenerSiguienteJugador(idJugador, idPartida) {
     }
   }
 
+
+  //FUNCIONA OKEY.
+async function obtenerObtenerSiguienteJugador2(idJugador, idPartida) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      const resultado = await test.obtenerSiguienteJugador2(idJugador, idPartida);
+      console.log("El resultado obtenido de siguiente jugfador es:", resultado);
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -1236,6 +1252,8 @@ async function obtenerResultadoObtenerSiguienteJugador(idJugador, idPartida) {
 // obtenerResultadoModificarDineroBanco(1,'juan@example.com',500)
 
 // obtenerResultadoObtenerSiguienteJugador('jesus@example.com',1);
+
+// obtenerResultadoObtenerSiguienteJugador2('jesus@example.com',1);
 
 
 

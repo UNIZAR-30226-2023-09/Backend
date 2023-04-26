@@ -1662,33 +1662,34 @@ function encontrarNumeroMayor(vector, numero) {
     var encontrado = false;
     var indice = -1;
 
-    for (var i = 0; i < vector.length; i++) {
-        if (vector[i] > numero && !encontrado) {
+
+    for (var i = 1; i < 4 && !encontrado; i++){
+        if(vector.includes((numero +i)%5)){
             encontrado = true;
-            indice = i;
+            indice = vector.indexOf((numero+i)%5);
         }
     }
-
+  
     if (encontrado) {
-        return vector[indice];
+      return vector[indice];
     } else {
         var ultimoNumero = vector[vector.length - 1];
-        if (numero > ultimoNumero) {
+        if (numero > ultimoNumero){
             return vector[0];
         } else {
             return null;
         }
     }
-}
-
+  }
+  
 
 /*
 =================== OBTENER SIGUIENTE JUGADOR =========================================================
 */
 // Devuelve false si no existe partida o jugador o ese jugador no esta en esa partida
-// Devuelve el id del siguiente jugador y si es bot y si es fin de ronda
+// Devuelve el id del siguiente jugador y si es bot y si es fin de partida
 // ejemplo jugador bot y no fin --> pedro@gmail.com : 1 , 0
-function obtenerSiguienteJugador(idJugador, idPartida) {
+function obtenerSiguienteJugador2(idJugador, idPartida) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         //const turno_siguiente = 0;
@@ -1740,7 +1741,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
 
                                         // En este bucle guardamos los turnos de jugadores vivos
                                         results3.forEach((fila) => {
-                                            if (fila.jugadorVivo && fila.turno != turno_siguiente) {
+                                            if(fila.jugadorVivo && fila.turno != turno_siguiente){
                                                 encontrado = true;
                                                 numeros.push(fila.turno); // agrega el número 5 al final del vector
                                             }
@@ -1751,7 +1752,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
 
                                         // Con este bucle buscamos con el turno el resto de datos del jugador
                                         results3.forEach((fila) => {
-                                            if (fila.turno === indice) {
+                                            if(fila.turno === indice){
                                                 encontrado = true;
                                                 email = fila.email;
                                                 esBot = fila.esBot;
@@ -1761,17 +1762,17 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                         });
 
                                         // Si se ha encontrado un turno siguiente se mandan los datos
-                                        if (encontrado) {
+                                        if(encontrado){
                                             const respuesta = [];
                                             const aux = [];
                                             aux[0] = email;
-                                            if (esBot || esBotInicial) {
+                                            if (esBot || esBotInicial){
                                                 aux[1] = 1;
                                             } else {
                                                 aux[1] = 0;
                                             }
                                             respuesta[0] = aux.join(":");
-                                            if (turno_next === 4) {
+                                            if (turno_next < turno_siguiente) {
                                                 respuesta[1] = 1;
                                             } else {
                                                 respuesta[1] = 0;
@@ -1784,7 +1785,7 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                                             resolve(false);
                                         }
                                     }
-
+                                    
                                 });
 
                             }
@@ -1792,12 +1793,13 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
                     }
                 });
             }
-        });
+        }); 
     });
 }
 
 
-exports.obtenerSiguienteJugador = obtenerSiguienteJugador;
+exports.obtenerSiguienteJugador2 = obtenerSiguienteJugador2;
+
 
 
 
