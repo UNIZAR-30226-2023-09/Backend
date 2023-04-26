@@ -176,6 +176,8 @@ async function ActualizarInteresesBanco(jugadores_struct, i, ID_partida) {
         let economia = await APIpartida.obtenerEconomia(ID_partida);
         let interes = economia * 1.2;
         let dinero = dineroBanco * interes;
+        // Redondear el dinero
+        dinero = Math.round(dinero);
         await APIpartida.meterDineroBanco(jugadores_struct[i].id, ID_partida, dinero);
         // Enviar a los jugadores la nueva economia
         if (jugadores_struct[i].esBot === "0") {
