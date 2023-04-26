@@ -177,7 +177,7 @@ async function obtenerJugadoresPartida(ID_partida) {
 async function Chatear(ID_jugador, ID_partida, mensaje) {
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     for (let i = 0; i < jugadores_struct.length; i++) {
-        if (jugadores_struct[i].esBot === 0) {
+        if (jugadores_struct[i].esBot === "0") {
             let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
             conexionUsuario.send(`CHAT,"${ID_jugador}, ${mensaje}`);
         }

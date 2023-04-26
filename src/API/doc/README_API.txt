@@ -216,9 +216,9 @@ function edificarPropiedad(idJugador, idPartida, propiedad);
 function propiedadesEdificar(idJugador, idPartida);
 
 
-//El propietario de la vivienda pasara a ser el vendedor. 
-//Al comprador se le restara la cantidad y si es mayor que 0 el saldo aceptara la transferencia, 
-//en caso de que no haya dinero devolvera -1, en caso de que vaya todo bien, devolvera 1.
+// El propietario de la vivienda pasara a ser el vendedor. 
+// Al comprador se le restara la cantidad y si es mayor que 0 el saldo aceptara la transferencia, 
+// en caso de que no haya dinero devolvera -1, en caso de que vaya todo bien, devolvera 1.
 async function venderPropiedadJugador(id_partida, id_jugador_vendedor, id_jugador_comprador, cantidad, n_propiedad);
 
 //FUNCION INTERNA LA CUAL SE LE LLAMA DESDE UNA FUNCION, NO LLAMARLA EN LA LOGICA.
@@ -305,3 +305,14 @@ function obtenerRonda(idPartida);
 
 // Dado el id de la partida y una ronda, la actualiza 
 function actualizarRonda(idPartida, ronda);
+
+TODO: ACABAR ESTAS FUNCIONES
+
+// Dado el id de la partida, el id de jugador y el numero de propiedad, vende una casa de esa propiedad 
+function venderCasa(idPartida, idJugador, n_propiedad);
+
+// Dado el id de la partida, el id de jugador y el numero de propiedad, vende la propiedad a la banca y el jugador
+// recibe el dinero de la venta (el dinero es la mitad de lo que cuesta la propiedad).
+// Si la propiedad tenia propiedades, se devuelve la mitad de lo que ha costado cada propiedad.
+// Las propiedades cuestan en cada fila 50 mas. Fila 1: 50, Fila2: 100, etc...
+function venderPropiedadBanca(idPartida, idJugador, n_propiedad);
