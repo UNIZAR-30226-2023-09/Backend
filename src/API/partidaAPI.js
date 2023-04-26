@@ -3130,7 +3130,7 @@ exports.modificarDineroBanco = modificarDineroBanco;
 
 
 /*
-=================== ACTUALIZAR RONDA PARTIDA =========================================================
+=================== OBTENER SIGUIENTE JUGADOR =========================================================
 */
 
 
