@@ -3194,3 +3194,147 @@ function obtenerSiguienteJugador(idJugador, idPartida) {
 }
 exports.obtenerSiguienteJugador = obtenerSiguienteJugador;
 
+
+
+
+/*
+=================== VENDER CASA PROPIEDAD  =========================================================
+*/
+// Dado el id de la partida, el id de jugador y el numero de propiedad, vende una casa de esa propiedad 
+function venderCasa(idPartida, idJugador, nPropiedad) {
+
+    let numProp = "propiedad" + nPropiedad;
+    let numCasProp = "nCasasPropiedad" + nPropiedad;
+    let dineroDevolver = (((Math.floor(nPropiedad/10)) * 50 ) + 50) / 2;
+
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT ${numProp} AS numProp, ${numCasProp} AS numCasProp FROM Partida WHERE idPartida = '${idPartida}'`;
+        con.query(query, (error, results) => {                              // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                              // Caso -- No existe ninguna partida
+                con.end();
+                resolve(false);
+            } else {                                                        // Caso --  Existe la partida
+
+                if(results[0].numProp != idJugador) {                       // Caso el idJugador no es el owner de la propiedad
+                    console.log("Ojo, el propietario no es correcto");
+                    con.end();
+                    resolve(false); 
+                } else  if (results[0].numCasProp === null ||  results[0].numCasProp === 0){
+                    console.log("Ojo, no hay casas");                       // Caso no hay casas edificadas
+                    con.end();
+                    resolve(false);
+                } else {
+
+                    let nuevasCasas =  results[0].numCasProp - 1;
+                    nuevasCasas = parseInt(nuevasCasas);
+                    const sql = `UPDATE  Partida SET ${numCasProp} = ${nuevasCasas} WHERE idPartida = '${idPartida}'`;
+                    con.query(sql, (error, results3) => {                  // Caso -- Error
+                        if (error) {
+                            con.end();
+                            reject(error);
+                        } else {                                            // Caso --  Se actualizan las casas
+
+                            const sql2 = `UPDATE juega SET dinero = dinero + ${dineroDevolver} WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+                            con.query(sql2, (error, results4) => {                  // Caso -- Error
+                                if (error) {
+                                    con.end();
+                                    reject(error);
+                                } else {                                            // Caso --  Existen la partida
+                                    con.end();
+                                    resolve(true);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    });
+}
+
+
+exports.venderCasa = venderCasa;
+
+
+
+
+
+/*
+=================== VENDER CASA PROPIEDAD  =========================================================
+*/
+// Dado el id de la partida, el id de jugador y el numero de propiedad, vende la propiedad a la banca y el jugador
+// recibe el dinero de la venta (el dinero es la mitad de lo que cuesta la propiedad).
+// Si la propiedad tenia propiedades, se devuelve la mitad de lo que ha costado cada propiedad.
+// Las propiedades cuestan en cada fila 50 mas. Fila 1: 50, Fila2: 100, etc...
+function venderPropiedadBanca(idPartida, idJugador, nPropiedad) {
+
+    let numProp = "propiedad" + nPropiedad;
+    let numCasProp = "nCasasPropiedad" + nPropiedad;
+    let dineroDevolver = (((Math.floor(nPropiedad/10)) * 50 ) + 50) / 2;
+
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT ${numProp} AS numProp, ${numCasProp} AS numCasProp FROM Partida WHERE idPartida = '${idPartida}'`;
+        con.query(query, (error, results) => {                              // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                              // Caso -- No existe ninguna partida
+                con.end();
+                resolve(false);
+            } else {                                                        // Caso --  Existe la partida
+
+                if(results[0].numProp != idJugador) {                       // Caso el idJugador no es el owner de la propiedad
+                    console.log("Ojo, el propietario no es correcto");
+                    con.end();
+                    resolve(false); 
+
+                } else {
+
+                    dineroDevolver =  results[0].numCasProp * dineroDevolver;   
+                    const sql = `UPDATE  Partida SET ${numCasProp} = null WHERE idPartida = '${idPartida}'`;
+                    con.query(sql, (error, results3) => {                           // Caso -- Error
+                        if (error) {
+                            con.end();
+                            reject(error);
+                        } else {                                                    // Caso --  Quitamos todas las casas de la Propiedad
+
+                            const sql2 = `UPDATE juega SET dinero = dinero + ${dineroDevolver} WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+                            con.query(sql2, (error, results4) => {                  // Caso -- Error
+                                if (error) {
+                                    con.end();
+                                    reject(error);
+                                } else {                                            // Caso --  Existen la partida
+
+                                    const sql3 = `UPDATE  Partida SET ${numProp} = null WHERE idPartida = '${idPartida}'`;
+                                    con.query(sql3, (error, results5) => {                  // Caso -- Error
+                                        if (error) {
+                                            con.end();
+                                            reject(error);
+                                        } else {                                            // Caso --  Existen la partida
+                                            con.end();
+                                            resolve(true);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    });
+}
+
+
+
+exports.venderPropiedadBanca = venderPropiedadBanca;
+
+
+

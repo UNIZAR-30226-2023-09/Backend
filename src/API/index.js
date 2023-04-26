@@ -1135,6 +1135,39 @@ async function obtenerObtenerSiguienteJugador2(idJugador, idPartida) {
     }
   }
 
+
+  //FUNCIONA OKEY.
+async function obtenerVenderCasa(idPartida, idJugador, nPropiedad){
+    try {
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.venderCasa(idPartida, idJugador, nPropiedad);
+        console.log("El resultado obtenido vender Casa es:", resultado);
+        return resultado;
+  
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerVenderPropiedadBanca(idPartida, idJugador, nPropiedad){
+    try {
+        // Hacemos la llamada a la función que devuelve una Promesa.
+        const resultado = await test.venderPropiedadBanca(idPartida, idJugador, nPropiedad);
+        console.log("El resultado obtenido las skins de jugador es:", resultado);
+        return resultado;
+  
+    } catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+  }
+  
+
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
 //obtenerResultadoBorrar('sara@example.com');
@@ -1254,6 +1287,10 @@ async function obtenerObtenerSiguienteJugador2(idJugador, idPartida) {
 // obtenerResultadoObtenerSiguienteJugador('jesus@example.com',1);
 
 // obtenerResultadoObtenerSiguienteJugador2('jesus@example.com',1);
+
+//obtenerVenderCasa(1, 'jugador1@example.com', 9);
+
+//obtenerVenderPropiedadBanca(1, 'jugador1@example.com', 39);
 
 
 
