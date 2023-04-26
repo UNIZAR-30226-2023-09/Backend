@@ -655,15 +655,16 @@ async function VenderPropiedad(socket, ID_jugador, propiedad, ID_partida) {
         // Obtener precio propiedad
         let dineroPropiedad = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
         // Obtener precio jugador
-        let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
-        let dinero = await API.liberarPropiedadJugador(ID_partida, ID_jugador, propiedad, dineroJugador, dineroPropiedad);
-        if (dinero === -1) { // No se ha podido vender
-            socket.send(`VENDER_NO_OK,${ID_jugador},${propiedad}`)
+        let ok = await API.venderPropiedadBanca(ID_partida, ID_jugador, propiedad);
+
+        if (!ok) { // No se ha podido vender
+            socket.send(`VENDER_NO_OK,${ID_jugador},${propiedad}`);
             escribirEnArchivo("El jugador " + ID_jugador + " no ha podido vender la propiedad " + propiedad);
         }
         else { // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
-            socket.send(`VENDER_OK,${propiedad},${dinero}`);
-            escribirEnArchivo("El jugador " + ID_jugador + " ha vendido la propiedad " + propiedad);
+            let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
+            socket.send(`VENDER_OK,${propiedad},${dineroJugador}`);
+            escribirEnArchivo("El jugador " + ID_jugador + " ha vendido la propiedad " + propiedad + " por " + dineroPropiedad);
         }
     }
 
@@ -678,17 +679,17 @@ exports.VenderPropiedad = VenderPropiedad;
 // Funcion que vende una edificacion de una propiedad dada la partida y el jugador
 async function VenderEdificacion(socket, ID_jugador, propiedad, ID_partida) {
     try {
-        // Obtener precio propiedad
-        let dineroPropiedad = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
-        // Obtener precio jugador
-        let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
-        let dinero = await API.venderEdificacion(ID_partida, ID_jugador, propiedad, dineroJugador, dineroPropiedad);
-        if (dinero === -1) { // No se ha podido vender
+        // Intentar vender una edificacion dada la propiedad
+        let ok = await API.venderCasa(ID_partida, ID_jugador, propiedad);
+        if (!ok) {
+            // No se ha podido vender, enviamos error
             socket.send(`VENDER_EDIFICACION_NO_OK,${ID_jugador},${propiedad}`)
             escribirEnArchivo("El jugador " + ID_jugador + " no ha podido vender la edificacion de la propiedad " + propiedad);
         }
-        else { // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
-            socket.send(`VENDER_EDIFICACION_OK,${propiedad},${dinero}`);
+        else {
+            // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
+            let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
+            socket.send(`VENDER_EDIFICACION_OK,${propiedad},${dineroJugador}`);
             escribirEnArchivo("El jugador " + ID_jugador + " ha vendido la edificacion de la propiedad " + propiedad);
         }
     }
