@@ -34,7 +34,7 @@ elif [ "$1" = "restart" ]; then
   #bash /usr/local/bin/github.sh
   echo "Borrando logs.txt"
   rm /home/psbackend2023/logs.txt
-  cd /home/psbackend2023/Backend/src/baseDeDatos
+  cd /home/psbackend2023/Backend/src/baseDeDatos/administracion/server_pruebas
   echo "DROP TABLES..."
   bash ejecutarSQL.sh 2 # Borrar db
   sleep 1

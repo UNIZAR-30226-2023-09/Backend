@@ -227,7 +227,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
             for (let i = 0; i < jugadores_struct.length; i++) {
                 if (jugadores_struct[i].id != ID_jugador && jugadores_struct[i].esBot === "0") {
-                    let socketJugador = jugadores_struct[i].socket;
+                    let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
                     socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
                 }
             }

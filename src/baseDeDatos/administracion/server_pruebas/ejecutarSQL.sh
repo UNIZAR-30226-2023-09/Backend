@@ -12,13 +12,13 @@ ejecutar=$1
 if [ $ejecutar -eq 1 ]
 then
 	# Create tables
-	node exec_remote_sql '''
+	node ../exec_remote_sql '''
 	CREATE TABLE Skins (
 		precioGemas     INT NOT NULL,
 		idSkin          VARCHAR(255) PRIMARY KEY
 	);
 	'''
-	node exec_remote_sql '''
+	node ../exec_remote_sql '''
 	CREATE TABLE Jugador (
 		gemas           INT NOT NULL,
 		nombre          VARCHAR(255) NOT NULL,
@@ -26,7 +26,7 @@ then
 		email           VARCHAR(255) PRIMARY KEY
 	);
 	'''
-	node exec_remote_sql '''
+	node ../exec_remote_sql '''
 	CREATE TABLE tieneSkins (
 		idSkin          VARCHAR(255),
 		email           VARCHAR(255),
@@ -35,14 +35,14 @@ then
 		FOREIGN KEY (email) REFERENCES Jugador(email)
 	);
 	'''
-	node exec_remote_sql '''
+	node ../exec_remote_sql '''
 	CREATE TABLE Torneo (
 		nPartidas       INT NOT NULL,
 		estaActivo      BOOLEAN,
 		idTorneo        INT AUTO_INCREMENT PRIMARY KEY
 	);
 	'''
-	node exec_remote_sql '''
+	node ../exec_remote_sql '''
 	CREATE TABLE Partida (
 		ronda           INT NOT NULL,
 		bote            FLOAT NOT NULL,
@@ -226,7 +226,7 @@ then
 		FOREIGN KEY (perteneceTorneo) REFERENCES Torneo(idTorneo)
 	);
 	'''
-	node exec_remote_sql '''
+	node ../exec_remote_sql '''
 	CREATE TABLE juega (
 		turno           INT,
 		esBotInicial    BOOLEAN NOT NULL,
@@ -247,7 +247,7 @@ then
 		FOREIGN KEY (skin) REFERENCES Skins(idSkin)
 	);
 	'''
-	node exec_remote_sql '''
+	node ../exec_remote_sql '''
 	CREATE TABLE estaEnTorneo (
 		idTorneo        INT,
 		email           VARCHAR(255),
@@ -259,18 +259,18 @@ then
 
 	sleep 1
 	echo "POBLANDO TEST..."
-	node exec_remote_sql.js "INSERT INTO Skins (precioGemas, idSkin) VALUES (0, 'default')"
+	node ../exec_remote_sql.js "INSERT INTO Skins (precioGemas, idSkin) VALUES (0, 'default')"
 
 
 elif [ $ejecutar -eq 2 ]
 then
 	# Drop tables
-	node exec_remote_sql 'DROP TABLE IF EXISTS estaEnTorneo;'
-	node exec_remote_sql 'DROP TABLE IF EXISTS juega;'
-	node exec_remote_sql 'DROP TABLE IF EXISTS Partida;'
-	node exec_remote_sql 'DROP TABLE IF EXISTS Torneo;'
-	node exec_remote_sql 'DROP TABLE IF EXISTS tieneSkins;'
-	node exec_remote_sql 'DROP TABLE IF EXISTS Jugador;'
-	node exec_remote_sql 'DROP TABLE IF EXISTS Skins;'
-	node exec_remote_sql 'SHOW TABLES'
+	node ../exec_remote_sql 'DROP TABLE IF EXISTS estaEnTorneo;'
+	node ../exec_remote_sql 'DROP TABLE IF EXISTS juega;'
+	node ../exec_remote_sql 'DROP TABLE IF EXISTS Partida;'
+	node ../exec_remote_sql 'DROP TABLE IF EXISTS Torneo;'
+	node ../exec_remote_sql 'DROP TABLE IF EXISTS tieneSkins;'
+	node ../exec_remote_sql 'DROP TABLE IF EXISTS Jugador;'
+	node ../exec_remote_sql 'DROP TABLE IF EXISTS Skins;'
+	node ../exec_remote_sql 'SHOW TABLES'
 fi
