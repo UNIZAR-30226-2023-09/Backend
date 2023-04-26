@@ -179,7 +179,7 @@ async function Chatear(ID_jugador, ID_partida, mensaje) {
     for (let i = 0; i < jugadores_struct.length; i++) {
         if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id !== ID_jugador) {
             let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
-            conexionUsuario.send(`CHAT,"${ID_jugador},${mensaje}`);
+            conexionUsuario.send(`CHAT, ${ID_jugador},${mensaje}`);
         }
     }
 }

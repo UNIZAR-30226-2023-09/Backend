@@ -82,9 +82,9 @@ async function moverJugador(ID_jugador, ID_partida) {
     let dado2 = Math.ceil(Math.random() * 6);
     let evento = await API.obtenerEvento(ID_partida);
     let sumaDados;
-    if (evento === "dadoDoble") {
+    if (evento === "DadosDobles") {
         sumaDados = (dado1 + dado2) * 2;
-    } else if (evento === "dadoMitad") {
+    } else if (evento === "DadosMitad") {
         sumaDados = (dado1 + dado2) / 2;
     } else {
         sumaDados = dado1 + dado2;
@@ -223,6 +223,14 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             let dineroBote = await API.obtenerDineroBote(ID_jugador, ID_partida);
             socket.send(`OBTENER_BOTE,${ID_jugador},${dineroBote}`);
             escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla del bote en la partida " + ID_partida);
+            // Enviar a los demas usuarios el dinero del bote actualizado
+            let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+            for (let i = 0; i < jugadores_struct.length; i++) {
+                if (jugadores_struct[i].id != ID_jugador && jugadores_struct[i].esBot === "0") {
+                    let socketJugador = jugadores_struct[i].socket;
+                    socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
+                }
+            }
         }
 
         catch (error) {
@@ -875,7 +883,10 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
             num_bots++;
         }
     }
+    escribirEnArchivo("El jugador " + ID_jugador + " ha muerto y los jugadores restantes han sido notificados.");
+
     if (num_bots === jugadores_struct.length) {
+        escribirEnArchivo("Solo quedan bots en la partida " + ID_partida + ".");
         // Solo quedan bots en la partida
         await API.acabarPartida(ID_partida);
         let clasificacion = await API.resultadoPartida(ID_partida);

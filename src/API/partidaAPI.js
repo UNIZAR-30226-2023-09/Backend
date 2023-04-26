@@ -549,7 +549,7 @@ function dineroBanco(idJugador, idPartida) {
         var con = db.crearConexion();
         con.connect();
         // Comprobar si el jugador existe en la tabla "juega".(Si esta en la partida).
-        const query = `SELECT dinero FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
+        const query = `SELECT dineroInvertido FROM juega WHERE email = '${idJugador}' AND idPartida = '${idPartida}'`;
         con.query(query, (error, results) => {
             if (error) {
                 con.end();
@@ -561,7 +561,7 @@ function dineroBanco(idJugador, idPartida) {
             }
             else {
                 //una vez comprobado que esta en la partida, devuelve el dinero que tiene el jugador.
-                let dinero = results[0].dinero;
+                let dinero = results[0].dineroInvertido;
                 resolve(dinero);
             }
             con.end();
@@ -1364,7 +1364,7 @@ function liberarPropiedadJugador(id_partida, id_jugador, propiedad, dineroJugado
             else {
                 //Ponemos a 0 el numero de casas de dicha propiedad.
                 let suma = dineroJugador + dineroPropiedad;
-                const query2 = `UPDATE Juega SET dinero = '${suma}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
+                const query2 = `UPDATE juega SET dinero = '${suma}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
                 con.query(query2, (error, results2) => {
                     if (error) {
                         reject(error);
@@ -1663,25 +1663,25 @@ function encontrarNumeroMayor(vector, numero) {
     var indice = -1;
 
 
-    for (var i = 1; i < 4 && !encontrado; i++){
-        if(vector.includes((numero +i)%5)){
+    for (var i = 1; i < 4 && !encontrado; i++) {
+        if (vector.includes((numero + i) % 5)) {
             encontrado = true;
-            indice = vector.indexOf((numero+i)%5);
+            indice = vector.indexOf((numero + i) % 5);
         }
     }
-  
+
     if (encontrado) {
-      return vector[indice];
+        return vector[indice];
     } else {
         var ultimoNumero = vector[vector.length - 1];
-        if (numero > ultimoNumero){
+        if (numero > ultimoNumero) {
             return vector[0];
         } else {
             return null;
         }
     }
-  }
-  
+}
+
 
 /*
 =================== OBTENER SIGUIENTE JUGADOR =========================================================
@@ -1741,7 +1741,7 @@ function obtenerSiguienteJugador2(idJugador, idPartida) {
 
                                         // En este bucle guardamos los turnos de jugadores vivos
                                         results3.forEach((fila) => {
-                                            if(fila.jugadorVivo && fila.turno != turno_siguiente){
+                                            if (fila.jugadorVivo && fila.turno != turno_siguiente) {
                                                 encontrado = true;
                                                 numeros.push(fila.turno); // agrega el número 5 al final del vector
                                             }
@@ -1752,7 +1752,7 @@ function obtenerSiguienteJugador2(idJugador, idPartida) {
 
                                         // Con este bucle buscamos con el turno el resto de datos del jugador
                                         results3.forEach((fila) => {
-                                            if(fila.turno === indice){
+                                            if (fila.turno === indice) {
                                                 encontrado = true;
                                                 email = fila.email;
                                                 esBot = fila.esBot;
@@ -1762,11 +1762,11 @@ function obtenerSiguienteJugador2(idJugador, idPartida) {
                                         });
 
                                         // Si se ha encontrado un turno siguiente se mandan los datos
-                                        if(encontrado){
+                                        if (encontrado) {
                                             const respuesta = [];
                                             const aux = [];
                                             aux[0] = email;
-                                            if (esBot || esBotInicial){
+                                            if (esBot || esBotInicial) {
                                                 aux[1] = 1;
                                             } else {
                                                 aux[1] = 0;
@@ -1785,7 +1785,7 @@ function obtenerSiguienteJugador2(idJugador, idPartida) {
                                             resolve(false);
                                         }
                                     }
-                                    
+
                                 });
 
                             }
@@ -1793,7 +1793,7 @@ function obtenerSiguienteJugador2(idJugador, idPartida) {
                     }
                 });
             }
-        }); 
+        });
     });
 }
 
@@ -2100,7 +2100,7 @@ exports.anyadirPropiedadCompradorVendedor = anyadirPropiedadCompradorVendedor;
 async function venderPropiedadJugador(id_partida, id_jugador_vendedor, id_jugador_comprador, cantidad, n_propiedad) {
     //llamaremos a la funcion comprarPropiedad para que el id_jugador_comprador tenga su nueva propiedad.
     try {
-        const dinero = await dineroBanco(id_jugador_comprador, id_partida);
+        const dinero = await obtenerDinero(id_jugador_comprador, id_partida);
         console.log("Dinero del comprador: ", dinero);
         if (dinero >= cantidad) {
             //tiene dinero suficiente para comprarla. Primero le restamos el dinero y despues la compramos.
@@ -3140,57 +3140,57 @@ exports.modificarDineroBanco = modificarDineroBanco;
 // Devuelve el id del siguiente jugador y si es bot y si es fin de ronda
 // ejemplo jugador bot y no fin --> pedro@gmail.com : 1 , 0
 function obtenerSiguienteJugador(idJugador, idPartida) {
-  return new Promise((resolve, reject) => {
-    const con = db.crearConexion();
-    con.connect();
-    const query = `SELECT turno FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
-    con.query(query, (error, results) => {
-      if (error) {
-        con.end();
-        reject(error);
-      } else if (results.length === 0) {
-        con.end();
-        resolve(false);
-      } else {
-        const turno = results[0].turno;
-        let siguienteTurno = (turno + 1) % 5;
-        let anteriorTurno;
-        let finRonda = 0;
-
-        const consultarSiguienteJugador = () => {
-          const query2 = `SELECT email, esBot, turno FROM juega WHERE idPartida = '${idPartida}' AND turno = '${siguienteTurno}' AND jugadorVivo = true`;
-          con.query(query2, (error, results2) => {
+    return new Promise((resolve, reject) => {
+        const con = db.crearConexion();
+        con.connect();
+        const query = `SELECT turno FROM juega WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
+        con.query(query, (error, results) => {
             if (error) {
-              con.end();
-              reject(error);
-            } else if (results2.length === 0) {
-              anteriorTurno = siguienteTurno;
-              siguienteTurno = (siguienteTurno + 1) % 5;
-              if (siguienteTurno === 0) {
-                siguienteTurno = 1;
-              }
-              consultarSiguienteJugador();
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {
+                con.end();
+                resolve(false);
             } else {
-              const siguienteJugador = results2[0].email;
-              const esBot = results2[0].esBot;
-              const turnoSiguiente = results2[0].turno;
+                const turno = results[0].turno;
+                let siguienteTurno = (turno + 1) % 5;
+                let anteriorTurno;
+                let finRonda = 0;
 
-              if (turnoSiguiente < turno) {
-                finRonda = 1;
-              } else {
-                finRonda = 0;
-              }
+                const consultarSiguienteJugador = () => {
+                    const query2 = `SELECT email, esBot, turno FROM juega WHERE idPartida = '${idPartida}' AND turno = '${siguienteTurno}' AND jugadorVivo = true`;
+                    con.query(query2, (error, results2) => {
+                        if (error) {
+                            con.end();
+                            reject(error);
+                        } else if (results2.length === 0) {
+                            anteriorTurno = siguienteTurno;
+                            siguienteTurno = (siguienteTurno + 1) % 5;
+                            if (siguienteTurno === 0) {
+                                siguienteTurno = 1;
+                            }
+                            consultarSiguienteJugador();
+                        } else {
+                            const siguienteJugador = results2[0].email;
+                            const esBot = results2[0].esBot;
+                            const turnoSiguiente = results2[0].turno;
 
-              let res = siguienteJugador + ":" + esBot + "," + finRonda;
-              con.end();
-              resolve(res);
+                            if (turnoSiguiente < turno) {
+                                finRonda = 1;
+                            } else {
+                                finRonda = 0;
+                            }
+
+                            let res = siguienteJugador + ":" + esBot + "," + finRonda;
+                            con.end();
+                            resolve(res);
+                        }
+                    });
+                };
+                consultarSiguienteJugador();
             }
-          });
-        };
-        consultarSiguienteJugador();
-      }
+        });
     });
-  });
 }
 exports.obtenerSiguienteJugador = obtenerSiguienteJugador;
 

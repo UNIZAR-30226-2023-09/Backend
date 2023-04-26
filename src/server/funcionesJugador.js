@@ -153,19 +153,18 @@ async function actualizarFinRonda(jugadores_struct, ID_partida) {
         // por el interés y actualizar el saldo del banco
         await ActualizarInteresesBanco(jugadores_struct, i, ID_partida);
 
-        // Actualizar la economia de la partida sumando o restando de manera aleatoria 
-        // 0.1 hasta un minimo de 0.7 y un maximo de 1.3
-        await modificarEconomiaPartida(ID_partida, jugadores_struct);
+    }
 
-        // Obtener la ronda en la que esta la partida y si es ronda par y mayor que 10, 
-        // generar evento aleatorio
-        let ronda = await APIpartida.obtenerRonda(ID_partida);
-        if (ronda >= 10 && ronda % 2 === 0) {
-            await generarEventoAleatorio(ID_partida);
-        } else {
-            await APIpartida.actualizarEvento(ID_partida, "Ninguno");
-        }
-
+    // Actualizar la economia de la partida sumando o restando de manera aleatoria 
+    // 0.1 hasta un minimo de 0.7 y un maximo de 1.3
+    await modificarEconomiaPartida(ID_partida, jugadores_struct);
+    // Obtener la ronda en la que esta la partida y si es ronda par y mayor que 10, 
+    // generar evento aleatorio
+    let ronda = await APIpartida.obtenerRonda(ID_partida);
+    if (ronda >= 10 && ronda % 5 === 0) {
+        await generarEventoAleatorio(ID_partida, jugadores_struct);
+    } else {
+        await APIpartida.actualizarEvento(ID_partida, "Ninguno");
     }
 }
 
@@ -196,12 +195,11 @@ async function ActualizarInteresesBanco(jugadores_struct, i, ID_partida) {
 // 0.1 hasta un minimo de 0.7 y un maximo de 1.3
 async function modificarEconomiaPartida(ID_partida, jugadores_struct) {
     let economia = await APIpartida.obtenerEconomia(ID_partida);
-    let aleatorio = Math.random() * 0.2;
-    let aleatorio2 = Math.random();
-    if (aleatorio2 < 0.5) {
-        economia = economia - aleatorio;
+    let aleatorio = Math.random();
+    if (aleatorio < 0.5) {
+        economia += 0.1;
     } else {
-        economia = economia + aleatorio;
+        economia -= 0.1;
     }
     if (economia < 0.7) {
         economia = 0.8;
