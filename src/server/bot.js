@@ -10,6 +10,7 @@
 const API = require('../API/partidaAPI');
 const jugador = require('./funcionesJugador');
 const Tablero = require('./funcionesTablero');
+const fs = require('fs');
 const ECONOMIA = 1;
 
 /**

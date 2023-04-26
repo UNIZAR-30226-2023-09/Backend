@@ -89,6 +89,7 @@ async function FinTurno(ID_jugador, ID_partida) {
     let esBot = resultado2[1];
     let finRonda = resultado[1];
 
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     // Comprobar si es fin de ronda y realizar lo oportuno con esta
     if (finRonda == 1) {
         // Actualizar informacion fin de ronda
@@ -107,7 +108,6 @@ async function FinTurno(ID_jugador, ID_partida) {
         conexionUsuario.send(`TURNO,${jugador},${ID_partida}`);
     }
 
-    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     for (let i = 0; i < jugadores_struct.length; i++) {
         // Si el jugador no es un bot
         if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
@@ -215,7 +215,6 @@ async function modificarEconomiaPartida(ID_partida, jugadores_struct) {
             if (conexionUsuario === null) {
                 console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
             } else {
-                conexionUsuario.send(`EVENTO,${efecto}`);
                 conexionUsuario.send(`ECONOMIA,${economia}`);
             }
         }

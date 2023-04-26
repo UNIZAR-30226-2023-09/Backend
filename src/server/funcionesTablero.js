@@ -610,10 +610,12 @@ async function ComprarPropiedad(socket, ID_jugador, propiedad, ID_partida) {
         let dinero = await API.obtenerDinero(ID_jugador, ID_partida);
         if (correcto === false) { // No se ha podido comprar
             socket.send(`COMPRAR_NO_OK,${ID_jugador},${propiedad},${ID_partida}`)
+            escribirEnArchivo("El jugador " + ID_jugador + " no ha podido comprar la propiedad " + propiedad)
         }
         else { // Se ha comprado la propiedad, devolvemos el dinero resultante del jugador
 
             socket.send(`COMPRAR_OK,${ID_jugador},${propiedad},${dinero},${ID_partida}`);
+            escribirEnArchivo("El jugador " + ID_jugador + " ha comprado la propiedad " + propiedad)
         }
     }
 
