@@ -341,7 +341,6 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
 
         escribirEnArchivo("El jugador " + ID_jugador + " ha sacado la carta de superpoder " + superPoder + "en la partida " + ID_partida);
 
-        socket.send(`NADA`);
     }
 
     // Si la nueva casilla es la de la cárcel (11) -> no hacer nada
@@ -900,8 +899,12 @@ async function asignarGemas(clasificacion) {
 
 // Escribe en el archivo logs.txt el mensaje que se le pasa.
 function escribirEnArchivo(datos) {
-    // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual
-    datos = new Date().toLocaleString() + datos + " " + "\n";
+    // Obtener la fecha y hora actual en la zona horaria de España
+    const fechaActual = new Date();
+    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+
+    // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
+    datos = fechaActual.toLocaleString() + datos + " " + "\n";
 
     // Escribir datos al final del archivo logs.txt
     fs.appendFile("logs.txt", datos, (error) => {
@@ -910,4 +913,3 @@ function escribirEnArchivo(datos) {
         }
     });
 }
-

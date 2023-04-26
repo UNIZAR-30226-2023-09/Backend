@@ -20,10 +20,19 @@ const ECONOMIA = 1;
  * @param {int} IDpartida - El ID de la partida en la que está jugando el jugador.
  */
 async function moverBot(IDJugador, IDpartida) {
+    // Calculamos los valores de los dados en funcion del evento actual 
     let dado1 = Math.ceil(Math.random() * 6);
     let dado2 = Math.ceil(Math.random() * 6);
-    let sumaDados = dado1 + dado2;
-    let estaCarcel = 0; //await API.verificarCarcel(IDJugador, IDpartida);
+    let evento = await API.obtenerEvento(IDpartida);
+    let sumaDados;
+    if (evento === "dadoDoble") {
+        sumaDados = (dado1 + dado2) * 2;
+    } else if (evento === "dadoMitad") {
+        sumaDados = (dado1 + dado2) / 2;
+    } else {
+        sumaDados = dado1 + dado2;
+    }
+    let estaCarcel = await API.verificarCarcel(IDJugador, IDpartida);
 
     // Si estás en la cárcel restamos un turno
     if (estaCarcel > 0) {
@@ -79,6 +88,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     if (posicion == 1) {
         try {
             API.modificarDinero(IDpartida, IDJugador, 100);
+            escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de salida");
         } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
@@ -95,9 +105,11 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             await API.sumarDineroBote(cantidad, IDpartida);
             let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, -cantidad);
             let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+            escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos");
             if (!sigue) {
                 await API.jugadorAcabadoPartida(IDJugador, IDpartida);
                 await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
             }
         }
 
@@ -117,9 +129,12 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
             let nuevoDinero = API.modificarDinero(IDpartida, IDJugador, -cantidad);
             let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+            escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos luxury");
             if (!sigue) {
                 await API.jugadorAcabadoPartida(IDJugador, IDpartida);
                 await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
+
             }
         }
         catch (error) {
@@ -138,6 +153,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     else if (posicion == 21) {
         try {
             API.obtenerDineroBote(IDJugador, IDpartida);
+            escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla del bote en la partida " + IDpartida);
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -174,6 +190,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             if (!sigue) {
                 await API.jugadorAcabadoPartida(IDJugador, IDpartida);
                 await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
             }
         }
         catch (error) {
@@ -186,7 +203,37 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     // Comprobar si es casilla de superpoder
     else if (posicion == 9 || posicion == 18) {
         // Obtener carta
-        // TODO:
+        // Obtener carta
+        let superPoder = Math.ceil(Math.random() * 5) + 1;
+        let nuevaPosicion;
+        switch (superPoder) {
+            case 1:
+                break;
+            case 2:
+                // Ir a la casilla del banco
+                nuevaPosicion = 28;
+                await API.desplazarJugadorACasilla(IDJugador, nuevaPosicion, IDpartida);
+                break;
+            case 3:
+                // Ir a la casilla del casino
+                nuevaPosicion = 14;
+                await API.desplazarJugadorACasilla(IDJugador, nuevaPosicion, IDpartida);
+                break;
+            case 4:
+                // Ir a la casilla de salida
+                nuevaPosicion = 1;
+                await API.desplazarJugadorACasilla(IDJugador, nuevaPosicion, IDpartida);
+                await API.modificarDinero(IDpartida, IDJugador, 300);
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            default:
+                break;
+        }
+
+        escribirEnArchivo("El bot " + IDJugador + " ha sacado la carta de superpoder " + superPoder + "en la partida " + IDpartida);
     }
 
     // Si la nueva casilla es la de la cárcel (11) -> no hacer nada
@@ -216,8 +263,10 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
                 // Comprar la propiedad
                 console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| Compra propiedad:", propiedad);
                 ComprarPropiedad(IDJugador, posicion, IDpartida);
+                escribirEnArchivo("El bot " + IDJugador + " ha comprado la propiedad " + propiedad + " en la partida " + IDpartida)
             } else {
                 console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| No compra propiedad:", propiedad);
+                escribirEnArchivo("El bot " + IDJugador + " no ha comprado la propiedad " + propiedad + " en la partida " + IDpartida)
             }
 
 
@@ -232,10 +281,12 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
                 // Pagamos el alquiler con el nuevo precio
                 if (API.pagarAlquiler(IDJugador, IDjugador_propiedad, posicion, IDpartida, precio)) {
                     let dineroJugadorPaga = await API.obtenerDinero(IDJugador, IDpartida);
+                    escribirEnArchivo("El bot " + IDJugador + " ha pagado " + precio + " al jugador " + IDjugador_propiedad + " por la propiedad " + propiedad + " en la partida " + IDpartida);
                     let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, dineroJugadorPaga);
                     if (!sigue) {
                         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
                         await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
+                        escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
                     }
                     if (API.jugadorEsBot(IDjugador_propiedad, IDpartida) === 0) {
                         let conexion = con.buscarUsuario(IDjugador_propiedad);
@@ -270,4 +321,21 @@ async function ComprarPropiedad(IDJugador, propiedad, IDpartida) {
         console.error("Error en la Promesa: ", error);
         return false;
     }
+}
+
+// Escribe en el archivo logs.txt el mensaje que se le pasa.
+function escribirEnArchivo(datos) {
+    // Obtener la fecha y hora actual en la zona horaria de España
+    const fechaActual = new Date();
+    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+
+    // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
+    datos = fechaActual.toLocaleString() + datos + " " + "\n";
+
+    // Escribir datos al final del archivo logs.txt
+    fs.appendFile("logs.txt", datos, (error) => {
+        if (error) {
+            console.error(`Error al escribir en el archivo logs.txt: ${error}`);
+        }
+    });
 }

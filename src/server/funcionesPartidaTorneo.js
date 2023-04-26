@@ -11,6 +11,7 @@ const con = require('./conexiones');
 const APIpartida = require('../API/partidaAPI');
 const APItorneo = require('../API/torneoAPI');
 const bot = require('./bot');
+const fs = require('fs');
 
 
 // El jugador dado crea una partida
@@ -125,6 +126,9 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                 }
             }
 
+            // Escribir en los logs que la partida ha empezado, el idPartida y el orden de los jugadores
+            escribirEnArchivo(`Partida ${ID_partida} empezada con los jugadores ${jugadores_struct[0].id}, ${jugadores_struct[1].id}, ${jugadores_struct[2].id}, ${jugadores_struct[3].id}\n`);
+
             // Damos el turno al primer jugador
             if (jugadores_struct[0].esBot === "1") {
                 bot.Jugar(jugadores_struct[0].id, ID_partida);
@@ -196,3 +200,19 @@ function mostrarJugadores(jugadores_struct, IDPartida) {
     console.log("---------------------------------------");
 }
 
+// Escribe en el archivo logs.txt el mensaje que se le pasa.
+function escribirEnArchivo(datos) {
+    // Obtener la fecha y hora actual en la zona horaria de España
+    const fechaActual = new Date();
+    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+
+    // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
+    datos = fechaActual.toLocaleString() + datos + " " + "\n";
+
+    // Escribir datos al final del archivo logs.txt
+    fs.appendFile("logs.txt", datos, (error) => {
+        if (error) {
+            console.error(`Error al escribir en el archivo logs.txt: ${error}`);
+        }
+    });
+}

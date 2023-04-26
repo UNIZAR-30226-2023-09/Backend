@@ -88,6 +88,14 @@ async function FinTurno(ID_jugador, ID_partida) {
     let jugador = resultado2[0];
     let esBot = resultado2[1];
     let finRonda = resultado[1];
+
+    // Comprobar si es fin de ronda y realizar lo oportuno con esta
+    if (finRonda == 1) {
+        // Actualizar informacion fin de ronda
+        await finDeRonda(ID_partida, jugadores_struct);
+        await actualizarFinRonda(jugadores_struct, ID_partida);
+    }
+
     // Si le toca a un bot
     if (esBot === "1") {
         bot.Jugar(jugador, ID_partida);
@@ -115,14 +123,7 @@ async function FinTurno(ID_jugador, ID_partida) {
         }
     }
 
-    escribirEnArchivo("Fin de turno de jugador: " + ID_jugador + "Partida: " + ID_partida + "Siguiente jugador: " + jugador + "Fin de ronda: " + finRonda);
-
-    // Comprobar si es fin de ronda y realizar lo oportuno con esta
-    if (finRonda == 1) {
-        // Actualizar informacion fin de ronda
-        await finDeRonda(ID_partida, jugadores_struct);
-        await actualizarFinRonda(jugadores_struct, ID_partida);
-    }
+    escribirEnArchivo("Fin de turno de jugador: " + ID_jugador + " Partida: " + ID_partida + " Siguiente jugador: " + jugador + " Fin de ronda: " + finRonda);
 }
 exports.FinTurno = FinTurno;
 
@@ -139,7 +140,7 @@ async function finDeRonda(ID_partida, jugadores_struct) {
             if (conexionUsuario === null) {
                 console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
             } else {
-                conexionUsuario.send(`FIN_RONDA, ${ronda}`);
+                conexionUsuario.send(`FIN_RONDA,${ronda}`);
             }
         }
     }
@@ -362,12 +363,19 @@ function Usuario(id, esBot) {
 
 // Escribe en el archivo logs.txt el mensaje que se le pasa.
 function escribirEnArchivo(datos) {
-    // Añadir al archivo logs.txt el mensaje que se le pasa junto al dia y la hora actual
-    datos = new Date().toLocaleString() + datos + " " + "\n";
+    // Obtener la fecha y hora actual en la zona horaria de España
+    const fechaActual = new Date();
+    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+
+    // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
+    datos = fechaActual.toLocaleString() + " " + datos + " " + "\n";
+
+    // Escribir datos al final del archivo logs.txt
     fs.appendFile("logs.txt", datos, (error) => {
         if (error) {
             console.error(`Error al escribir en el archivo logs.txt: ${error}`);
         }
     });
 }
+
 
