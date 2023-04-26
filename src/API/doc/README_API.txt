@@ -254,6 +254,10 @@ function obtenerPosicionJugadores(idPartida);
 //En caso de que no exista la aprtida entonces devuelve false
 function obtenerDineroJugadores(idPartida);
 
+//
+//  SEGUNDA VERSION, por si la primera falla
+function obtenerDineroJugadores2(idPartida);
+
 //funcion la cual determina que un jugador ya esta acabado de la partida.(jugadorVivo = 0).
 function jugadorAcabadoPartida(email, idPartida);
 
