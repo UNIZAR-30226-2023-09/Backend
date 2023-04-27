@@ -242,3 +242,6 @@ CREATE TABLE estaEnTorneo (
     FOREIGN KEY (idTorneo) REFERENCES Torneo(idTorneo),
     FOREIGN KEY (email) REFERENCES Jugador(email)
 );
+
+
+INSERT INTO Skins (precioGemas, idSkin) VALUES (0, 'default');
