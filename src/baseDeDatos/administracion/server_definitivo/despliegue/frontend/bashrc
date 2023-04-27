@@ -38,7 +38,7 @@ echo -en '''\e[31m\e[1m
 sleep 3
 clear
 echo "##########################################################################"
-echo "# ¡Bienvenido al servidor frontend!                                    #"
+echo "# ¡Bienvenido al servidor frontend!                                      #"
 echo -e "#\033[1;38;5;208m En este momento, $(who | wc -l) personas están trabajando en esta máquina.          \033[0m#"
 echo "##########################################################################"
 echo "# Comandos de utilidad:                                                  #"
