@@ -1,0 +1,43 @@
+###########################################################################################################
+# Fichero: docker-compose.yml                                                                             #
+# Autor: David Rivera Seves (NIP: 815124)                                                                 #
+###########################################################################################################
+
+version: '3.3'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    container_name: db_mysql_psoft
+    environment:
+      MYSQL_DATABASE: 'otterfortune_main_db'
+      MYSQL_ROOT_PASSWORD: psbackend1234
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+      - ./Backend/src/baseDeDatos/sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    networks:
+      - app-network
+
+  node:
+    image: node:12.22.12
+    restart: always
+    container_name: backend_node_psoft
+    working_dir: /Backend
+    volumes:
+      - ./Backend:/Backend
+    ports:
+      - '8080:8080'
+    command: tail -f /dev/null
+    networks:
+      - app-network
+
+
+volumes:
+  my-db:
+
+networks:
+  app-network:
+    driver: bridge

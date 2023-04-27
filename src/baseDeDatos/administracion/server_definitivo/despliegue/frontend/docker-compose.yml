@@ -1,0 +1,18 @@
+###########################################################################################################
+# Fichero: docker-compose.yml                                                                             #
+# Autor: David Rivera Seves (NIP: 815124)                                                                 #
+###########################################################################################################
+
+version: '3.3'
+
+services:
+  react:
+    image: node:12.22.12
+    restart: always
+    container_name: frontend_react_psoft
+    working_dir: /Frontend-Web/otterfortune
+    volumes:
+      - ./Frontend-Web:/Frontend-Web
+    ports:
+      - '80:3000'
+    command: tail -f /dev/null
