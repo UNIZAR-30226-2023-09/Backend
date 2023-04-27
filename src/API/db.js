@@ -12,7 +12,7 @@ var mysql = require('mysql');
 
 //valores para conectarse a la base.
 const config = {
-    host: '34.175.149.140',
+    host: 'db',
     user: 'root',
     password: 'psbackend1234',
     database: 'otterfortune_main_db'
