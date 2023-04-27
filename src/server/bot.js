@@ -65,9 +65,7 @@ async function jugar(IDusuario, IDpartida) {
             }
         }
 
-        if (!estaCarcel) {
-            casillaActual(IDusuario, IDpartida, posicionNueva, dadosDobles);
-        }
+        casillaActual(IDusuario, IDpartida, posicionNueva, dadosDobles);
 
     } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
