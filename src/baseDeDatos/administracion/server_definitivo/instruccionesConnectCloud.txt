@@ -4,4 +4,3 @@ Bienvenidos al video tutorial (nuevo servidor)
 3. Pasarme vuestra clave publica, para que la meta al google cloud
 4. Conectarme al servidor frontend: ssh -i ~/.ssh/rsa_google_psoft-frontend psoftserver@34.175.172.53
 5. Conectarme al servidor backend: ssh -i ~/.ssh/rsa_google_psoft-backend psoftserver@34.175.149.140
-
