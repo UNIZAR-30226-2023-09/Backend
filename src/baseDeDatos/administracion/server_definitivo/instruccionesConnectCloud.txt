@@ -1,4 +1,6 @@
 Bienvenidos al video tutorial (nuevo servidor)
-1. ssh-keygen -t rsa -f ~/.ssh/rsa_google_psoft -C psoftserver
-2. Pasarme vuestra clave publica, para que la meta al google cloud
-3. Conectarme: ssh -i ~/.ssh/rsa_google_psoft psoftserver@34.175.172.53
+1. ssh-keygen -t rsa -f ~/.ssh/rsa_google_psoft-frontend -C psoftserver
+2. ssh-keygen -t rsa -f ~/.ssh/rsa_google_psoft-backend -C psoftserver
+3. Pasarme vuestra clave publica, para que la meta al google cloud
+4. Conectarme al servidor frontend: ssh -i ~/.ssh/rsa_google_psoft-frontend psoftserver@34.175.172.53
+5. Conectarme al servidor backend: ssh -i ~/.ssh/rsa_google_psoft-backend psoftserver@34.175.149.140
