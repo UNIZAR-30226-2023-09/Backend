@@ -101,7 +101,8 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             // 50€ + 20€ * número de propiedades
             let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
             let cantidad = 50 + 20 * numPropiedades;
-            await API.sumarDineroBote(cantidad, IDpartida);
+            let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
+            await enviarDineroBote(IDpartida, IDJugador, dineroBote);
             let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, -cantidad);
             let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
             escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos");
@@ -126,6 +127,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
             let cantidad = 100 + 50 * numPropiedades;
             let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
+            await enviarDineroBote(IDpartida, IDJugador, dineroBote);
             let nuevoDinero = API.modificarDinero(IDpartida, IDJugador, -cantidad);
             let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
             escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos luxury");
@@ -153,6 +155,8 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
         try {
             API.obtenerDineroBote(IDJugador, IDpartida);
             escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla del bote en la partida " + IDpartida);
+            // Enviar a los demas usuarios el dinero del bote actualizado
+            await enviarDineroBote(IDpartida, IDJugador, 0);
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -306,6 +310,16 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     }
     else {
         jugador.FinTurno(IDJugador, IDpartida);
+    }
+}
+
+async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
+    let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].id != IDJugador && jugadores_struct[i].esBot === "0") {
+            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+            socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
+        }
     }
 }
 

@@ -1391,11 +1391,11 @@ exports.liberarPropiedadJugador = liberarPropiedadJugador;
 */
 
 //obtener el precio de la propiedad en una partida.
-function obtenerPrecioPropiedad(idPartida, numPropiedades) {
+function obtenerPrecioPropiedad(idPartida, propiedad) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
-        let precio = 'precioPropiedad' + numPropiedades;
+        let precio = 'precioPropiedad' + propiedad;
         const query1 = `SELECT ${precio} as price FROM Partida WHERE idPartida = '${idPartida}'`;
         con.query(query1, (error, results) => {
             if (error) {

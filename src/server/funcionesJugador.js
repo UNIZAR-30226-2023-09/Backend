@@ -206,6 +206,8 @@ async function modificarEconomiaPartida(ID_partida, jugadores_struct) {
     } else if (economia > 1.3) {
         economia = 1.2;
     }
+    // Dejar la economia con 1 decimal
+    economia = economia.toFixed(1);
     await APIpartida.actualizarEconomia(ID_partida, economia);
 
     // Enviar a los jugadores la nueva economia

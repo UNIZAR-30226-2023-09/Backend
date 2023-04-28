@@ -148,8 +148,9 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             let sigue = true;
             let partidaContinua = true;
             let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
-            let cantidad = 50 + 20 * numPropiedades;
+            let cantidad = 50 + 10 * numPropiedades;
             let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
+            await enviarDineroBote(ID_partida, ID_jugador, dineroBote);
             if (await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
                 let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
                 sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
@@ -182,8 +183,9 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             let sigue = true;
             let partidaContinua = true;
             let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
-            let cantidad = 100 + 50 * numPropiedades;
+            let cantidad = 100 + 30 * numPropiedades;
             let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
+            await enviarDineroBote(ID_partida, ID_jugador, dineroBote);
             if (await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
                 let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
                 sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
@@ -226,13 +228,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             socket.send(`OBTENER_BOTE,${ID_jugador},${dineroBote}`);
             escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla del bote en la partida " + ID_partida);
             // Enviar a los demas usuarios el dinero del bote actualizado
-            let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
-            for (let i = 0; i < jugadores_struct.length; i++) {
-                if (jugadores_struct[i].id != ID_jugador && jugadores_struct[i].esBot === "0") {
-                    let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
-                    socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
-                }
-            }
+            await enviarDineroBote(ID_partida, ID_jugador, 0);
         }
 
         catch (error) {
@@ -548,23 +544,26 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
         }
         else {
             let accion;
-            if (suerte == "1") { // Si la suerte es 1, generar un número aleatorio entre 0 y 9
+            let haGanado;
+            if (suerte === "1") { // Si la suerte es 1, generar un número aleatorio entre 0 y 9
                 let randomNum = Math.floor(Math.random() * 10);
                 accion = randomNum < 8 ? 0 : 1; // 80% de probabilidad de apostar bien (accion = 0)
             } else { // Si la suerte no es 1, generar un número aleatorio normal
-                accion = Math.round(Math.random());
+                accion = Math.random() < 0.5 ? 0 : 1; // 50% de probabilidad de apostar bien (accion = 0)
             }
-            // Si es 0 sumamos la cantidad
-            if (accion == 0) {
+            // Si es 0 sumamos la cantidad y se guarda que ha ganado
+            if (accion === 0) {
                 await API.modificarDinero(ID_partida, ID_jugador, cantidadInt);
-            }
-            else { // Sino, se la restamos
+                haGanado = true;
+            } else { // Sino, se la restamos y se guarda que ha perdido
                 await API.modificarDinero(ID_partida, ID_jugador, -cantidadInt);
+                haGanado = false;
             }
             let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
+
+            socket.send(`APOSTAR_OK,${ID_jugador},${nuevoDinero},${ID_partida}`);
             sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
             if (sigue) {
-                socket.send(`APOSTAR_OK,${ID_jugador},${nuevoDinero},${ID_partida}`);
                 socket.send(`REINICIAR_SUERTE`);
             } else {
                 socket.send(`ELIMINADO`);
@@ -956,7 +955,7 @@ exports.DesplazarJugador = DesplazarJugador;
 
 // Devolver el precio de venta de la propiedad
 async function PropiedadesDispVender(socket, ID_jugador, ID_partida, propiedad) {
-    let precio = await API.obtenerPrecioPropiedad(propiedad);
+    let precio = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
     socket.send(`PRECIO_VENTA,${precio}`);
 }
 
@@ -987,4 +986,14 @@ function escribirEnArchivo(datos) {
             console.error(`Error al escribir en el archivo logs.txt: ${error}`);
         }
     });
+}
+
+async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
+    let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].id != IDJugador && jugadores_struct[i].esBot === "0") {
+            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+            socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
+        }
+    }
 }

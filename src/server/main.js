@@ -110,7 +110,7 @@ server.on("connection", (socket) => {
         // Si el mensaje es que quiere vender una propiedad para obtener el precio de venta
         if (mensaje[0] == "QUIERO_VENDER_PROPIEDAD") {
             // socket, ID_jugador, ID_partida
-            funcionesTablero.PropiedadesDispVender(socket, mensaje[1], mensaje[2]);
+            funcionesTablero.PropiedadesDispVender(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
 
 
