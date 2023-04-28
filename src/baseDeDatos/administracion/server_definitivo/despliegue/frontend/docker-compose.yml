@@ -7,7 +7,7 @@ version: '3.3'
 
 services:
   react:
-    image: node:12.22.12
+    image: node:14.18.0
     restart: always
     container_name: frontend_react_psoft
     working_dir: /Frontend-Web/otterfortune

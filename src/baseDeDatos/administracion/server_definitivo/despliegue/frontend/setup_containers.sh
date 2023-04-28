@@ -57,7 +57,9 @@ function start_containers {
 
     # Configurar en el contenedor React
     docker exec -it frontend_react_psoft npm install
-    docker exec -d frontend_react_psoft npm start
+    docker exec -it frontend_react_psoft npm run build
+    docker exec -it frontend_react_psoft npm install -g serve
+    docker exec -it frontend_react_psoft serve -s build
 }
 
 
