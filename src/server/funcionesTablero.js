@@ -396,31 +396,27 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 // obtenerPrecioPropiedad(propiedad, ID_partida)
                 // 
                 // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
-                let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, posicion);
-                // 
-                let precio = precioPagar
                 // Pagamos el alquiler con el nuevo precio
-                if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio)) {
-                    // obtener dinero de ambos jugadores
-                    let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
-                    let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
-                    let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
-                    if (sigue) {
-                        socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
-                        escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
-                    } else {
-                        socket.send(`ELIMINADO`);
-                        console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
-                        await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
-                        await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                        escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
-                    }
+                let precioAlquiler = await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio)
+                // obtener dinero de ambos jugadores
+                let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
+                let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
+                let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
+                if (sigue) {
+                    socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precioAlquiler + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
+                } else {
+                    socket.send(`ELIMINADO`);
+                    console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
+                    await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
+                    await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                }
 
-                    // Mandarle al jugador de la propiedad en la que has caido la actualizacion
-                    if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
-                        let conexion = con.buscarUsuario(IDjugador_propiedad);
-                        conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
-                    }
+                // Mandarle al jugador de la propiedad en la que has caido la actualizacion
+                if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
+                    let conexion = con.buscarUsuario(IDjugador_propiedad);
+                    conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
                 }
             }
 

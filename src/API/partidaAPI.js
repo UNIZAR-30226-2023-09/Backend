@@ -1450,7 +1450,13 @@ async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPart
         //le restamos el dinero al jugadorPaga.
         const res2 = await modificarDinero(idPartida, id_jugadorRecibe, alquiler);
 
-        return res2 && res;
+        if (res2 && res) {
+            //devolvemos el dinero que ha pagado el jugadorPaga.
+            return alquiler;
+        }
+        else {
+            return -1;
+        }
 
     } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
