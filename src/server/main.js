@@ -175,7 +175,7 @@ server.on("connection", (socket) => {
 
         // Se quiere ver las skins disponibles para comprar
         // Es decir, cuando se pulsa para ir a tienda
-        if (mensaje[0] == "verSkins") {
+        if (mensaje[0] == "MOSTRAR_SKINS") {
             // TODO:
             // socket, ID_jugador
             funcionesSkin.VerSkins(socket, mensaje[1]);
@@ -186,7 +186,7 @@ server.on("connection", (socket) => {
         }
 
         if (mensaje[0] == "venderEdificio") {
-            funcionesTablero.VenderEdificio(socket, mensaje[1], mensaje[2], mensaje[3]);
+            funcionesTablero.VenderEdificacion(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
 
     });

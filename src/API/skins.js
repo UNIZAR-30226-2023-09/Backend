@@ -35,7 +35,7 @@ function obtenerListadoSkins() {
                     let aux = [];
                     aux[0] = row.idSkin;
                     aux[1] = row.precioGemas;
-                    respuesta[i] = aux.join(".");
+                    respuesta[i] = aux.join(":");
                 });
 
                 let cadena = respuesta.join(",");
@@ -164,12 +164,12 @@ function obtenerSkinsJugador(idJugador) {
                             skinsJugador.push(fila.idSkin);
                         });
 
-                        if(results.length === 0){
+                        if (results.length === 0) {
                             con.end();
                             resolve(false);
                         } else {
 
-                            const query = `SELECT idSkin FROM Skins`;
+                            const query = `SELECT idSkin, precioGemas FROM Skins`;
                             con.query(query, (error, results3) => {                // Caso -- Error
                                 if (error) {
                                     con.end();
@@ -179,17 +179,17 @@ function obtenerSkinsJugador(idJugador) {
                                     const respuesta = [];
 
                                     results3.forEach((fila, i) => {
-                                        if(skinsJugador.includes(fila.idSkin)){
-                                            let aux = [];
-                                            aux[0] = fila.idSkin;
-                                            aux[1] = 1;
-                                            respuesta[i] = aux.join(":");
-                                        } else {
+                                        if (skinsJugador.includes(fila.idSkin)) {
                                             let aux = [];
                                             aux[0] = fila.idSkin;
                                             aux[1] = 0;
                                             respuesta[i] = aux.join(":");
-                                        } 
+                                        } else {
+                                            let aux = [];
+                                            aux[0] = fila.idSkin;
+                                            aux[1] = fila.precioGemas;
+                                            respuesta[i] = aux.join(":");
+                                        }
                                     });
 
                                     let cadena = respuesta.join(",");

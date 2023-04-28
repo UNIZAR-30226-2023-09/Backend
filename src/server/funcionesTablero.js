@@ -682,7 +682,7 @@ async function VenderPropiedad(socket, ID_jugador, propiedad, ID_partida) {
 exports.VenderPropiedad = VenderPropiedad;
 
 // Funcion que vende una edificacion de una propiedad dada la partida y el jugador
-async function VenderEdificacion(socket, ID_jugador, propiedad, ID_partida) {
+async function VenderEdificacion(socket, ID_jugador, ID_partida, propiedad) {
     try {
         // Intentar vender una edificacion dada la propiedad
         let ok = await API.venderCasa(ID_partida, ID_jugador, propiedad);
@@ -958,6 +958,7 @@ async function PropiedadesDispVender(socket, ID_jugador, ID_partida, propiedad) 
     let precio = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
     socket.send(`PRECIO_VENTA,${precio}`);
 }
+exports.PropiedadesDispVender = PropiedadesDispVender;
 
 // Dada una clasificacion que es un string concatenado por comas, con el formato
 // (jugador1:posicion,jugador2:posicion), devuelve un array con las gemas de cada
