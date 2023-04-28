@@ -86,6 +86,8 @@ async function moverJugador(ID_jugador, ID_partida) {
         sumaDados = (dado1 + dado2) * 2;
     } else if (evento === "DadosMitad") {
         sumaDados = (dado1 + dado2) / 2;
+        // Redondear sumaDados para que no tenga decimales
+        sumaDados = Math.round(sumaDados);
     } else {
         sumaDados = dado1 + dado2;
     }
@@ -396,31 +398,35 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 // obtenerPrecioPropiedad(propiedad, ID_partida)
                 // 
                 // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
-                let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, posicion);
-                // 
-                let precio = precioPagar
                 // Pagamos el alquiler con el nuevo precio
-                if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio)) {
-                    // obtener dinero de ambos jugadores
-                    let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
-                    let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
-                    let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
-                    if (sigue) {
-                        socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
-                        escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + "en la partida " + ID_partida);
-                    } else {
-                        socket.send(`ELIMINADO`);
-                        console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
-                        await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
-                        await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                        escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
-                    }
+                let dineroJugadorPagaAntes = await API.obtenerDinero(ID_jugador, ID_partida);
+                let dineroJugadorRecibeAntes = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
+                // Escribir el dinero de los jugadores antes 
+                escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPagaAntes + "€ antes de pagar el alquiler en la partida " + ID_partida);
 
-                    // Mandarle al jugador de la propiedad en la que has caido la actualizacion
-                    if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
-                        let conexion = con.buscarUsuario(IDjugador_propiedad);
-                        conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
-                    }
+                let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
+                let precioAlquiler = await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio);
+                // obtener dinero de ambos jugadores
+                let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
+                let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
+                let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
+                if (sigue) {
+                    socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precioAlquiler + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
+                    escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPaga + "€ despues de pagar el alquiler en la partida " + ID_partida);
+                    escribirEnArchivo("El jugador " + IDjugador_propiedad + " tiene " + dineroJugadorRecibe + "€ despues de recibir el alquiler en la partida " + ID_partida);
+                } else {
+                    socket.send(`ELIMINADO`);
+                    console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
+                    await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
+                    await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
+                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                }
+
+                // Mandarle al jugador de la propiedad en la que has caido la actualizacion
+                if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
+                    let conexion = con.buscarUsuario(IDjugador_propiedad);
+                    conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
                 }
             }
 
@@ -565,7 +571,7 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
                 console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
                 await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                 await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " + ID_partida);
             }
         }
     }
@@ -867,13 +873,14 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
 
     if (jugadores_struct.length === 1) {
         // Es el ultimo jugador
+        await API.acabarPartida(ID_partida);
         let clasificacion = await API.resultadoPartida(ID_partida);
         console.log(clasificacion);
         asignarGemas(clasificacion);
-        await API.acabarPartida(ID_partida);
         let conexion = con.buscarUsuario(jugadores_struct[0].id);
         conexion.send(`FinPartida,${ID_partida}`);
         escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
+        return;
     }
 
     for (let i = 0; i < jugadores_struct.length; i++) {
@@ -946,6 +953,12 @@ async function DesplazarJugador(socket, ID_jugador, ID_partida, posicion) {
     await API.moverJugador(ID_jugador, posicion, ID_partida);
 }
 exports.DesplazarJugador = DesplazarJugador;
+
+// Devolver el precio de venta de la propiedad
+async function PropiedadesDispVender(socket, ID_jugador, ID_partida, propiedad) {
+    let precio = await API.obtenerPrecioPropiedad(propiedad);
+    socket.send(`PRECIO_VENTA,${precio}`);
+}
 
 // Dada una clasificacion que es un string concatenado por comas, con el formato
 // (jugador1:posicion,jugador2:posicion), devuelve un array con las gemas de cada
