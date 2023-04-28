@@ -50,6 +50,8 @@ echo "#      · stop:    finalizar y eliminar contenedores                      
 echo "#      · restart: reiniciar los contenedores                             #"
 echo "#      · status:  consultar el estado del servidor node                  #"
 echo "#      · clear:   eliminar los datos de la base de datos mysql           #"
+echo "#      · view:    ver la salida por pantalla de node                     #"
+echo "#      · logs:    ver los logs de node                                   #"
 echo "#                                                                        #"
 echo "##########################################################################"
 echo
