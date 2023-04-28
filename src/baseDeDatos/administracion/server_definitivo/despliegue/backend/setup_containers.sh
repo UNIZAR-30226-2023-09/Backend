@@ -14,6 +14,8 @@
 #   - bash setup_containers.sh restart: Para reiniciar los contenedores.                                  #
 #   - bash setup_containers.sh status:  Para consultar es estado del servidor node                        #
 #   - bash setup_containers.sh clear:   Para eliminar los datos de la base de datos mysql                 #
+#   - bash setup_containers.sh view:    Para ver la salida por pantalla de node                           #
+#   - bash setup_containers.sh logs:    Para ver los logs de node                                         #
 #                                                                                                         #
 # Entrar en los contenedores:                                                                             #
 #   - MYSQL: docker exec -it db_mysql_psoft bash                                                          #
@@ -59,7 +61,7 @@ function start_containers {
 
     # Configurar en el contenedor Node
     docker exec -it backend_node_psoft npm install mysql ws
-    docker exec -d backend_node_psoft node src/server/main.js
+    docker exec -d backend_node_psoft sh -c 'node src/server/main.js > output.txt'
 }
 
 
@@ -86,11 +88,11 @@ function restart_containers {
 # Función para ver si esta activo el servidor node (main.js)
 #
 function status_node {
-  if pgrep -f "main.js" > /dev/null; then
-    echo "El servidor node (main.js) está en ejecución"
-  else
-    echo "El servidor node (main.js) no está en ejecución"
-  fi
+    if pgrep -f "main.js" > /dev/null; then
+        echo "El servidor node (main.js) está en ejecución"
+    else
+        echo "El servidor node (main.js) no está en ejecución"
+    fi
 }
 
 
@@ -98,27 +100,52 @@ function status_node {
 # Función para eliminar la base de datos mysql
 #
 function clear_mysql {
-  docker volume rm psoftserver_my-db
+    docker volume rm psoftserver_my-db
+}
+
+
+#
+# Función para eliminar la base de datos mysql
+#
+function view_output {
+    while true
+    do
+        clear
+        docker exec -it backend_node_psoft cat output.txt
+        sleep 0.5
+        done
+}
+
+
+#
+# Función para eliminar la base de datos mysql
+#
+function view_logs {
+    docker exec -it backend_node_psoft cat logs.txt
 }
 
 
 # Validar argumentos
 if [ "$1" == "install" ]; then
-  install_docker
+    install_docker
 elif [ "$1" == "start" ]; then
-  start_containers
+    start_containers
 elif [ "$1" == "stop" ]; then
-  stop_containers
+    stop_containers
 elif [ "$1" == "restart" ]; then
-  restart_containers
+    restart_containers
 elif [ "$1" == "status" ]; then
-  status_node
+    status_node
 elif [ "$1" == "clear" ]; then
-  clear_mysql
+    clear_mysql
+elif [ "$1" == "view" ]; then
+    view_output
+elif [ "$1" == "logs" ]; then
+    view_logs
 else
-  # Argumento inválido
-  echo "Argumento inválido. Usa 'install' o 'start' o 'stop' o 'restart' o 'status' o 'clear'."
-  exit 1
+    # Argumento inválido
+    echo "Argumento inválido. Usa 'install' o 'start' o 'stop' o 'restart' o 'status' o 'clear' o 'view' o logs."
+    exit 1
 fi
 
 # IP: 34.175.149.140
