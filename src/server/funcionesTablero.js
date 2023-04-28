@@ -86,6 +86,8 @@ async function moverJugador(ID_jugador, ID_partida) {
         sumaDados = (dado1 + dado2) * 2;
     } else if (evento === "DadosMitad") {
         sumaDados = (dado1 + dado2) / 2;
+        // Redondear sumaDados para que no tenga decimales
+        sumaDados = Math.round(sumaDados);
     } else {
         sumaDados = dado1 + dado2;
     }
@@ -397,7 +399,8 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 // 
                 // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
                 // Pagamos el alquiler con el nuevo precio
-                let precioAlquiler = await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio)
+                let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
+                let precioAlquiler = await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio);
                 // obtener dinero de ambos jugadores
                 let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
                 let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
@@ -863,13 +866,14 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
 
     if (jugadores_struct.length === 1) {
         // Es el ultimo jugador
+        await API.acabarPartida(ID_partida);
         let clasificacion = await API.resultadoPartida(ID_partida);
         console.log(clasificacion);
         asignarGemas(clasificacion);
-        await API.acabarPartida(ID_partida);
         let conexion = con.buscarUsuario(jugadores_struct[0].id);
         conexion.send(`FinPartida,${ID_partida}`);
         escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
+        return;
     }
 
     for (let i = 0; i < jugadores_struct.length; i++) {
@@ -942,6 +946,12 @@ async function DesplazarJugador(socket, ID_jugador, ID_partida, posicion) {
     await API.moverJugador(ID_jugador, posicion, ID_partida);
 }
 exports.DesplazarJugador = DesplazarJugador;
+
+// Devolver el precio de venta de la propiedad
+async function PropiedadesDispVender(socket, ID_jugador, ID_partida, propiedad) {
+    let precio = await API.obtenerPrecioPropiedad(propiedad);
+    socket.send(`PRECIO_VENTA,${precio}`);
+}
 
 // Dada una clasificacion que es un string concatenado por comas, con el formato
 // (jugador1:posicion,jugador2:posicion), devuelve un array con las gemas de cada
