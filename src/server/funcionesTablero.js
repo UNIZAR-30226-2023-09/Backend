@@ -399,6 +399,11 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 // 
                 // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
                 // Pagamos el alquiler con el nuevo precio
+                let dineroJugadorPagaAntes = await API.obtenerDinero(ID_jugador, ID_partida);
+                let dineroJugadorRecibeAntes = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
+                // Escribir el dinero de los jugadores antes 
+                escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPagaAntes + "€ antes de pagar el alquiler en la partida " + ID_partida);
+
                 let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
                 let precioAlquiler = await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio);
                 // obtener dinero de ambos jugadores
@@ -408,6 +413,8 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 if (sigue) {
                     socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
                     escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precioAlquiler + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
+                    escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPaga + "€ despues de pagar el alquiler en la partida " + ID_partida);
+                    escribirEnArchivo("El jugador " + IDjugador_propiedad + " tiene " + dineroJugadorRecibe + "€ despues de recibir el alquiler en la partida " + ID_partida);
                 } else {
                     socket.send(`ELIMINADO`);
                     console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
