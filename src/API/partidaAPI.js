@@ -3274,13 +3274,14 @@ exports.venderCasa = venderCasa;
 function venderPropiedadBanca(idPartida, idJugador, nPropiedad) {
 
     let numProp = "propiedad" + nPropiedad;
+    let precioProp = "precioPropiedad" + nPropiedad;
     let numCasProp = "nCasasPropiedad" + nPropiedad;
     let dineroDevolver = (((Math.floor(nPropiedad/10)) * 50 ) + 50) / 2;
 
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
-        const query = `SELECT ${numProp} AS numProp, ${numCasProp} AS numCasProp FROM Partida WHERE idPartida = '${idPartida}'`;
+        const query = `SELECT ${numProp} AS numProp, ${numCasProp} AS numCasProp, ${precioProp} AS precioPropiedad FROM Partida WHERE idPartida = '${idPartida}'`;
         con.query(query, (error, results) => {                              // Caso -- Error
             if (error) {
                 con.end();
@@ -3297,14 +3298,14 @@ function venderPropiedadBanca(idPartida, idJugador, nPropiedad) {
 
                 } else {
 
-                    dineroDevolver =  results[0].numCasProp * dineroDevolver;   
+                    dineroDevolver =  (results[0].numCasProp * dineroDevolver) + (results[0].precioPropiedad / 2);   
                     const sql = `UPDATE  Partida SET ${numCasProp} = null WHERE idPartida = '${idPartida}'`;
                     con.query(sql, (error, results3) => {                           // Caso -- Error
                         if (error) {
                             con.end();
                             reject(error);
                         } else {                                                    // Caso --  Quitamos todas las casas de la Propiedad
-
+                            
                             const sql2 = `UPDATE juega SET dinero = dinero + ${dineroDevolver} WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
                             con.query(sql2, (error, results4) => {                  // Caso -- Error
                                 if (error) {
