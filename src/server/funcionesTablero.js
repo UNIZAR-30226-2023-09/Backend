@@ -407,7 +407,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                     let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
                     if (sigue) {
                         socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
-                        escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + "en la partida " + ID_partida);
+                        escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
                     } else {
                         socket.send(`ELIMINADO`);
                         console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
@@ -565,7 +565,7 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
                 console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
                 await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
                 await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " + ID_partida);
             }
         }
     }

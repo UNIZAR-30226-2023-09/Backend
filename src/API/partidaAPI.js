@@ -1427,7 +1427,22 @@ async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPart
         const numCasas = await obtenerNumCasasPropiedad(idPartida, propiedad);
 
         //le aplicamos la formula para saber que dinero tiene que pagar.
-        let alquiler = precioPropiedad * ((numCasas * 20) / 100);
+        let alquiler;
+
+        // Calcular el alquiler en función del número de casas.
+        if (numCasas === 0) {
+            alquiler = precioPropiedad * 0.1;
+        } else if (numCasas === 1) {
+            alquiler = precioPropiedad / 2;
+        } else if (numCasas === 2) {
+            alquiler = precioPropiedad;
+        } else if (numCasas === 3) {
+            alquiler = precioPropiedad * 2;
+        } else if (numCasas === 4) {
+            alquiler = precioPropiedad * 3;
+        } else if (numCasas === 5) {
+            alquiler = precioPropiedad * 5;
+        }
 
         //le sumamos ese dinero al jugadorRecibe.
         const res = await modificarDinero(idPartida, id_jugadorPaga, -alquiler);
@@ -3205,7 +3220,7 @@ function venderCasa(idPartida, idJugador, nPropiedad) {
 
     let numProp = "propiedad" + nPropiedad;
     let numCasProp = "nCasasPropiedad" + nPropiedad;
-    let dineroDevolver = (((Math.floor(nPropiedad/10)) * 50 ) + 50) / 2;
+    let dineroDevolver = (((Math.floor(nPropiedad / 10)) * 50) + 50) / 2;
 
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
@@ -3220,17 +3235,17 @@ function venderCasa(idPartida, idJugador, nPropiedad) {
                 resolve(false);
             } else {                                                        // Caso --  Existe la partida
 
-                if(results[0].numProp != idJugador) {                       // Caso el idJugador no es el owner de la propiedad
+                if (results[0].numProp != idJugador) {                       // Caso el idJugador no es el owner de la propiedad
                     console.log("Ojo, el propietario no es correcto");
                     con.end();
-                    resolve(false); 
-                } else  if (results[0].numCasProp === null ||  results[0].numCasProp === 0){
+                    resolve(false);
+                } else if (results[0].numCasProp === null || results[0].numCasProp === 0) {
                     console.log("Ojo, no hay casas");                       // Caso no hay casas edificadas
                     con.end();
                     resolve(false);
                 } else {
 
-                    let nuevasCasas =  results[0].numCasProp - 1;
+                    let nuevasCasas = results[0].numCasProp - 1;
                     nuevasCasas = parseInt(nuevasCasas);
                     const sql = `UPDATE  Partida SET ${numCasProp} = ${nuevasCasas} WHERE idPartida = '${idPartida}'`;
                     con.query(sql, (error, results3) => {                  // Caso -- Error
@@ -3276,7 +3291,7 @@ function venderPropiedadBanca(idPartida, idJugador, nPropiedad) {
     let numProp = "propiedad" + nPropiedad;
     let precioProp = "precioPropiedad" + nPropiedad;
     let numCasProp = "nCasasPropiedad" + nPropiedad;
-    let dineroDevolver = (((Math.floor(nPropiedad/10)) * 50 ) + 50) / 2;
+    let dineroDevolver = (((Math.floor(nPropiedad / 10)) * 50) + 50) / 2;
 
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
@@ -3291,21 +3306,21 @@ function venderPropiedadBanca(idPartida, idJugador, nPropiedad) {
                 resolve(false);
             } else {                                                        // Caso --  Existe la partida
 
-                if(results[0].numProp != idJugador) {                       // Caso el idJugador no es el owner de la propiedad
+                if (results[0].numProp != idJugador) {                       // Caso el idJugador no es el owner de la propiedad
                     console.log("Ojo, el propietario no es correcto");
                     con.end();
-                    resolve(false); 
+                    resolve(false);
 
                 } else {
 
-                    dineroDevolver =  (results[0].numCasProp * dineroDevolver) + (results[0].precioPropiedad / 2);   
+                    dineroDevolver = (results[0].numCasProp * dineroDevolver) + (results[0].precioPropiedad / 2);
                     const sql = `UPDATE  Partida SET ${numCasProp} = null WHERE idPartida = '${idPartida}'`;
                     con.query(sql, (error, results3) => {                           // Caso -- Error
                         if (error) {
                             con.end();
                             reject(error);
                         } else {                                                    // Caso --  Quitamos todas las casas de la Propiedad
-                            
+
                             const sql2 = `UPDATE juega SET dinero = dinero + ${dineroDevolver} WHERE idPartida = '${idPartida}' AND email = '${idJugador}'`;
                             con.query(sql2, (error, results4) => {                  // Caso -- Error
                                 if (error) {
