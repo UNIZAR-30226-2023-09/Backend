@@ -59,7 +59,7 @@ function start_containers {
     docker exec -it frontend_react_psoft npm install
     docker exec -it frontend_react_psoft npm run build
     docker exec -it frontend_react_psoft npm install -g serve
-    docker exec -it frontend_react_psoft serve -s build
+    docker exec -d frontend_react_psoft serve -s build
 }
 
 
@@ -83,10 +83,10 @@ function restart_containers {
 
 
 #
-# Función para ver si está activo el servidor React (npm start)
+# Función para ver si está activo el servidor React
 #
 function status_react {
-  if pgrep -f "react-scripts start" > /dev/null; then
+  if pgrep -f "/usr/local/bin/serve -s build" > /dev/null; then
     echo "El servidor React está en ejecución"
   else
     echo "El servidor React no está en ejecución"
