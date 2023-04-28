@@ -2827,6 +2827,7 @@ function modificarGemas(ID_usuario, cantidad) {
                 con.end();
                 reject(error);
             } else if (result[0].length === 0) {
+                con.end();
                 resolve(-1);
             }
             else {

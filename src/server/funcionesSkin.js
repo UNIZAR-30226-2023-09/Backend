@@ -10,6 +10,7 @@
 const con = require('./conexiones');
 const API = require('../API/skins');
 const bot = require('./bot');
+const fs = require('fs');
 
 // El jugador dado compra la skin dada
 async function ComprarSkin(socket, ID_jugador, skin) {
@@ -39,7 +40,6 @@ exports.ComprarSkin = ComprarSkin;
 // El jugador dado solicita ver la tienda
 async function VerSkins(socket, ID_jugador) {
     // Devuelve el listado de skins con id.Precio que estan en el sistema
-    console.log("VerSkins");
     let listadoSkins = await API.obtenerSkinsJugador(ID_jugador);
     escribirEnArchivo(`El jugador ${ID_jugador} ha solicitado ver la tienda.`);
     socket.send(`LISTA_SKIN,${listadoSkins}`);
@@ -53,7 +53,7 @@ function escribirEnArchivo(datos) {
     fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
-    datos = fechaActual.toLocaleString() + datos + " " + "\n";
+    datos = fechaActual.toLocaleString() + " " + datos + " " + "\n";
 
     // Escribir datos al final del archivo logs.txt
     fs.appendFile("logs.txt", datos, (error) => {
