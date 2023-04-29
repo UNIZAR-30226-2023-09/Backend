@@ -1024,7 +1024,7 @@ function obtenerSkinEquipada(idJugador) {
         var con = db.crearConexion();
         con.connect();
 
-        const query = `SELECT skinEquipada FROM Jugador WHERE AND email = '${idJugador}'`;
+        const query = `SELECT skinEquipada FROM Jugador WHERE email = '${idJugador}'`;
         con.query(query, (error, results) => {
             if (error) { // Caso -- Error
                 con.end();
