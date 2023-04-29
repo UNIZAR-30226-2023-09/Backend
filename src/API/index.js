@@ -1323,3 +1323,4 @@ async function obtenerVenderCasa(idPartida, idJugador, nPropiedad){
 //obtenerResultadoObtenerListadoSkins();
 //obtenerComprarSkin('AEoooo@gmail.com', 'default2');
 // obtenerObtenerSkinsJugador('jugador1@example.com');
+
