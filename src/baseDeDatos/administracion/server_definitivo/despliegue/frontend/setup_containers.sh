@@ -120,7 +120,7 @@ elif [ "$1" == "restart" ]; then
 elif [ "$1" == "status" ]; then
   status_react
 elif [ "$1" == "view" ]; then
-  status_react
+  view_output
 else
   # Argumento inválido
   echo "Argumento inválido. Usa 'install' o 'start' o 'stop' o 'restart' o 'status' o 'view'."
