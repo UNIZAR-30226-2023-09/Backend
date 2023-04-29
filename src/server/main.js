@@ -164,7 +164,7 @@ server.on("connection", (socket) => {
         /*------------------------------------------------------*/
         // Se solicita hacer un intercambio
         if (mensaje[0] == "intercambio") {
-            // TODO:
+            funcionesTablero.Intercambio(socket, mensaje[1], mensaje[2], mensaje[3], mensaje[4]);
         }
 
         // Se quiere comprar una skin
