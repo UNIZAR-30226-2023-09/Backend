@@ -176,7 +176,7 @@ async function ActualizarInteresesBanco(jugadores_struct, i, ID_partida) {
         let dinero = dineroBanco * interes;
         // Redondear el dinero
         dinero = Math.round(dinero);
-        await APIpartida.modificarDineroBanco(jugadores_struct[i].id, ID_partida, dinero);
+        await APIpartida.modificarDineroBanco(ID_partida, jugadores_struct[i].id, dinero);
         // Enviar a los jugadores la nueva cantidad de dinero que tienen en el banco
         if (jugadores_struct[i].esBot === "0") {
             let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);

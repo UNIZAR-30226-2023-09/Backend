@@ -7,9 +7,11 @@
  ---------------------------------------------------------------------------
 */
 
+const con = require('./conexiones');
 const API = require('../API/partidaAPI');
 const jugador = require('./funcionesJugador');
 const Tablero = require('./funcionesTablero');
+const APIpartida = require('../API/partidaAPI');
 const fs = require('fs');
 const ECONOMIA = 1;
 
@@ -402,4 +404,10 @@ function escribirEnArchivo(datos) {
             console.error(`Error al escribir en el archivo logs.txt: ${error}`);
         }
     });
+}
+
+// Almacenar el usuario y si es un bot
+function Usuario(id, esBot) {
+    this.id = id;
+    this.esBot = esBot;
 }
