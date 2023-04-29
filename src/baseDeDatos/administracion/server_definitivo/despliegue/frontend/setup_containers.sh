@@ -13,6 +13,7 @@
 #   - bash setup_containers.sh stop:    Para finalizar el funcionamiento de los contenedores.             #
 #   - bash setup_containers.sh restart: Para reiniciar los contenedores.                                  #
 #   - bash setup_containers.sh status:  Para consultar el estado del servidor react                       #
+#   - bash setup_containers.sh view:    Para ver la salida por pantalla de react                          #
 #                                                                                                         #
 # Entrar en los contenedores:                                                                             #
 #   - REACT: docker exec -it frontend_react_psoft bash                                                    #
@@ -59,7 +60,7 @@ function start_containers {
     docker exec -it frontend_react_psoft npm install
     docker exec -it frontend_react_psoft npm run build
     docker exec -it frontend_react_psoft npm install -g serve
-    docker exec -d frontend_react_psoft serve -s build
+    docker exec -d frontend_react_psoft sh -c 'serve -s build > output.txt 2>&1'
 }
 
 
@@ -94,6 +95,19 @@ function status_react {
 }
 
 
+#
+# Función para eliminar la base de datos mysql
+#
+function view_output {
+    while true
+    do
+        clear
+        docker exec -it frontend_react_psoft cat output.txt
+        sleep 0.5
+        done
+}
+
+
 # Validar argumentos
 if [ "$1" == "install" ]; then
   install_docker
@@ -105,9 +119,11 @@ elif [ "$1" == "restart" ]; then
   restart_containers
 elif [ "$1" == "status" ]; then
   status_react
+elif [ "$1" == "view" ]; then
+  status_react
 else
   # Argumento inválido
-  echo "Argumento inválido. Usa 'install' o 'start' o 'stop' o 'restart' o 'status'."
+  echo "Argumento inválido. Usa 'install' o 'start' o 'stop' o 'restart' o 'status' o 'view'."
   exit 1
 fi
 

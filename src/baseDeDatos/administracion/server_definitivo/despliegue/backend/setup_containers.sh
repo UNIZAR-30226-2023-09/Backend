@@ -144,7 +144,7 @@ elif [ "$1" == "logs" ]; then
     view_logs
 else
     # Argumento inválido
-    echo "Argumento inválido. Usa 'install' o 'start' o 'stop' o 'restart' o 'status' o 'clear' o 'view' o logs."
+    echo "Argumento inválido. Usa 'install' o 'start' o 'stop' o 'restart' o 'status' o 'clear' o 'view' o 'logs'."
     exit 1
 fi
 

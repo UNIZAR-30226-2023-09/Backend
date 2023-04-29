@@ -45,10 +45,11 @@ echo "# Comandos de utilidad:                                                  #
 echo "#                                                                        #"
 echo "# - server [install/start/stop/restart]                                  #"
 echo "#      · install: instalar Docker, Docker-Compose y Git                  #"
-echo "#      · start: descargar repositorios y poner en marcha contenedores    #"
-echo "#      · stop: finalizar y eliminar contenedores                         #"
+echo "#      · start:   descargar repositorios y poner en marcha contenedores  #"
+echo "#      · stop:    finalizar y eliminar contenedores                      #"
 echo "#      · restart: reiniciar los contenedores                             #"
 echo "#      · status:  consultar el estado del servidor react                 #"
+echo "#      · view:    ver la salida por pantalla de react                    #"
 echo "#                                                                        #"
 echo "##########################################################################"
 echo
