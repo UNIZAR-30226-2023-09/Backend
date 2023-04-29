@@ -15,7 +15,9 @@ CREATE TABLE Jugador (
     gemas           INT NOT NULL,
     nombre          VARCHAR(255) NOT NULL,
     pass            VARCHAR(255) NOT NULL,
-    email           VARCHAR(255) PRIMARY KEY
+    skinEquipada    VARCHAR(255) NOT NULL,
+    email           VARCHAR(255) PRIMARY KEY,
+    FOREIGN KEY (skinEquipada) REFERENCES Skins(idSkin)
 );
 
 
