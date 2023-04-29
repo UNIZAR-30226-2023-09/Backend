@@ -319,3 +319,9 @@ function venderCasa(idPartida, idJugador, n_propiedad);
 // Si la propiedad tenia propiedades, se devuelve la mitad de lo que ha costado cada propiedad.
 // Las propiedades cuestan en cada fila 50 mas. Fila 1: 50, Fila2: 100, etc...
 function venderPropiedadBanca(idPartida, idJugador, n_propiedad);
+
+//funcion la cual inserta en la tabla tieneSkin el usaurio y la skin.
+function insertarSkin(idUsuario, idSkin);
+
+//Dado un email, inserta un nuevo usuario al juego del Monopòly y añade una skin default en la tabla tieneSkin.
+async function insertarUsuarioConSkin(userData);

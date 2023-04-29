@@ -207,3 +207,37 @@ function obtenerSkinsJugador(idJugador) {
 
 
 exports.obtenerSkinsJugador = obtenerSkinsJugador;
+
+
+/*
+=================== INSERTAR SKIN =========================================================
+*/
+
+/*
+funcion la cual inserta en la tabla tieneSkin el usaurio y la skin.
+*/
+function insertarSkin(idUsuario, idSkin) {
+    return new Promise((resolve, reject) => {
+      // Creamos una conexión a la base de datos
+      const con = db.crearConexion();
+      con.connect();
+  
+      // Construimos la consulta SQL
+      const query = `INSERT INTO tieneSkins (idSkin, email) VALUES (?, ?)`;
+      const values = [idSkin, idUsuario.toString()];
+  
+      // Ejecutamos la consulta SQL
+      con.query(query, values, (error, result) => {
+        // Cerramos la conexión
+        con.end();
+        // Verificamos si hubo algún error en la consulta SQL
+        if (error) {
+          reject(error);
+        } else {
+          resolve(true);
+        }
+        
+      });
+    });
+  }
+  exports.insertarSkin = insertarSkin;
