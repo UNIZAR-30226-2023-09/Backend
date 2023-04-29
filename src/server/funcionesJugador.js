@@ -21,7 +21,7 @@ async function Registrarse(socket, email, contrasenya, nombre) {
     try {
         // Si se ha registrado correctamente
         let insert = nombre + "," + contrasenya + "," + email + "," + 0;
-        if (await API.insertarUsuarioConSkins(insert)) {
+        if (await API.insertarUsuarioConSkin(insert)) {
             socket.send("REGISTRO_OK");
             escribirEnArchivo("Registro correcto" + "Nombre: " + nombre + "Contraseña: " + contrasenya + "Email: " + email);
         }

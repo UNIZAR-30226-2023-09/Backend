@@ -9,6 +9,7 @@
 */
 
 const db = require('./db');
+const skin = require('./skins');
 
 /*
 ======================INSERTAR USUARIO=====================================
@@ -64,35 +65,35 @@ exports.insertarUsuario = insertarUsuario;
   insertarUsuario(userData);
   Dado un email, inserta un nuevo usuario al juego del Monopòly y añade una skin default en la tabla tieneSkin.
 */
-async function insertarUsuarioConSkin(userData) {
-    const success = await insertarUsuario(userData);
-    if (success) {
-        return new Promise((resolve, reject) => {
-            const email = userData.split(',')[2].trim();
-            const query = `INSERT INTO tieneSkin (email, nombre_skin) VALUES (?, ?), (?, ?)`;
-            const values = [email, "PLEX", email, "JULS"];
-            var con = db.crearConexion();
-            con.connect(function (err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    con.query(query, values, (error, results) => {
-                        con.end(); // Cerrar conexión
-                        if (error) {
-                            resolve(false);
-                        } else {
-                            resolve(true);
-                        }
-                    });
-                }
-            });
-        });
-    } else {
-        return false;
-    }
-}
+// async function insertarUsuarioConSkin(userData) {
+//     const success = await insertarUsuario(userData);
+//     if (success) {
+//         return new Promise((resolve, reject) => {
+//             const email = userData.split(',')[2].trim();
+//             const query = `INSERT INTO tieneSkin (email, nombre_skin) VALUES (?, ?), (?, ?)`;
+//             const values = [email, "PLEX", email, "JULS"];
+//             var con = db.crearConexion();
+//             con.connect(function (err) {
+//                 if (err) {
+//                     reject(err);
+//                 } else {
+//                     con.query(query, values, (error, results) => {
+//                         con.end(); // Cerrar conexión
+//                         if (error) {
+//                             resolve(false);
+//                         } else {
+//                             resolve(true);
+//                         }
+//                     });
+//                 }
+//             });
+//         });
+//     } else {
+//         return false;
+//     }
+// }
 
-exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
+// exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
 
 
 
@@ -274,41 +275,40 @@ function obtenerInformacionJugador(id_jugador) {
 exports.obtenerInformacionJugador = obtenerInformacionJugador;
 
 
-  
 
-  /*
+
+/*
 ===================INSERTAR USUARIO CON SKIN =========================================
 */
 
-  /*
-    insertarUsuario(userData);
-    Dado un email, inserta un nuevo usuario al juego del Monopòly y añade una skin default en la tabla tieneSkin.
-  */
-  async function insertarUsuarioConSkin(userData) {
+/*
+  insertarUsuario(userData);
+  Dado un email, inserta un nuevo usuario al juego del Monopòly y añade una skin default en la tabla tieneSkin.
+*/
+async function insertarUsuarioConSkin(userData) {
     try {
-      // Insertamos usuario
-      const success = await insertarUsuario(userData);
-      if (success) {
-        const email = userData.split(',')[2].trim();
-  
-        // Insertamos primera skin default
-        let res = await insertarSkin(email, "PLEX");
-  
-        if(res){
-          // Insertamos segunda skin default
-          await insertarSkin(email, "JULS");
+        // Insertamos usuario
+        const success = await insertarUsuario(userData);
+        if (success) {
+            const email = userData.split(',')[2].trim();
+
+            // Insertamos primera skin default
+            let res = await skin.insertarSkin(email, "PLEX");
+
+            if (res) {
+                // Insertamos segunda skin default
+                await skin.insertarSkin(email, "JULS");
+            }
+            return true;
         }
-        return true;
-      } 
-      else {
-        return false;
-      }
+        else {
+            return false;
+        }
     } catch (error) {
-      // Si hay un error en alguna de las Promesas, devolvemos false.
-      console.error("Error en la Promesa: ", error);
-      return false;
+        // Si hay un error en alguna de las Promesas, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
-  }
-  exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
-  
-  
+}
+exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
+
