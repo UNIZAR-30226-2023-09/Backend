@@ -272,3 +272,43 @@ function obtenerInformacionJugador(id_jugador) {
 }
 
 exports.obtenerInformacionJugador = obtenerInformacionJugador;
+
+
+  
+
+  /*
+===================INSERTAR USUARIO CON SKIN =========================================
+*/
+
+  /*
+    insertarUsuario(userData);
+    Dado un email, inserta un nuevo usuario al juego del Monopòly y añade una skin default en la tabla tieneSkin.
+  */
+  async function insertarUsuarioConSkin(userData) {
+    try {
+      // Insertamos usuario
+      const success = await insertarUsuario(userData);
+      if (success) {
+        const email = userData.split(',')[2].trim();
+  
+        // Insertamos primera skin default
+        let res = await insertarSkin(email, "PLEX");
+  
+        if(res){
+          // Insertamos segunda skin default
+          await insertarSkin(email, "JULS");
+        }
+        return true;
+      } 
+      else {
+        return false;
+      }
+    } catch (error) {
+      // Si hay un error en alguna de las Promesas, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
+  
+  

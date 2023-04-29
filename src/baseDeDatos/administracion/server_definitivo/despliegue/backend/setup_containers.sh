@@ -61,7 +61,7 @@ function start_containers {
 
     # Configurar en el contenedor Node
     docker exec -it backend_node_psoft npm install mysql ws
-    docker exec -d backend_node_psoft sh -c 'node src/server/main.js > output.txt'
+    docker exec -d backend_node_psoft sh -c 'node src/server/main.js > output.txt 2>&1'
 }
 
 
