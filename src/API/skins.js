@@ -263,12 +263,13 @@ function insertarSkin(idUsuario, idSkin) {
 
         // Ejecutamos la consulta SQL
         con.query(query, values, (error, result) => {
-            // Cerramos la conexión
-            con.end();
+            
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else {
+                con.end(); // Cerrar conexión
                 resolve(true);
             }
 

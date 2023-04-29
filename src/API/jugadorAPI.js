@@ -30,12 +30,12 @@ function insertarUsuario(userData) {
                 const query = `SELECT * FROM Jugador WHERE email = '${email}'`;
                 con.query(query, (error, results) => {
                     if (error) {
-                        resolve(false);
                         con.end(); // Cerrar conexión
+                        resolve(false);
                     } else {
                         if (results.length > 0) {
-                            resolve(false);
                             con.end(); // Cerrar conexión
+                            resolve(false);
                         } else {
                             const sql = `INSERT INTO Jugador (gemas, nombre, pass, email, skinEquipada) VALUES (?, ?, ?, ?, ?)`;
                             const gemasInt = parseInt(gemas, 10);
@@ -130,8 +130,8 @@ function comprobarInicioSesion(email, contrasenya) {
                 const query = `SELECT pass,gemas FROM Jugador WHERE email = '${email}'`;
                 con.query(query, (error, results) => {
                     if (error) {
-                        resolve(false);
                         con.end(); // Cerrar conexión
+                        reject(error);
                     }
                     else if (results.length === 0) {
                         // Si el jugador no existe, devolver false.
@@ -145,13 +145,15 @@ function comprobarInicioSesion(email, contrasenya) {
                         pass = results[0].pass;   //guardamos la contrasenya para poder compararla y verificar si es correecta o no.
                         if (pass == contrasenya) {
                             //son iguales, devolvemos numero de gemas.
+                            con.end(); // Cerrar conexión
                             resolve(gemas);
                         }
                         else {
                             //no son iguales las contrasenyas, devolvemos false.
+                            con.end(); // Cerrar conexión
                             resolve(-1);
                         }
-                        con.end(); // Cerrar conexión
+                        //con.end(); // Cerrar conexión
                     }
                 });
             }
@@ -254,8 +256,10 @@ function obtenerInformacionJugador(id_jugador) {
         const query1 = `SELECT * FROM jugador WHERE email = '${id_jugador}'`;
         con.query(query1, (error, results1) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results1.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1);
             } else {
                 //devolvemos en un vector los valores del usuario.
@@ -265,9 +269,10 @@ function obtenerInformacionJugador(id_jugador) {
                 vector[2] = results1[0].nombre;
                 vector[3] = results1[0].pass;
                 let cadena = vector.join(",");
+                con.end(); // Cerrar conexión
                 resolve(cadena);
             }
-            con.end();
+            //con.end();
         });
     });
 }

@@ -145,11 +145,13 @@ function modificarDinero(idPartida, jugador, cantidad) {
                 const values = [dinero, jugador, idPartida];
                 con.query(query, values, (error, results) => {
                     if (error) {
+                        con.end(); // Cerrar conexión
                         reject(error);
                     } else {
+                        con.end(); // Cerrar conexión
                         resolve(true);
                     }
-                    con.end();
+                    //con.end();
                 });
             }
         });
@@ -236,6 +238,7 @@ function obtenerDinero(jugador, idPartida) {
         // Conectar a la base de datos
         con.connect((err) => {
             if (err) {
+                con.end(); // Cerrar conexión
                 reject(err);
             } else {
                 // Comprobar si el jugador existe en la tabla "juega" (si está en la partida)
@@ -243,9 +246,11 @@ function obtenerDinero(jugador, idPartida) {
                 con.query(query, (error, results) => {
                     if (error) {
                         // Si hay un error, rechazar la promesa y cerrar la conexión
+                        con.end(); // Cerrar conexión
                         reject(error);
                     } else if (results.length === 0) {
                         // Si el jugador no existe en la partida, resolver la promesa con -1 y cerrar la conexión
+                        con.end(); // Cerrar conexión
                         resolve(-1);
                     } else {
                         // Una vez comprobado que está en la partida, realizar una consulta para devolver el dinero del jugador
@@ -253,16 +258,18 @@ function obtenerDinero(jugador, idPartida) {
                         con.query(query3, (error, results3) => {
                             if (error) {
                                 // Si hay un error, rechazar la promesa y cerrar la conexión
+                                con.end(); // Cerrar conexión
                                 reject(error);
                             } else {
                                 // Si todo ha ido bien, resolver la promesa con el dinero y cerrar la conexión
                                 let dinero = results3[0].dinero;
+                                con.end(); // Cerrar conexión
                                 resolve(dinero);
                             }
                         });
                     }
                     // Cerrar la conexión a la base de datos
-                    con.end();
+                    //con.end();
                 });
             }
         });
@@ -298,6 +305,7 @@ function enviarCarcel(jugador, idPartida) {
                 const query2 = `SELECT posicion FROM juega WHERE email = '${jugador}' AND idPartida = '${idPartida}'`;
                 con.query(query2, (error, results2) => {
                     if (error) {
+                        con.end(); // Cerrar conexión
                         reject(error);
                     } else {
                         //si ha ido bien devolvemos la posicion.
@@ -591,9 +599,11 @@ function meterDineroBanco(idJugador, idPartida, cantidad) {
         const values = [idJugador, idPartida];
         con.query(query, values, (error, results) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results.length === 0) {
                 // Si no existe en juega, devolver -1.
+                con.end(); // Cerrar conexión
                 resolve(-1);
             } else {
                 let dineroInver = results[0].dineroInvertido;
@@ -603,14 +613,16 @@ function meterDineroBanco(idJugador, idPartida, cantidad) {
                 con.query(query2, values2, (error, results2) => {
                     if (error) {
                         console.log(query2);
+                        con.end(); // Cerrar conexión
                         reject(error);
                     } else {
                         //todo ha ido okey, devolvemos la cantidad de dinero que tiene en el banco el usuario.
+                        con.end(); // Cerrar conexión
                         resolve(dineroInver);
                     }
                 });
             }
-            con.end();
+            //con.end();
         });
     });
 }
@@ -694,7 +706,7 @@ function obtenerJugadorPropiedad(n_propiedad, id_partida) {
                 }
             }
         });
-        con.end();
+        //con.end();
     });
 }
 
@@ -713,15 +725,18 @@ function obtenerPosicion(id_jugador, id_partida) {
         const query1 = `SELECT posicion FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
         con.query(query1, (error, results1) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results1.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1);
             } else {
                 //devolvemos en un vector los valores del usuario.
                 let pos = results1[0].posicion;
+                con.end(); // Cerrar conexión
                 resolve(pos);
             }
-            con.end();
+            //con.end();
         });
     });
 }
@@ -742,8 +757,10 @@ function comprobarDinero(id_partida, id_jugador, cantidad) {
         const query1 = `SELECT dinero FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
         con.query(query1, (error, results1) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results1.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1);
             } else {
                 //devolvemos el dinero del usuario.
@@ -753,20 +770,23 @@ function comprobarDinero(id_partida, id_jugador, cantidad) {
                     const query2 = `UPDATE juega SET dinero = '${dinero}' WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
                     con.query(query2, (error, results2) => {
                         if (error) {
+                            con.end(); // Cerrar conexión
                             reject(error);
                         }
                         else {
                             //devolvemos true si ha ido todo bien, habiendo actualizado el dinero del jugador.
+                            con.end(); // Cerrar conexión
                             resolve(true);
                         }
                     });
                 }
                 else {
                     //no tiene suficiente dinero, devuelve false;
+                    con.end(); // Cerrar conexión
                     resolve(false);
                 }
             }
-            con.end();
+            //con.end();
         });
     });
 }
@@ -785,16 +805,19 @@ function obtenerNumPropiedades(id_partida, id_jugador) {
         const query1 = `SELECT numPropiedades FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
         con.query(query1, (error, results1) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results1.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1);
             } else {
                 //devolvemos el dinero del usuario.
                 let numProp = results1[0].numPropiedades;
+                con.end(); // Cerrar conexión
                 resolve(numProp);
             }
         });
-        con.end();
+        //con.end();
     });
 
 }
@@ -815,20 +838,25 @@ function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad)
         const query1 = `SELECT ${concat} AS duenyo FROM Partida WHERE idPartida = '${id_partida}'`;
         con.query(query1, (error, results1) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results1.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1);
             } else {
                 let propiet = results1[0].duenyo;
                 if (propiet != null) {
+                    con.end(); // Cerrar conexión
                     resolve(false);
                 }
                 else {
                     const query2 = `SELECT dinero, numPropiedades FROM juega WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
                     con.query(query2, (error, results2) => {
                         if (error) {
+                            con.end(); // Cerrar conexión
                             reject(error);
                         } else if (results2.length === 0) {
+                            con.end(); // Cerrar conexión
                             resolve(-1);
                         } else {
                             let moneyJugador = results2[0].dinero;
@@ -837,8 +865,10 @@ function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad)
                                 const query3 = `UPDATE juega SET dinero = ${moneyJugador} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
                                 con.query(query3, (error, results3) => {
                                     if (error) {
+                                        con.end(); // Cerrar conexión
                                         reject(error);
                                     } else if (results3.affectedRows === 0) {
+                                        con.end(); // Cerrar conexión
                                         resolve(false);
                                     } else {
                                         let prop = results2[0].numPropiedades;
@@ -846,27 +876,33 @@ function comprarPropiedad(id_partida, id_jugador, n_propiedad, precio_propiedad)
                                         const query4 = `UPDATE juega SET numPropiedades = ${prop} WHERE email = '${id_jugador}' AND idPartida = '${id_partida}'`;
                                         con.query(query4, (error, results4) => {
                                             if (error) {
+                                                con.end(); // Cerrar conexión
                                                 reject(error);
                                             } else if (results4.affectedRows === 0) {
+                                                con.end(); // Cerrar conexión
                                                 resolve(false);
                                             } else {
                                                 const query5 = `UPDATE Partida SET ${concat} = '${id_jugador}' WHERE idPartida = '${id_partida}'`;
                                                 con.query(query5, (error, results5) => {
                                                     if (error) {
+                                                        con.end(); // Cerrar conexión
                                                         reject(error);
                                                     } else if (results5.affectedRows === 0) {
+                                                        con.end(); // Cerrar conexión
                                                         resolve(false);
                                                     } else {
+                                                        con.end(); // Cerrar conexión
                                                         resolve(true);
                                                     }
                                                     // Aquí cerramos la conexión
-                                                    con.end();
+                                                    //con.end();
                                                 });
                                             }
                                         });
                                     }
                                 });
                             } else {
+                                con.end(); // Cerrar conexión
                                 resolve(false);
                             }
                         }
@@ -1162,6 +1198,7 @@ function restarTurnoCarcel(id_jugador, id_partida, turnos) {
                     } else {
                         //si ha ido bien,cerramos conexion
                         con.end();
+                        // ¿ Falta hacer un resolve(true) ??
                     }
                 });
             }
@@ -1323,13 +1360,15 @@ function intercambiarPropiedades(id_partida, id_jugador1, id_jugador2, propiedad
                     } else {
                         const query3 = `UPDATE Partida SET ${propiedad_n2} = '${propietario_1}' WHERE idPartida = '${id_partida}'`;
                         con.query(query3, (error, results3) => {
-                            con.end();
 
                             if (error) {
+                                con.end(); // Cerrar conexión
                                 reject(error);
                             } else if (results3.affectedRows === 0) {
+                                con.end(); // Cerrar conexión
                                 resolve(false);
                             } else {
+                                con.end(); // Cerrar conexión
                                 resolve(true);
                             }
                         });
@@ -1357,16 +1396,18 @@ function obtenerNumCasasPropiedad(idPartida, propiedad) {
         const query1 = `SELECT ${numCasas} as num_casas FROM Partida WHERE idPartida = '${idPartida}'`;
         con.query(query1, (error, results1) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results1.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1);
             } else {
                 //devolvemos el dinero del usuario.
                 let numCas = results1[0].num_casas;
+                con.end(); // Cerrar conexión
                 resolve(numCas);
             }
         });
-        con.end();
     });
 }
 exports.obtenerNumCasasPropiedad = obtenerNumCasasPropiedad;
@@ -1387,9 +1428,11 @@ function liberarPropiedadJugador(id_partida, id_jugador, propiedad, dineroJugado
         const query = `UPDATE Partida SET ${concat} = NULL WHERE idPartida = '${id_partida}'`;
         con.query(query, (error, results) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results.affectedRows === 0) {
                 // Si el jugador no existe en la partida, devolver false.
+                con.end(); // Cerrar conexión
                 resolve(-1);
             }
             else {
@@ -1398,18 +1441,20 @@ function liberarPropiedadJugador(id_partida, id_jugador, propiedad, dineroJugado
                 const query2 = `UPDATE juega SET dinero = '${suma}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
                 con.query(query2, (error, results2) => {
                     if (error) {
+                        con.end(); // Cerrar conexión
                         reject(error);
                     } else if (results2.affectedRows === 0) {
                         // Si el jugador no existe en la partida, devolver false.
+                        con.end(); // Cerrar conexión
                         resolve(-1);
                     }
                     else {
                         //Todo bien, devolvemos true.
+                        con.end(); // Cerrar conexión
                         resolve(true);
                     }
                 });
             }
-            con.end();
         });
     });
 }
@@ -1438,8 +1483,8 @@ function obtenerPrecioPropiedad(idPartida, propiedad) {
             } else {
                 //TODO HA SALIDO CORRECTO, CON LO CUAL DEVOLVEMOS TRUE.
                 let precio = results[0].price;
+                con.end(); // Cerrar conexión
                 resolve(precio);
-                con.end();
             }
         });
     });
@@ -1517,12 +1562,12 @@ function sacarDineroBancoAPartida(id_partida, id_jugador, cantidad) {
         const query = `SELECT dineroInvertido, dinero FROM juega WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
         con.query(query, (error, results) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
-                con.end();
             } else if (results.length === 0) {
                 // Si el jugador no existe en la partida, devolver false.
+                con.end(); // Cerrar conexión
                 resolve(-1);
-                con.end();
             }
             else {
                 //comparamos y vemos si la cantidad a sacar es menor que el dinero del banco, sino es asi devolvemos -1.
@@ -1537,12 +1582,12 @@ function sacarDineroBancoAPartida(id_partida, id_jugador, cantidad) {
                     const query2 = `UPDATE juega SET dinero = ${dineroJugador} WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
                     con.query(query2, (error, results2) => {
                         if (error) {
+                            con.end(); // Cerrar conexión
                             reject(error);
-                            con.end();
                         } else if (results2.affectedRows === 0) {
                             // Si el jugador no existe en la partida, devolver false.
+                            con.end(); // Cerrar conexión
                             resolve(-1);
-                            con.end();
                         }
                         else {
                             //ahora actualizamos el dinero del banco.
@@ -1550,17 +1595,17 @@ function sacarDineroBancoAPartida(id_partida, id_jugador, cantidad) {
                             const query3 = `UPDATE juega SET dineroInvertido = ${dineroBanco} WHERE idPartida = '${id_partida}' AND email = '${id_jugador}'`;
                             con.query(query3, (error, results3) => {
                                 if (error) {
+                                    con.end(); // Cerrar conexión
                                     reject(error);
-                                    con.end();
                                 } else if (results3.affectedRows === 0) {
                                     // Si el jugador no existe en la partida, devolver false.
+                                    con.end(); // Cerrar conexión
                                     resolve(-1);
-                                    con.end();
                                 }
                                 else {
                                     //todo okey, devolvemos el dinero del jugador en la partida ahora.
+                                    con.end(); // Cerrar conexión
                                     resolve(dineroBanco);
-                                    con.end();
                                 }
                             });
                         }
@@ -1568,8 +1613,8 @@ function sacarDineroBancoAPartida(id_partida, id_jugador, cantidad) {
                 }
                 else {
                     //no tenemos dinero suficinete, con lo que devolvemos -1.
+                    con.end(); // Cerrar conexión
                     resolve(-2);
-                    con.end();
                 }
             }
         });
@@ -2061,22 +2106,22 @@ function anyadirPropiedadCompradorVendedor(id_partida, id_jugador_comprador, id_
                     const query2 = `UPDATE Juega SET numPropiedades = '${n_propiedades}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador_vendedor}'`;
                     con.query(query2, (error, results2) => {
                         if (error) {
+                            con.end(); // Cerrar conexión
                             reject(error);
-                            con.end();
                         } else if (results2.affectedRows === 0) {
+                            con.end(); // Cerrar conexión
                             resolve(-2);
-                            con.end();
                         } else {
                             //una vez actualizado el numero de propiedades del vendedor, ahora actualizaremos la propiedad para que sea del comprador.
                             //HAY QUE OBTENER EL NUMERO DE PROPIEDADES_TOTALES QUE TENIA ANTES DE COMPRAR ESTA PROPIEDAD EL COMPRADOR PARA PODER ACTUALIZARLO.
                             const query3 = `SELECT numPropiedades FROM juega WHERE idPartida = '${id_partida}' AND email = '${id_jugador_comprador}' `;
                             con.query(query3, (error, results3) => {
                                 if (error) {
+                                    con.end(); // Cerrar conexión
                                     reject(error);
-                                    con.end();
                                 } else if (results3.length === 0) {
+                                    con.end(); // Cerrar conexión
                                     resolve(-3);
-                                    con.end();
                                 } else {
                                     //Actualizamos el numero de propiedades del comprador en + 1.
                                     let total_propiedades_comprador = results3[0].numPropiedades;
@@ -2084,36 +2129,36 @@ function anyadirPropiedadCompradorVendedor(id_partida, id_jugador_comprador, id_
                                     const query4 = `UPDATE juega SET numPropiedades = '${total_propiedades_comprador}' WHERE idPartida = '${id_partida}' AND email = '${id_jugador_comprador}' `;
                                     con.query(query4, (error, results4) => {
                                         if (error) {
+                                            con.end(); // Cerrar conexión
                                             reject(error);
-                                            con.end();
                                         } else if (results4.affectedRows === 0) {
+                                            con.end(); // Cerrar conexión
                                             resolve(-4);
-                                            con.end();
                                         } else {
                                             //Actualizamos la propiedad para que sea del comprador.
                                             let n_casas = results[0].num_casas_propiedad;     //ESTO ES LO QUE HAY QUE VER SI DEJAMOS EL NUMERO DE CASAS QUE YA ESTABA O EMPIEZA CON 1 CASA SOLO.
                                             const query5 = `UPDATE Partida SET nCasasPropiedad${n_propiedad} = '${n_casas}' WHERE idPartida = '${id_partida}' `;
                                             con.query(query5, (error, results5) => {
                                                 if (error) {
+                                                    con.end(); // Cerrar conexión
                                                     reject(error);
-                                                    con.end();
                                                 } else if (results5.affectedRows === 0) {
+                                                    con.end(); // Cerrar conexión
                                                     resolve(-5);
-                                                    con.end();
                                                 } else {
                                                     //Actualizamos la propiedad, para que aparezca como dueño el comprador.
                                                     const query6 = `UPDATE Partida SET propiedad${n_propiedad} = '${id_jugador_comprador}' WHERE idPartida = '${id_partida}' `;
                                                     con.query(query6, (error, results6) => {
                                                         if (error) {
+                                                            con.end(); // Cerrar conexión
                                                             reject(error);
-                                                            con.end();
                                                         } else if (results5.affectedRows === 0) {
+                                                            con.end(); // Cerrar conexión
                                                             resolve(-6);
-                                                            con.end();
                                                         } else {
                                                             //TODO HA SALIDO BIEN, DEVOLVEMOS 1.
+                                                            con.end(); // Cerrar conexión
                                                             resolve(1);
-                                                            con.end();
                                                         }
                                                     });
                                                 }
@@ -2204,16 +2249,16 @@ async function crearPartidaTorneo(id_jugador, id_torneo) {
         const query = `UPDATE Partida SET perteneceTorneo = ${id_torneo} WHERE idPartida = ${idPartidaCreada}`;
         con.query(query, (error, results) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
-                con.end();
             }
             else if (results.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1); // Si no existe jugador
-                con.end();
             }
             else {
+                con.end(); // Cerrar conexión
                 resolve(true);
-                con.end();
             }
         });
 
@@ -2362,6 +2407,7 @@ function unirBotPartida(idJugador, idPartida) {
                 con.end();
                 reject(error);
             } else if (results.length == 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1);
             }
             else {                                         // Caso -- Insert okay
@@ -2535,6 +2581,7 @@ function partidaEnCurso(idPartida) {
                 //todo ha ido bien, con lo que devolvemos true.
                 let estado = results[0].enCurso;
                 if (estado === 1) {
+                    con.end(); // Cerrar conexión
                     resolve(true);
                 } else {
                     con.end();
