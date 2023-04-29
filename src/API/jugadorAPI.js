@@ -62,6 +62,37 @@ function insertarUsuario(userData) {
 
 exports.insertarUsuario = insertarUsuario;
 
+/*
+  insertarUsuario(userData);
+  Dado un email, inserta un nuevo usuario al juego del Monopòly y añade las skins "PLEX" y "JULS" en la tabla tieneSkins.
+*/
+async function insertarUsuarioConSkins(userData) {
+    const success = await insertarUsuario(userData);
+    if (!success) {
+        return false;
+    }
+
+    const email = userData.split(',')[2].trim();
+    const skinIds = ["PLEX", "JULS"];
+
+    const query = `INSERT INTO tieneSkins (email, idSkin) VALUES (?, ?)`;
+
+    try {
+        const con = db.crearConexion();
+        for (const skinId of skinIds) {
+            const values = [email, skinId];
+            await con.promise().execute(query, values);
+        }
+        con.end(); // Cerrar conexión
+        return true;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+exports.insertarUsuarioConSkins = insertarUsuarioConSkins;
+
 
 
 

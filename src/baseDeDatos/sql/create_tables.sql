@@ -244,4 +244,12 @@ CREATE TABLE estaEnTorneo (
 );
 
 
-INSERT INTO Skins (precioGemas, idSkin) VALUES (0, 'default');
+INSERT INTO Skins (precioGemas, idSkin) VALUES
+(0, 'PLEX'),
+(1, 'BAXTER'),
+(10, 'BERTA'),
+(15, 'DIONIX'),
+(20, 'JEANCARLO'),
+(0, 'JULS'),
+(3, 'LUCAS'),
+(50, 'TITE');
