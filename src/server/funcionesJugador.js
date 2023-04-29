@@ -80,6 +80,12 @@ async function FinTurno(ID_jugador, ID_partida) {
     // Si es un jugador mando: TURNO,ID_jugador,ID_partida
     // Buscar todos los jugadores de la partida y si no son bots, enviar la info actualizada de su jugada a los demas jugadores
 
+    // Comprobar si la partida está en curso
+    let partidaEnCurso = await APIpartida.partidaEnCurso(ID_partida);
+    if (!partidaEnCurso) {
+        return;
+    }
+
     // Llamar a la función de la api para obtener el siguiente jugador
     let siguienteJugador = await APIpartida.obtenerSiguienteJugador(ID_jugador, ID_partida);
     console.log("Siguiente jugador: ", siguienteJugador);
@@ -97,17 +103,6 @@ async function FinTurno(ID_jugador, ID_partida) {
         await actualizarFinRonda(jugadores_struct, ID_partida);
     }
 
-    // Si le toca a un bot
-    if (esBot === "1") {
-        bot.Jugar(jugador, ID_partida);
-    }
-    else {   // Es un jugador
-        // Buscar jugadores en el pool 
-        let conexionUsuario = conexion.buscarUsuario(jugador);
-        console.log("| Partida:", ID_partida, " | Turno de jugador:", ID_jugador);
-        conexionUsuario.send(`TURNO,${jugador},${ID_partida}`);
-    }
-
     for (let i = 0; i < jugadores_struct.length; i++) {
         // Si el jugador no es un bot
         if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
@@ -121,6 +116,17 @@ async function FinTurno(ID_jugador, ID_partida) {
             let propiedades = await APIpartida.obtenerPropiedades(ID_partida, ID_jugador);
             conexionUsuario.send(`ACTUALIZAR_USUARIO,${ID_jugador},${dinero},${casilla},${propiedades}`);
         }
+    }
+
+    // Si le toca a un bot
+    if (esBot === "1") {
+        bot.Jugar(jugador, ID_partida);
+    }
+    else {   // Es un jugador
+        // Buscar jugadores en el pool 
+        let conexionUsuario = conexion.buscarUsuario(jugador);
+        console.log("| Partida:", ID_partida, " | Turno de jugador:", ID_jugador);
+        conexionUsuario.send(`TURNO,${jugador},${ID_partida}`);
     }
 
     escribirEnArchivo("Fin de turno de jugador: " + ID_jugador + " Partida: " + ID_partida + " Siguiente jugador: " + jugador + " Fin de ronda: " + finRonda);

@@ -15,6 +15,8 @@ const APIpartida = require('../API/partidaAPI');
 const fs = require('fs');
 const ECONOMIA = 1;
 
+let sigueVivo = true;
+
 /**
  * Realiza el movimiento de un bot.
  * Si el jugador está en la cárcel, se restará un turno.
@@ -59,6 +61,7 @@ async function calcularSumaDados(IDpartida, dado1, dado2) {
 
 // Funcion que automatiza la jugada de un bot
 async function jugar(IDusuario, IDpartida) {
+    sigueVivo = true;
 
     try {
         let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverBot(IDusuario, IDpartida);
@@ -135,7 +138,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     // Comprobar si la nueva casilla es la del bote
     else if (posicion == 21) {
         try {
-            API.obtenerDineroBote(IDJugador, IDpartida);
+            await API.obtenerDineroBote(IDJugador, IDpartida);
             escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla del bote en la partida " + IDpartida);
             // Enviar a los demas usuarios el dinero del bote actualizado
             await enviarDineroBote(IDpartida, IDJugador, 0);
@@ -208,8 +211,6 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad === -1) {
             await CasillaComprarPropiedad(IDJugador, IDpartida, propiedad, posicion);
-
-
         }
         // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
         else if (IDjugador_propiedad != IDJugador) {
@@ -246,6 +247,7 @@ async function CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_pr
             await API.jugadorAcabadoPartida(IDJugador, IDpartida);
             await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
             escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
+            sigueVivo = false;
         }
         if (API.jugadorEsBot(IDjugador_propiedad, IDpartida) === 0) {
             let conexion = con.buscarUsuario(IDjugador_propiedad);
@@ -308,6 +310,7 @@ async function CasillaTreasure(IDpartida, IDJugador) {
         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
         await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
         escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
+        sigueVivo = false;
     }
 }
 
@@ -323,7 +326,7 @@ async function CasillaLuxuryTax(IDpartida, IDJugador) {
         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
         await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
         escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
-
+        sigueVivo = false;
     }
 }
 
@@ -339,6 +342,7 @@ async function CasillaTax(IDpartida, IDJugador) {
         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
         await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
         escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
+        sigueVivo = false;
     }
 }
 

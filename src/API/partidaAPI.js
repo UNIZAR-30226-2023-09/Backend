@@ -2508,6 +2508,38 @@ function acabarPartida(idPartida) {
 }
 exports.acabarPartida = acabarPartida;
 
+/*
+=================== ACABAR PARTIDA =========================================================
+*/
+//funcion la cual devuelve si una partida sigue en curso o no.
+function partidaEnCurso(idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        //en la API de github hay que poner false en vez de 0.
+        const query = `Select enCurso FROM Partida WHERE idPartida='${idPartida}'`;
+        con.query(query, (error, results) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {
+                con.end();
+                resolve(-1);
+            } else {
+                //todo ha ido bien, con lo que devolvemos true.
+                let estado = results[0].enCurso;
+                if (estado === 1) {
+                    resolve(true);
+                } else {
+                    con.end();
+                    resolve(false);
+                }
+            }
+        });
+    });
+}
+exports.partidaEnCurso = partidaEnCurso;
+
 
 
 

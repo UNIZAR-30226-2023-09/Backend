@@ -885,6 +885,8 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
     for (let i = 0; i < jugadores_struct.length; i++) {
         if (jugadores_struct[i].esBot === "0") {
             let conexion = con.buscarUsuario(jugadores_struct[i].id);
+            console.log("Jugador " + jugadores_struct[i].id + " no es bot: " + jugadores_struct[i].esBot);
+            escribirEnArchivo("Jugador " + jugadores_struct[i].id + " no es bot: " + jugadores_struct[i].esBot);
             conexion.send(`JugadorMuerto,${ID_jugador}`);
         } else {
             num_bots++;
@@ -992,7 +994,7 @@ function escribirEnArchivo(datos) {
 async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
     let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
     for (let i = 0; i < jugadores_struct.length; i++) {
-        if (jugadores_struct[i].id != IDJugador && jugadores_struct[i].esBot === "0") {
+        if (jugadores_struct[i].esBot === "0") {
             let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
             socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
         }
