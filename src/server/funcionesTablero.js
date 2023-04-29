@@ -882,7 +882,7 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
         // Divide la clasificacion en los diferentes jugadores y sus gemas
         // y envia a cada jugador sus nuevas gemas
         let aux = clasificacion.split(",");
-        let jugadores = [];
+        escribirEnArchivo("Clasificacion: " + aux);
         let gemas = [];
         for (let i = 0; i < aux.length; i++) {
             let aux2 = aux[i].split(":");
@@ -901,16 +901,23 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
             }
 
             // Comprobar que el jugador no sea un bot
-            let esBot = await API.esBot(jugador);
+            let esBot = await API.jugadorEsBot(jugador, ID_partida);
             if (!esBot) {
-                socket.send(`SUMAR_GEMAS,${gema}`);
+                let conexion = con.buscarUsuario(jugador);
+                conexion.send(`SUMAR_GEMAS,${gema}`);
+                escribirEnArchivo("El jugador " + jugador + " ha ganado " + gema + " gemas.");
             }
         }
-        for (let i = 0; i < jugadores.length; i++) {
-            let conexion = con.buscarUsuario(jugadores[i]);
-            conexion.send(`FinPartida,${ID_partida},${gemas[i]}`);
-        }
+        // Obtener los jugadores de la partida
+        let jugadoresPartida = await API.obtenerTodosJugadoresPartida(ID_partida);
+        for (let i = 0; i < jugadoresPartida.length; i++) {
+            if (jugadoresPartida[i].esBot === "0") {
+                let conexion = con.buscarUsuario(jugadoresPartida[i].id);
+                conexion.send(`FinPartida,${ID_partida},${gemas[i]}`);
 
+            }
+        }
+        escribirEnArchivo("El jugador " + jugadoresPartida[i].id + " ha ganado " + gemas[i] + " gemas. Y ha sido notificado de que la partida ha acabado.");
         escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
         return false;
     }
