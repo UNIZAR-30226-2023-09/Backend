@@ -115,7 +115,8 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                 [jugadores_struct[i], jugadores_struct[j]] = [jugadores_struct[j], jugadores_struct[i]]; // Intercambiamos las cadenas
             }
             // TODO: AL establecer el orden de los jugadores mandarselo a cada jugador
-            APIpartida.establecerOrdenPartida(ID_partida, jugadores_struct[0].id, jugadores_struct[1].id, jugadores_struct[2].id, jugadores_struct[3].id)
+            await APIpartida.establecerOrdenPartida(ID_partida, jugadores_struct[0].id, jugadores_struct[1].id, jugadores_struct[2].id, jugadores_struct[3].id)
+            let skins = await obtenerSkinsJugadores(jugadores_struct, ID_partida);
             for (let i = 0; i < jugadores_struct.length; i++) {
                 // Si el jugador no es un bot
                 if (jugadores_struct[i].esBot === "0") {
@@ -124,12 +125,12 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                         console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
                         return;
                     }
-                    conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${i},${jugadores_struct[0].id},${jugadores_struct[1].id},${jugadores_struct[2].id},${jugadores_struct[3].id}`);
+                    conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${i},${jugadores_struct[0].id},${jugadores_struct[1].id},${jugadores_struct[2].id},${jugadores_struct[3].id},${skins}`);
                 }
             }
 
             // Escribir en los logs que la partida ha empezado, el idPartida y el orden de los jugadores
-            escribirEnArchivo(`Partida ${ID_partida} empezada con los jugadores ${jugadores_struct[0].id}, ${jugadores_struct[1].id}, ${jugadores_struct[2].id}, ${jugadores_struct[3].id}\n`);
+            escribirEnArchivo(`Partida ${ID_partida} empezada con los jugadores ${jugadores_struct[0].id}, ${jugadores_struct[1].id}, ${jugadores_struct[2].id}, ${jugadores_struct[3].id},${skins}\n`);
 
             // Damos el turno al primer jugador
             if (jugadores_struct[0].esBot === "1") {
@@ -155,6 +156,35 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
     }
 }
 exports.EmpezarPartida = EmpezarPartida;
+
+// Devuelve las skins de los jugadores en el orden que tienen los jugadores  
+// en jugador_struct
+async function obtenerSkinsJugadores(jugadores_struct, ID_partida) {
+    let resultado = "";
+    // Definir un array con las 4 skins
+    let arraySkins = ["", "", "", ""];
+    let skins = await APIpartida.obtenerSkinsPartida(ID_partida);
+    // Ordenar las skins en el array en el orden de jugadores_struct
+    let skinsPartida = skins.split(",");
+    for (let i = 0; i < 4; i++) {
+        let jugador = jugadores_struct[i].id;
+        for (let j = 0; j < 4; j++) {
+            let aux = skinsPartida[j].split(":");
+            if (jugador === aux[0]) {
+                arraySkins[i] = aux[1];
+            }
+        }
+    }
+    // Convertir el array en un string
+    for (let i = 0; i < 4; i++) {
+        resultado += arraySkins[i];
+        if (i < 3) {
+            resultado += ",";
+        }
+    }
+
+    return resultado;
+}
 
 async function obtenerJugadoresPartida(ID_partida) {
     let jugadores;
