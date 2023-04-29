@@ -116,6 +116,7 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
             }
             // TODO: AL establecer el orden de los jugadores mandarselo a cada jugador
             await APIpartida.establecerOrdenPartida(ID_partida, jugadores_struct[0].id, jugadores_struct[1].id, jugadores_struct[2].id, jugadores_struct[3].id)
+            let skins = await obtenerSkinsJugadores(jugadores_struct, ID_partida);
             for (let i = 0; i < jugadores_struct.length; i++) {
                 // Si el jugador no es un bot
                 if (jugadores_struct[i].esBot === "0") {
@@ -124,12 +125,12 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                         console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
                         return;
                     }
-                    conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${i},${jugadores_struct[0].id},${jugadores_struct[1].id},${jugadores_struct[2].id},${jugadores_struct[3].id}`);
+                    conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${i},${jugadores_struct[0].id},${jugadores_struct[1].id},${jugadores_struct[2].id},${jugadores_struct[3].id},${skins}`);
                 }
             }
 
             // Escribir en los logs que la partida ha empezado, el idPartida y el orden de los jugadores
-            escribirEnArchivo(`Partida ${ID_partida} empezada con los jugadores ${jugadores_struct[0].id}, ${jugadores_struct[1].id}, ${jugadores_struct[2].id}, ${jugadores_struct[3].id}\n`);
+            escribirEnArchivo(`Partida ${ID_partida} empezada con los jugadores ${jugadores_struct[0].id}, ${jugadores_struct[1].id}, ${jugadores_struct[2].id}, ${jugadores_struct[3].id},${skins}\n`);
 
             // Damos el turno al primer jugador
             if (jugadores_struct[0].esBot === "1") {
@@ -155,6 +156,22 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
     }
 }
 exports.EmpezarPartida = EmpezarPartida;
+
+async function obtenerSkinsJugadores(jugadores_struct, ID_partida) {
+    let resultado = "";
+    let skins = await APIpartida.obtenerSkinsPartida(ID_partida);
+    let skinsPartida = skins.split(",");
+    for (let i = 0; i < 4; i++) {
+        let aux = skinsPartida[i].split(":");
+        if (i === 3) {
+            resultado += aux[1];
+            break;
+        } else {
+            resultado += aux[1] + ",";
+        }
+    }
+    return resultado;
+}
 
 async function obtenerJugadoresPartida(ID_partida) {
     let jugadores;
