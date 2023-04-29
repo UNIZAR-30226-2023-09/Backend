@@ -10,9 +10,6 @@
 
 const db = require('./db');
 
-
-
-
 /*
 ======================INSERTAR USUARIO=====================================
 */
@@ -62,36 +59,42 @@ function insertarUsuario(userData) {
 
 exports.insertarUsuario = insertarUsuario;
 
+
 /*
   insertarUsuario(userData);
-  Dado un email, inserta un nuevo usuario al juego del Monopòly y añade las skins "PLEX" y "JULS" en la tabla tieneSkins.
+  Dado un email, inserta un nuevo usuario al juego del Monopòly y añade una skin default en la tabla tieneSkin.
 */
-async function insertarUsuarioConSkins(userData) {
+async function insertarUsuarioConSkin(userData) {
     const success = await insertarUsuario(userData);
-    if (!success) {
-        return false;
-    }
-
-    const email = userData.split(',')[2].trim();
-    const skinIds = ["PLEX", "JULS"];
-
-    const query = `INSERT INTO tieneSkins (email, idSkin) VALUES (?, ?)`;
-
-    try {
-        const con = db.crearConexion();
-        for (const skinId of skinIds) {
-            const values = [email, skinId];
-            await con.promise().execute(query, values);
-        }
-        con.end(); // Cerrar conexión
-        return true;
-    } catch (error) {
-        console.log(error);
+    if (success) {
+        return new Promise((resolve, reject) => {
+            const email = userData.split(',')[2].trim();
+            const query = `INSERT INTO tieneSkin (email, nombre_skin, precio) VALUES (?, ?, ?)`;
+            const values = [email, "default", 0];
+            var con = db.crearConexion();
+            con.connect(function (err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    con.query(query, values, (error, results) => {
+                        con.end(); // Cerrar conexión
+                        if (error) {
+                            resolve(false);
+                        } else {
+                            resolve(true);
+                        }
+                    });
+                }
+            });
+        });
+    } else {
         return false;
     }
 }
 
-exports.insertarUsuarioConSkins = insertarUsuarioConSkins;
+exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
+
+
 
 
 
