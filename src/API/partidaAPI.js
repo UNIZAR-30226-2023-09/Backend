@@ -3387,3 +3387,52 @@ exports.venderPropiedadBanca = venderPropiedadBanca;
 
 
 
+// Funcion que dada una partida, devuelve el los jugadores y sus skins
+/*
+===================OBTENER LISTADO JUGADORES EN PARTIDA CON CON ID_PARTIDA =========================================
+*/
+// Devuelve el listado de jugadores VIVOS que hay asociados a una partida separados por comas, si son bots pondra -1 en vez de email
+// En caso de que no no exista la partida devuelve false
+function obtenerSkinsPartida(idPartida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+        con.query(query, (error, results) => {                // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                  // Caso -- No existe la Partida
+                con.end();
+                resolve(false);
+            } else {                                            // Caso --  Existe la partida
+
+                const query2 = `SELECT email, skin FROM juega WHERE idPartida = '${idPartida}' AND jugadorVivo = true`;
+                const respuesta = [];
+                con.query(query2, (error, results2) => {
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else {
+
+                        results2.forEach((row, i) => {
+                            let aux = [];
+                            aux[0] = row.email;
+                            aux[1] = row.skin;
+                            respuesta[i] = aux.join(":");
+
+                        });
+                        /*while (respuesta.length < 4) {
+                          respuesta.push("-1");
+                        }*/
+                        let cadena = respuesta.join(",");
+                        con.end();
+                        resolve(cadena)
+                    }
+                });
+            }
+        });
+    });
+}
+
+exports.obtenerSkinsPartida = obtenerSkinsPartida;

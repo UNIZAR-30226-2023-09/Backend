@@ -115,7 +115,7 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                 [jugadores_struct[i], jugadores_struct[j]] = [jugadores_struct[j], jugadores_struct[i]]; // Intercambiamos las cadenas
             }
             // TODO: AL establecer el orden de los jugadores mandarselo a cada jugador
-            APIpartida.establecerOrdenPartida(ID_partida, jugadores_struct[0].id, jugadores_struct[1].id, jugadores_struct[2].id, jugadores_struct[3].id)
+            await APIpartida.establecerOrdenPartida(ID_partida, jugadores_struct[0].id, jugadores_struct[1].id, jugadores_struct[2].id, jugadores_struct[3].id)
             for (let i = 0; i < jugadores_struct.length; i++) {
                 // Si el jugador no es un bot
                 if (jugadores_struct[i].esBot === "0") {
