@@ -69,8 +69,8 @@ async function insertarUsuarioConSkin(userData) {
     if (success) {
         return new Promise((resolve, reject) => {
             const email = userData.split(',')[2].trim();
-            const query = `INSERT INTO tieneSkin (email, nombre_skin, precio) VALUES (?, ?, ?)`;
-            const values = [email, "default", 0];
+            const query = `INSERT INTO tieneSkin (email, nombre_skin) VALUES (?, ?), (?, ?)`;
+            const values = [email, "PLEX", email, "JULS"];
             var con = db.crearConexion();
             con.connect(function (err) {
                 if (err) {
@@ -93,6 +93,7 @@ async function insertarUsuarioConSkin(userData) {
 }
 
 exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
+
 
 
 

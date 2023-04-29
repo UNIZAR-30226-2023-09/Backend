@@ -62,3 +62,22 @@ function escribirEnArchivo(datos) {
         }
     });
 }
+
+// El jugador dado se equipa la skin dada
+async function EquiparSkin(socket, ID_jugador, skin) {
+    try {
+        // Equipamos la skin
+        if (await API.equiparSkin(ID_jugador, skin)) {
+            socket.send(`SKIN_EQUIPADA_OK,${ID_jugador},${skin}`);
+        }
+        else {
+            socket.send(`SKIN_EQUIPADA_NOOK,${ID_jugador},${skin}`);
+        }
+    }
+    catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
+    }
+}
+exports.EquiparSkin = EquiparSkin;
