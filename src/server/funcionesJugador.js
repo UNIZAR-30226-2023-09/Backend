@@ -21,7 +21,7 @@ async function Registrarse(socket, email, contrasenya, nombre) {
     try {
         // Si se ha registrado correctamente
         let insert = nombre + "," + contrasenya + "," + email + "," + 0;
-        if (await API.insertarUsuario(insert)) {
+        if (await API.insertarUsuarioConSkins(insert)) {
             socket.send("REGISTRO_OK");
             escribirEnArchivo("Registro correcto" + "Nombre: " + nombre + "Contraseña: " + contrasenya + "Email: " + email);
         }
@@ -172,13 +172,12 @@ async function actualizarFinRonda(jugadores_struct, ID_partida) {
 async function ActualizarInteresesBanco(jugadores_struct, i, ID_partida) {
     let dineroBanco = await APIpartida.dineroBanco(jugadores_struct[i].id, ID_partida);
     if (dineroBanco > 0) {
-        let economia = await APIpartida.obtenerEconomia(ID_partida);
-        let interes = economia * 1.2;
+        let interes = 1.1;
         let dinero = dineroBanco * interes;
         // Redondear el dinero
         dinero = Math.round(dinero);
-        await APIpartida.meterDineroBanco(jugadores_struct[i].id, ID_partida, dinero);
-        // Enviar a los jugadores la nueva economia
+        await APIpartida.modificarDineroBanco(jugadores_struct[i].id, ID_partida, dinero);
+        // Enviar a los jugadores la nueva cantidad de dinero que tienen en el banco
         if (jugadores_struct[i].esBot === "0") {
             let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
             if (conexionUsuario === null) {

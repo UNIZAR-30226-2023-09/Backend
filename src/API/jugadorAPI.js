@@ -10,9 +10,6 @@
 
 const db = require('./db');
 
-
-
-
 /*
 ======================INSERTAR USUARIO=====================================
 */
@@ -61,6 +58,43 @@ function insertarUsuario(userData) {
 }
 
 exports.insertarUsuario = insertarUsuario;
+
+
+/*
+  insertarUsuario(userData);
+  Dado un email, inserta un nuevo usuario al juego del Monopòly y añade una skin default en la tabla tieneSkin.
+*/
+async function insertarUsuarioConSkin(userData) {
+    const success = await insertarUsuario(userData);
+    if (success) {
+        return new Promise((resolve, reject) => {
+            const email = userData.split(',')[2].trim();
+            const query = `INSERT INTO tieneSkin (email, nombre_skin, precio) VALUES (?, ?, ?)`;
+            const values = [email, "default", 0];
+            var con = db.crearConexion();
+            con.connect(function (err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    con.query(query, values, (error, results) => {
+                        con.end(); // Cerrar conexión
+                        if (error) {
+                            resolve(false);
+                        } else {
+                            resolve(true);
+                        }
+                    });
+                }
+            });
+        });
+    } else {
+        return false;
+    }
+}
+
+exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
+
+
 
 
 

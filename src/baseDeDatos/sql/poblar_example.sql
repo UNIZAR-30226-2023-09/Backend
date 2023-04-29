@@ -9,9 +9,14 @@
 
 -- Skins
 INSERT INTO Skins (precioGemas, idSkin) VALUES
-(0, 'default'),
-(10, 'skin1'),
-(15, 'skin2');
+(0, 'PLEX'),
+(1, 'BAXTER'),
+(10, 'BERTA'),
+(15, 'DIONIX'),
+(20, 'JEANCARLO'),
+(0, 'JULS'),
+(3, 'LUCAS'),
+(50, 'TITE');
 
 -- Jugadores
 INSERT INTO Jugador (gemas, nombre, pass, email) VALUES

@@ -2827,6 +2827,7 @@ function modificarGemas(ID_usuario, cantidad) {
                 con.end();
                 reject(error);
             } else if (result[0].length === 0) {
+                con.end();
                 resolve(-1);
             }
             else {
@@ -3119,6 +3120,7 @@ function modificarDineroBanco(idPartida, idJugador, cantidad) {
         // Creamos una conexión a la base de datos
         const con = db.crearConexion();
         con.connect();
+        cantidad = parseInt(cantidad);
 
         // Obtenemos la cantidad de dinero actual del jugador en el banco
         const query = `SELECT dineroInvertido FROM juega WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
@@ -3128,10 +3130,10 @@ function modificarDineroBanco(idPartida, idJugador, cantidad) {
                 reject(error);
             } else {
                 let dineroActual = result[0].dineroInvertido;
-                dineroActual += parseInt(cantidad); // Añadimos la cantidad al dinero actual del jugador en el banco
+                // dineroActual += parseInt(cantidad); // Añadimos la cantidad al dinero actual del jugador en el banco
 
                 // Actualizamos la cantidad de dinero del jugador en el banco
-                const updateQuery = `UPDATE juega SET dineroInvertido = ${dineroActual} WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
+                const updateQuery = `UPDATE juega SET dineroInvertido = ${cantidad} WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
                 con.query(updateQuery, (error, result2) => {
                     if (error) {
                         con.end();
