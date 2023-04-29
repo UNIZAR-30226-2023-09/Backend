@@ -2349,7 +2349,7 @@ function unirBotPartida(idJugador, idPartida) {
         var con = db.crearConexion();
         con.connect();
         const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-        email, idPartida) VALUES ( true, true, 0, true, 0.0, 0, 1, 1000.0, 'default', 0 , '${idJugador}', ${idPartida})`;
+        email, idPartida) VALUES ( true, true, 0, true, 0.0, 0, 1, 1000.0, 'TITE', 0 , '${idJugador}', ${idPartida})`;
         con.query(sql, (error, results) => {      // Caso -- Error
             if (error) {
                 console.log(sql);
