@@ -37,9 +37,9 @@ function insertarUsuario(userData) {
                             resolve(false);
                             con.end(); // Cerrar conexión
                         } else {
-                            const sql = `INSERT INTO Jugador (gemas, nombre, pass, email) VALUES (?, ?, ?, ?)`;
+                            const sql = `INSERT INTO Jugador (gemas, nombre, pass, email, skinEquipada) VALUES (?, ?, ?, ?, ?)`;
                             const gemasInt = parseInt(gemas, 10);
-                            const values = [gemasInt, username.trim(), password.trim(), email.trim()];
+                            const values = [gemasInt, username.trim(), password.trim(), email.trim(), "PLEX"];
                             con.query(sql, values, (error, results2, fields) => {
                                 if (error) {
                                     con.end(); // Cerrar conexión

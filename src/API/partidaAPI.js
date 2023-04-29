@@ -935,7 +935,7 @@ exports.obtenerPropiedades = obtenerPropiedades;
 
 // Devuelve el id de la partida creada
 // crearPartida(id_jugador) crea partida rapida sin asociarse a ningun torneo.
-function crearPartida(id_jugador) {
+function crearPartida(id_jugador, skin) {
     return new Promise((resolve, reject) => {
         const con = db.crearConexion();
         con.connect();
@@ -990,7 +990,7 @@ function crearPartida(id_jugador) {
                                 //ahora hay que enlazarlo con la tabla juega
                                 let maxIdPartida = results3[0].maximo;  //id de la partida creada.
                                 const query3 = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-                  email, idPartida) VALUES ( false, false, 0, true, 0.0, 0, 1, 1000.0, 'default', 0 , '${id_jugador}', ${maxIdPartida})`;
+                  email, idPartida) VALUES ( false, false, 0, true, 0.0, 0, 1, 1000.0,'${skin}', 0 , '${id_jugador}', ${maxIdPartida})`;
                                 con.query(query3, (error, results3) => {
                                     if (error) {
                                         reject(error);
@@ -1016,6 +1016,31 @@ function crearPartida(id_jugador) {
 
 exports.crearPartida = crearPartida;
 
+// Dado un jugador devuelve la skin que tiene equipada en la tabla jugador
+// Devuelve false si el jugador no existe
+// Devuelve la skin en caso contrario
+function obtenerSkinEquipada(idJugador) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+
+        const query = `SELECT skinEquipada FROM Jugador WHERE AND email = '${idJugador}'`;
+        con.query(query, (error, results) => {
+            if (error) { // Caso -- Error
+                con.end();
+                reject(error);
+            } else if (results.length === 0) { // Caso -- El jugador no tiene la skin
+                con.end();
+                resolve(false);
+            } else {
+                con.end();
+                let skin = results[0].skinEquipada;
+                resolve(skin);
+            }
+        });
+    });
+}
+exports.obtenerSkinEquipada = obtenerSkinEquipada;
 
 
 /*
@@ -1026,7 +1051,7 @@ exports.crearPartida = crearPartida;
 // Devuelve true en caso contrario
 
 
-function unirsePartida(idJugador, idPartida) {
+function unirsePartida(idJugador, idPartida, skin) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
@@ -1072,7 +1097,7 @@ function unirsePartida(idJugador, idPartida) {
                                     } else {                                            // Caso -- El jugador no esta jugando ninguna partida
                                         const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades,jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, 
                                         dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                        const values = [false, false, 0, true, 0.0, 0, 1, 1000.0, 'default', 0, idJugador, idPartida];
+                                        const values = [false, false, 0, true, 0.0, 0, 1, 1000.0, skin, 0, idJugador, idPartida];
                                         con.query(sql, values, (error, results5) => {      // Caso -- Error
                                             if (error) {
                                                 con.end();

@@ -18,7 +18,8 @@ const fs = require('fs');
 async function CrearPartida(socket, ID_jugador) {
     try {
         // Creamos la partida y guardamos su ID
-        let id_partida = await APIpartida.crearPartida(ID_jugador);
+        let skinJugador = await APIpartida.obtenerSkinEquipada(ID_jugador);
+        let id_partida = await APIpartida.crearPartida(ID_jugador, skinJugador);
         if (id_partida == -1) {
             socket.send(`CREADAP_NOOK,${ID_jugador}`);
         }
@@ -40,7 +41,8 @@ exports.CrearPartida = CrearPartida;
 async function UnirsePartida(socket, ID_jugador, ID_partida) {
     try {
         // Unimos al jugador a la partida 
-        if (await APIpartida.unirsePartida(ID_jugador, ID_partida)) {
+        let skinJugador = await APIpartida.obtenerSkinEquipada(ID_jugador);
+        if (await APIpartida.unirsePartida(ID_jugador, ID_partida, skinJugador)) {
             socket.send(`UNIRP_OK,${ID_partida},${ID_jugador}`);
         }
         else { // TODO: ¿Motivo?
