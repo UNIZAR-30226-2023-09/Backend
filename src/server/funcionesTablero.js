@@ -165,9 +165,6 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                     escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
                 }
             }
-            if (sigue && partidaContinua) {
-                enviarDineroBote(ID_partida, dineroBote);
-            }
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -198,9 +195,6 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                     partidaContinua = await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
                     escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
                 }
-            }
-            if (sigue && partidaContinua) {
-                enviarDineroBote(ID_partida, dineroBote);
             }
         }
         catch (error) {
@@ -515,20 +509,6 @@ async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
         socket.send(`NADA`);
     }
 }
-
-// Funcion que dado el id de la partida y el dinero del bote le envia a todos los jugadores de la partida el dinero del bote
-async function enviarDineroBote(ID_partida, dineroBote) {
-    let jugadores = await obtenerJugadoresPartida(ID_partida);
-    for (let i = 0; i < jugadores.length; i++) {
-        if (jugadores[i].esBot === "0") {
-            let conexion = con.buscarUsuario(jugadores[i].ID_jugador);
-            if (conexion != null) {
-                conexion.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
-            }
-        }
-    }
-}
-
 
 // Realiza la acción de apostar dinero
 async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
@@ -996,7 +976,9 @@ async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
     for (let i = 0; i < jugadores_struct.length; i++) {
         if (jugadores_struct[i].esBot === "0") {
             let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
-            socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
+            if (socketJugador != null) {
+                socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
+            }
         }
     }
 }
