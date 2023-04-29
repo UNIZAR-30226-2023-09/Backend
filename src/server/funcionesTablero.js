@@ -901,7 +901,7 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
             }
 
             // Comprobar que el jugador no sea un bot
-            let esBot = await API.esBot(jugador);
+            let esBot = await API.jugadorEsBot(jugador, ID_partida);
             if (!esBot) {
                 socket.send(`SUMAR_GEMAS,${gema}`);
             }
