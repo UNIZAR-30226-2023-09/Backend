@@ -437,14 +437,12 @@ function sumarDineroBote(cantidad, idPartida) {
                 const values = [bote, idPartida];
                 con.query(query, values, (error, results) => {
                     if (error) {
-                        con.end();
                         reject(error);
                     } else {
                         //todo ha ido okey, devolvemos el bote actualizado de la partida.
-                        con.end();
                         resolve(bote);
                     }
-
+                    con.end();
                 });
             }
         });
@@ -564,9 +562,9 @@ function dineroBanco(idJugador, idPartida) {
             else {
                 //una vez comprobado que esta en la partida, devuelve el dinero que tiene el jugador.
                 let dinero = results[0].dineroInvertido;
-                con.end();
                 resolve(dinero);
             }
+            con.end();
         });
     });
 }
@@ -675,21 +673,17 @@ function obtenerJugadorPropiedad(n_propiedad, id_partida) {
         const query1 = `SELECT ${concat} as nombre_propietario FROM Partida WHERE idPartida = ${id_partida}`;
         con.query(query1, (error, results1) => {
             if (error) {
-                con.end();
                 reject(error);
             } else if (results1.length === 0) {
-                con.end();
                 resolve(-1);
             } else {
                 let propietario = results1[0].nombre_propietario;
                 if (propietario == null) {
                     //no tiene propietario, con lo que devolvemos -1.
-                    con.end();
                     resolve(-1);
                 }
                 else {
                     //tiene propietario, con lo que devolvemos el id_jugador(email).
-                    con.end();
                     resolve(propietario);
                 }
             }
