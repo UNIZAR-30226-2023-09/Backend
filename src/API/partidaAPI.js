@@ -1026,7 +1026,7 @@ function crearPartida(id_jugador, skin) {
                                 //ahora hay que enlazarlo con la tabla juega
                                 let maxIdPartida = results3[0].maximo;  //id de la partida creada.
                                 const query3 = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-                  email, idPartida) VALUES ( false, false, 0, true, 0.0, 0, 1, 1000.0,'${skin}', 0 , '${id_jugador}', ${maxIdPartida})`;
+                  email, idPartida, propiedadSubastar, precioSubastar) VALUES ( false, false, 0, true, 0.0, 0, 1, 1000.0,'${skin}', 0 , '${id_jugador}', ${maxIdPartida},null,null)`;
                                 con.query(query3, (error, results3) => {
                                     if (error) {
                                         reject(error);
@@ -1132,8 +1132,8 @@ function unirsePartida(idJugador, idPartida, skin) {
                                         resolve(false);
                                     } else {                                            // Caso -- El jugador no esta jugando ninguna partida
                                         const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades,jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, 
-                                        dinero, skin, puestoPartida, email, idPartida) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                        const values = [false, false, 0, true, 0.0, 0, 1, 1000.0, skin, 0, idJugador, idPartida];
+                                        dinero, skin, puestoPartida, email, idPartida,propiedadSubastar, precioSubastar) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                        const values = [false, false, 0, true, 0.0, 0, 1, 1000.0, skin, 0, idJugador, idPartida, null, null];
                                         con.query(sql, values, (error, results5) => {      // Caso -- Error
                                             if (error) {
                                                 con.end();
@@ -2394,7 +2394,7 @@ function unirBotPartida(idJugador, idPartida) {
         var con = db.crearConexion();
         con.connect();
         const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-        email, idPartida) VALUES ( true, true, 0, true, 0.0, 0, 1, 1000.0, 'TITE', 0 , '${idJugador}', ${idPartida})`;
+        email, idPartida,propiedadSubastar, precioSubastar) VALUES ( true, true, 0, true, 0.0, 0, 1, 1000.0, 'TITE', 0 , '${idJugador}', ${idPartida},null,null)`;
         con.query(sql, (error, results) => {      // Caso -- Error
             if (error) {
                 console.log(sql);
