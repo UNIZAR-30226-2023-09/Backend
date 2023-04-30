@@ -317,3 +317,137 @@ async function insertarUsuarioConSkin(userData) {
 }
 exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
 
+
+
+/*
+===================ACTUALIZAR PRECIO SUBASTA=========================================
+*/
+
+//Actualiza el precio de la propiedad subastada en una partida específica para el jugador con el email indicado.
+function actualizarPrecioSubasta(idPartida, precio, email) {
+    return new Promise((resolve, reject) => {
+      // Creamos una conexión a la base de datos
+      const con = db.crearConexion();
+      con.connect();
+  
+      // Construimos la consulta SQL
+      const query = `UPDATE juega SET precioSubastar = ? WHERE idPartida = ? AND email = ?`;
+      const values = [precio, idPartida, email];
+  
+      // Ejecutamos la consulta SQL
+      con.query(query, values, (error, result) => {
+        // Cerramos la conexión
+        con.end();
+  
+        // Verificamos si hubo algún error en la consulta SQL
+        if (error) {
+          reject(error);
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  }
+  exports.actualizarPrecioSubasta = actualizarPrecioSubasta;
+  
+  
+  /*
+===================ACTUALIZAR PROPIEDAD SUBASTA=========================================
+*/
+  
+  //Actualiza el precio de la propiedad subastada en una partida específica para el jugador con el email indicado.
+  function actualizarPropiedadSubasta(idPartida, nombre, email) {
+    return new Promise((resolve, reject) => {
+      // Creamos una conexión a la base de datos
+      const con = db.crearConexion();
+      con.connect();
+  
+      // Construimos la consulta SQL
+      const query = `UPDATE juega SET propiedadSubastar = ? WHERE idPartida = ? AND email = ?`;
+      const values = [nombre, idPartida, email];
+  
+      // Ejecutamos la consulta SQL
+      con.query(query, values, (error, result) => {
+        // Cerramos la conexión
+        con.end();
+  
+        // Verificamos si hubo algún error en la consulta SQL
+        if (error) {
+          reject(error);
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  }
+  exports.actualizarPropiedadSubasta = actualizarPropiedadSubasta;
+  
+  
+  
+    /*
+===================OBTENER PRECIO SUBASTA=========================================
+*/
+  
+  
+  //Devuelve el precio de la propiedad subastada en una partida específica para el jugador con el email indicado.
+  function obtenerPrecioSubasta(idPartida, email) {
+    return new Promise((resolve, reject) => {
+      // Creamos una conexión a la base de datos
+      const con = db.crearConexion();
+      con.connect();
+  
+      // Construimos la consulta SQL
+      const query = `SELECT precioSubastar FROM juega WHERE idPartida = ? AND email = ?`;
+      const values = [idPartida, email];
+  
+      // Ejecutamos la consulta SQL
+      con.query(query, values, (error, result) => {
+        // Cerramos la conexión
+        con.end();
+  
+        // Verificamos si hubo algún error en la consulta SQL
+        if (error) {
+          reject(error);
+        } else {
+          // Si no hubo errores, devolvemos el precio de la propiedad subastada
+          resolve(result[0].precioSubastar);
+        }
+      });
+    });
+  }
+  exports.obtenerPrecioSubasta = obtenerPrecioSubasta;
+  
+  
+    
+    /*
+===================OBTENER PROPIEDAD SUBASTA=========================================
+*/
+  
+  
+  //Devuelve el nombre de la propiedad subastada en una partida específica para el jugador con el email indicado.
+  function obtenerNombreSubasta(idPartida, email) {
+    return new Promise((resolve, reject) => {
+      // Creamos una conexión a la base de datos
+      const con = db.crearConexion();
+      con.connect();
+  
+      // Construimos la consulta SQL
+      const query = `SELECT propiedadSubastar FROM juega WHERE idPartida = ? AND email = ?`;
+      const values = [idPartida, email];
+  
+      // Ejecutamos la consulta SQL
+      con.query(query, values, (error, result) => {
+        // Cerramos la conexión
+        con.end();
+        // Verificamos si hubo algún error en la consulta SQL
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result[0].propiedadSubastar);
+        }
+      });
+    });
+  }
+  exports.obtenerNombreSubasta = obtenerNombreSubasta;
+  
+  

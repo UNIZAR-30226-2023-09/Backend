@@ -325,3 +325,15 @@ function insertarSkin(idUsuario, idSkin);
 
 //Dado un email, inserta un nuevo usuario al juego del Monopòly y añade una skin default en la tabla tieneSkin.
 async function insertarUsuarioConSkin(userData);
+
+//Actualiza el precio de la propiedad subastada en una partida específica para el jugador con el email indicado.
+function actualizarPrecioSubasta(idPartida, precio, email);
+
+//Actualiza el precio de la propiedad subastada en una partida específica para el jugador con el email indicado.
+function actualizarPropiedadSubasta(idPartida, nombre, email);
+
+//Devuelve el precio de la propiedad subastada en una partida específica para el jugador con el email indicado.
+function obtenerPrecioSubasta(idPartida, email);
+
+//Devuelve el nombre de la propiedad subastada en una partida específica para el jugador con el email indicado.
+function obtenerNombreSubasta(idPartida, email);

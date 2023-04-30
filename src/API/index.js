@@ -1166,6 +1166,78 @@ async function obtenerVenderCasa(idPartida, idJugador, nPropiedad){
         return false;
     }
   }
+
+  //FUNCIONA OKEY.
+async function obtenerResultadoActualizarPrecioSubasta(idPartida, precio, email) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.actualizarPrecioSubasta(idPartida, precio, email);
+      console.log("El resultado obtenido de actualizar precio subasta:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoActualizarPropiedadSubasta(idPartida, nombre, email) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.actualizarPropiedadSubasta(idPartida, nombre, email);
+      console.log("El resultado obtenido de actualizar propiedad subasta:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoObtenerPrecioSubasta(idPartida, email){
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.obtenerPrecioSubasta(idPartida, email);
+      console.log("El resultado obtenido de precio subasta:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
+  
+  //FUNCIONA OKEY.
+  async function obtenerResultadoObtenerNombreSubasta(idPartida, email) {
+    try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      let resultado;
+      resultado = await test.obtenerNombreSubasta(idPartida, email);
+      console.log("El resultado obtenido de obtener subasta:", resultado);
+  
+      return resultado;
+  
+    } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  
   
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
@@ -1291,6 +1363,14 @@ async function obtenerVenderCasa(idPartida, idJugador, nPropiedad){
 //obtenerVenderCasa(1, 'jugador1@example.com', 9);
 
 //obtenerVenderPropiedadBanca(1, 'jugador1@example.com', 39);
+
+// obtenerResultadoActualizarPrecioSubasta(1, 3300, 'cesar@example.com');
+
+// obtenerResultadoActualizarPropiedadSubasta(1, 'propiedad5', 'cesar@example.com');
+
+// obtenerResultadoObtenerPrecioSubasta(1,'cesar@example.com');
+
+// obtenerResultadoObtenerNombreSubasta(1,'cesar@example.com');
 
 
 
