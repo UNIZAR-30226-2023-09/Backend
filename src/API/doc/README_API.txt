@@ -336,3 +336,9 @@ function obtenerPrecioSubasta(idPartida, email);
 
 //Devuelve el nombre de la propiedad subastada en una partida específica para el jugador con el email indicado.
 function obtenerNombreSubasta(idPartida, email);
+
+//Dada una partida y un numero(entero), pone el valor de numTurnosSubasta al valor de ese numero.
+function actualizarNumTurnosSubasta(idPartida, numTurnosSubasta);
+
+//Dada una partida, devuelve el numero de turnos activos. Sino hay subasta(es null) devuelve 0.
+function obtenerNumTurnosActivos(idPartida);

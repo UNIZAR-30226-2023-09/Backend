@@ -1237,8 +1237,48 @@ async function obtenerResultadoActualizarPrecioSubasta(idPartida, precio, email)
       return false;
     }
   }
+
+  //FUNCIONA OKEY.
+async function obtenerResultadoObtenerNumTurnosActivos(idPartida){
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await testPartida.obtenerNumTurnosActivos(idPartida);
+    console.log("El resultado obtenido de precio subasta:", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+
+//FUNCIONA OKEY.
+async function obtenerResultadoActualizarNumTurnosSubasta(idPartida, numTurnosSubasta) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await testPartida.actualizarNumTurnosSubasta(idPartida, numTurnosSubasta)
+    console.log("El resultado obtenido de obtener subasta:", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
   
   
+
+// obtenerResultadoObtenerNumTurnosActivos(1);
+
+// obtenerResultadoActualizarNumTurnosSubasta(1,5);
 
 //obtenerResultadoInsertar('AEASD,1234,AEoooo@gmail.com,11234');
 
