@@ -838,7 +838,7 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
     let num_bots = 0;
 
     // Dar gemas en funcion de la posicion en la clasificacion
-    let posicion = jugadores.struct.length + 1;
+    let posicion = jugadores_struct.length + 1;
     let gema = 0;
 
     if (posicion === 1) {
