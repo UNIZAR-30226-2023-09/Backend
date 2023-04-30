@@ -230,6 +230,8 @@ CREATE TABLE juega (
     puestoPartida   INT,
     email           VARCHAR(255),
     idPartida       INT,
+    propiedadSubastar VARCHAR(255) NOT NULL,
+    precioSubastar FLOAT NOT NULL,
     PRIMARY KEY (idPartida, email),
     FOREIGN KEY (email) REFERENCES Jugador(email),
     FOREIGN KEY (idPartida) REFERENCES Partida(idPartida),
