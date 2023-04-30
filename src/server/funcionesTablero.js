@@ -242,6 +242,8 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     else if (posicion == 31) {
         try {
             API.enviarCarcel(ID_jugador, ID_partida);
+            // Obtener todos los jugadores y enviarles que estoy en la carcel
+            let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
             socket.send(`DENTRO_CARCEL,${ID_jugador}`);
             escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de ir a la carcel en la partida " + ID_partida);
         }
@@ -980,6 +982,7 @@ async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
 // partida el mensaje de que se ha subastado la propiedad y el precio por la que se
 // ha subastado.
 async function Subastar(ID_jugador, ID_partida, propiedad, precio) {
+    // TODO: Comprobar que no exista otra subasta, y actualizar turnos en finTurno
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     // Actualizar la subasta en la base de datos
     precio = parseInt(precio);
