@@ -163,8 +163,9 @@ server.on("connection", (socket) => {
 
         /*------------------------------------------------------*/
         // Se solicita hacer un intercambio
-        if (mensaje[0] == "intercambio") {
-            funcionesTablero.Intercambio(socket, mensaje[1], mensaje[2], mensaje[3], mensaje[4]);
+        if (mensaje[0] == "SUBASTAR") {
+            // ID_partida,ID_jugador, propiedad, precio
+            funcionesTablero.Subastar(mensaje[1], mensaje[2], mensaje[3], mensaje[4]);
         }
 
         // Se quiere comprar una skin
@@ -192,6 +193,11 @@ server.on("connection", (socket) => {
 
         if (mensaje[0] == "venderEdificio") {
             funcionesTablero.VenderEdificacion(socket, mensaje[1], mensaje[2], mensaje[3]);
+        }
+
+        if (mensaje[0] == "COMPRAR_SUBASTA") {
+            // ID_Partida, ID_jugador, compra, propiedad, precio
+            funcionesTablero.ComprarSubasta(mensaje[1], mensaje[2], mensaje[3]);
         }
 
     });

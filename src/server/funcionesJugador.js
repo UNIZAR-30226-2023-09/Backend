@@ -59,11 +59,11 @@ async function IniciarSesion(socket, email, contrasenya) {
 
             }
             socket.send(`INICIO_OK,${email},${gemas}`);
-            escribirEnArchivo("Inicio sesion correcto" + "Email: " + email + "Contraseña: " + contrasenya);
+            escribirEnArchivo("Inicio sesion correcto. Email: " + email + " Contraseña: " + contrasenya + " Gemas: " + gemas);
         }
         else {
             socket.send(`INICIO_NO_OK`);
-            escribirEnArchivo("Inicio sesion incorrecto" + "Email: " + email + "Contraseña: " + contrasenya);
+            escribirEnArchivo("Inicio sesion incorrecto. Email: " + email + " Contraseña: " + contrasenya);
         }
 
     } catch (error) {

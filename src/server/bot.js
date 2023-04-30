@@ -245,7 +245,7 @@ async function CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_pr
         let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, dineroJugadorPaga);
         if (!sigue) {
             await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-            await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
+            await Tablero.enviarJugadorMuertoPartida(null, IDJugador, IDpartida);
             escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
             sigueVivo = false;
         }
@@ -308,7 +308,7 @@ async function CasillaTreasure(IDpartida, IDJugador) {
     let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
     if (!sigue) {
         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-        await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
+        await Tablero.enviarJugadorMuertoPartida(null, IDJugador, IDpartida);
         escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
         sigueVivo = false;
     }
@@ -324,7 +324,7 @@ async function CasillaLuxuryTax(IDpartida, IDJugador) {
     escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos luxury");
     if (!sigue) {
         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-        await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
+        await Tablero.enviarJugadorMuertoPartida(null, IDJugador, IDpartida);
         escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
         sigueVivo = false;
     }
@@ -340,7 +340,7 @@ async function CasillaTax(IDpartida, IDJugador) {
     escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos");
     if (!sigue) {
         await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-        await Tablero.enviarJugadorMuertoPartida(IDJugador, IDpartida);
+        await Tablero.enviarJugadorMuertoPartida(null, IDJugador, IDpartida);
         escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
         sigueVivo = false;
     }

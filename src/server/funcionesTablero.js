@@ -103,6 +103,9 @@ async function moverJugador(ID_jugador, ID_partida) {
         // Si estás en la cárcel restamos un turno
         API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
         posicionNueva = await API.obtenerPosicion(ID_jugador, ID_partida);
+        // Enviar a todos los jugadores que el jugador esta en la carcel
+        enviarJugadoresCarcel(ID_partida, ID_jugador);
+
     } else {
         // Movemos al jugador -> obtenemos su nueva posición
         posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
@@ -158,11 +161,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                     socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
                     escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de impuestos");
                 } else {
-                    socket.send(`ELIMINADO`);
-                    console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
-                    await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
-                    partidaContinua = await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                    partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
                 }
             }
         }
@@ -189,11 +188,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 if (sigue) {
                     socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
                 } else {
-                    socket.send(`ELIMINADO`);
-                    console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
-                    await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
-                    partidaContinua = await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                    partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
                 }
             }
         }
@@ -269,11 +264,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 if (sigue) {
                     socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
                 } else {
-                    socket.send(`ELIMINADO`);
-                    console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
-                    await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
-                    await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                    let partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
                 }
             }
             escribirEnArchivo("El jugador " + ID_jugador + " ha obtenido " + cantidad + "€" + "por caer en la casilla de Treasure en la partida " + ID_partida);
@@ -406,11 +397,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                     escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPaga + "€ despues de pagar el alquiler en la partida " + ID_partida);
                     escribirEnArchivo("El jugador " + IDjugador_propiedad + " tiene " + dineroJugadorRecibe + "€ despues de recibir el alquiler en la partida " + ID_partida);
                 } else {
-                    socket.send(`ELIMINADO`);
-                    console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
-                    await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
-                    await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                    let partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
                 }
 
                 // Mandarle al jugador de la propiedad en la que has caido la actualizacion
@@ -433,6 +420,14 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     }
     // Este mensaje sirve para desbloquear al usuario
     socket.send("CASILLA");
+}
+
+async function gestionarMuerteJugador(ID_jugador, ID_partida, socket) {
+    console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
+    await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
+    let partidaContinua = await enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida);
+    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+    return partidaContinua;
 }
 
 async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
@@ -483,11 +478,7 @@ async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
                     socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
                     escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion);
                 } else {
-                    socket.send(`ELIMINADO`);
-                    console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
-                    await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
-                    await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                    escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida");
+                    partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
                 }
 
                 // Mandarle al jugador de la propiedad en la que has caido la actualizacion
@@ -546,11 +537,7 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
             if (sigue) {
                 socket.send(`REINICIAR_SUERTE`);
             } else {
-                socket.send(`ELIMINADO`);
-                console.log("Jugador:", ID_jugador, "eliminado de la partida:", ID_partida);
-                await API.jugadorAcabadoPartida(ID_jugador, ID_partida);
-                await enviarJugadorMuertoPartida(ID_jugador, ID_partida);
-                escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " + ID_partida);
+                let partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
             }
         }
     }
@@ -846,27 +833,44 @@ async function obtenerJugadoresPartida(ID_partida) {
 }
 
 // Devuelve true si continua la partida y false si se ha acabado
-async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
+async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     let num_bots = 0;
 
+    // Dar gemas en funcion de la posicion en la clasificacion
+    let posicion = jugadores.struct.length + 1;
+    let gema = 0;
+
+    if (posicion === 1) {
+        gema = 5;
+    } else if (posicion === 2) {
+        gema = 3;
+    } else if (posicion === 3) {
+        gema = 2;
+    } else {
+        gema = 1;
+    }
+    await API.modificarGemas(ID_jugador, gema);
+    let esBot = API.jugadorEsBot(ID_jugador, ID_partida);
+    if (!esBot) {
+        socket.send(`ELIMINADO,${posicion},${gema}`);
+    }
+
+    // Comprobamos si es el ultimo jugador
     if (jugadores_struct.length === 1) {
-        // Es el ultimo jugador
+        if (!esBot) {
+            socket.send(`GANADOR,${5}`);
+        }
+        await API.modificarGemas(ID_jugador, 5);
         await API.acabarPartida(ID_partida);
-        let clasificacion = await API.resultadoPartida(ID_partida);
-        console.log(clasificacion);
-        asignarGemas(clasificacion);
-        let conexion = con.buscarUsuario(jugadores_struct[0].id);
-        conexion.send(`FinPartida,${ID_partida}`);
         escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
-        return;
+        return false;
     }
 
     for (let i = 0; i < jugadores_struct.length; i++) {
         if (jugadores_struct[i].esBot === "0") {
             let conexion = con.buscarUsuario(jugadores_struct[i].id);
-            console.log("Jugador " + jugadores_struct[i].id + " no es bot: " + jugadores_struct[i].esBot);
-            escribirEnArchivo("Jugador " + jugadores_struct[i].id + " no es bot: " + jugadores_struct[i].esBot);
+            escribirEnArchivo("Notificando a " + jugadores_struct[i].id + " de que el jugador " + ID_jugador + " ha muerto.");
             conexion.send(`JugadorMuerto,${ID_jugador}`);
         } else {
             num_bots++;
@@ -878,52 +882,32 @@ async function enviarJugadorMuertoPartida(ID_jugador, ID_partida) {
         escribirEnArchivo("Solo quedan bots en la partida " + ID_partida + ".");
         // Solo quedan bots en la partida
         await API.acabarPartida(ID_partida);
-        let clasificacion = await API.resultadoPartida(ID_partida);
-        // Divide la clasificacion en los diferentes jugadores y sus gemas
-        // y envia a cada jugador sus nuevas gemas
-        let aux = clasificacion.split(",");
-        escribirEnArchivo("Clasificacion: " + aux);
-        let gemas = [];
-        for (let i = 0; i < aux.length; i++) {
-            let aux2 = aux[i].split(":");
-            let jugador = aux2[0];
-            let gema = aux2[1];
-
-            // Dar gemas en funcion de la posicion en la clasificacion
-            if (gema === "1") {
-                gema = 5;
-            } else if (gema === "2") {
-                gema = 3;
-            } else if (gema === "3") {
-                gema = 2;
-            } else {
-                gema = 1;
-            }
-
-            // Comprobar que el jugador no sea un bot
-            let esBot = await API.jugadorEsBot(jugador, ID_partida);
-            if (!esBot) {
-                let conexion = con.buscarUsuario(jugador);
-                conexion.send(`SUMAR_GEMAS,${gema}`);
-                escribirEnArchivo("El jugador " + jugador + " ha ganado " + gema + " gemas.");
-            }
-        }
-        // Obtener los jugadores de la partida
-        let jugadoresPartida = await API.obtenerTodosJugadoresPartida(ID_partida);
-        for (let i = 0; i < jugadoresPartida.length; i++) {
-            if (jugadoresPartida[i].esBot === "0") {
-                let conexion = con.buscarUsuario(jugadoresPartida[i].id);
-                conexion.send(`FinPartida,${ID_partida},${gemas[i]}`);
-
-            }
-        }
-        escribirEnArchivo("El jugador " + jugadoresPartida[i].id + " ha ganado " + gemas[i] + " gemas. Y ha sido notificado de que la partida ha acabado.");
-        escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
         return false;
     }
     return true;
 }
 exports.enviarJugadorMuertoPartida = enviarJugadorMuertoPartida;
+
+// Funcion que acaba la partida 
+async function acabarPartida(ID_partida) {
+    await API.acabarPartida(ID_partida);
+    let clasificacion = await API.resultadoPartida(ID_partida);
+    // Divide la clasificacion en los diferentes jugadores y sus gemas
+    // y envia a cada jugador sus nuevas gemas
+    let aux = clasificacion.split(",");
+    escribirEnArchivo("Clasificacion: " + clasificacion);
+    let gemas = [];
+    // Obtener los jugadores de la partida
+    let jugadoresPartida = await API.obtenerTodosJugadoresPartida(ID_partida);
+    // for (let i = 0; i < jugadoresPartida.length; i++) {
+    //     if (jugadoresPartida[i].esBot === "0") {
+    //         let conexion = con.buscarUsuario(jugadoresPartida[i].id);
+    //         conexion.send(`FinPartida,${ID_partida},${gemas[i]}`);
+    //     }
+    // }
+    escribirEnArchivo("El jugador " + jugadoresPartida[i].id + " ha ganado " + gemas[i] + " gemas. Y ha sido notificado de que la partida ha acabado.");
+    escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
+}
 
 function SigueEnPartida(ID_jugador, ID_partida, dinero) {
     return dinero > 0;
@@ -985,6 +969,37 @@ async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
             let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
             if (socketJugador != null) {
                 socketJugador.send(`NUEVO_DINERO_BOTE,${dineroBote}`);
+            }
+        }
+    }
+}
+
+// Dado el ID del jugador, el ID de la partida, una propiedad que posee el jugador
+// y el precio por la que lo quiere subastar, se envia a todos los jugadores de la
+// partida el mensaje de que se ha subastado la propiedad y el precio por la que se
+// ha subastado.
+async function Subastar(ID_jugador, ID_partida, propiedad, precio) {
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+    // TODO: Actualizar la subasta en la base de datos
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
+            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+            if (socketJugador != null) {
+                socketJugador.send(`SUBASTA,${ID_jugador},${propiedad},${precio}`);
+            }
+        }
+    }
+}
+exports.Subastar = Subastar;
+
+// Enviar a todos los jugadores que el jugador esta en la carcel
+async function enviarJugadoresCarcel(ID_jugador, ID_partida) {
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].esBot === "0") {
+            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+            if (socketJugador != null) {
+                socketJugador.send(`DENTRO_CARCEL,${ID_jugador}`);
             }
         }
     }
