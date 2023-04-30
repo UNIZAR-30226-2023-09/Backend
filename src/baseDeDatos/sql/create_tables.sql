@@ -171,6 +171,7 @@ CREATE TABLE Partida (
     enCurso         BOOLEAN,
     perteneceTorneo INT,
     idPartida       INT AUTO_INCREMENT PRIMARY KEY,
+    numTurnosSubasta INT,
     FOREIGN KEY (propiedad1) REFERENCES Jugador(email),
     FOREIGN KEY (propiedad2) REFERENCES Jugador(email),
     FOREIGN KEY (propiedad3) REFERENCES Jugador(email),
