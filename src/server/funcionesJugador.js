@@ -171,6 +171,18 @@ async function actualizarFinRonda(jugadores_struct, ID_partida) {
         await generarEventoAleatorio(ID_partida, jugadores_struct);
     } else {
         await APIpartida.actualizarEvento(ID_partida, "Ninguno");
+        // Enviar a los jugadores que no hay ningun evento
+        for (let i = 0; i < jugadores_struct.length; i++) {
+            await APIpartida.modificarDineroBanco(ID_partida, jugadores_struct[i].id, 0);
+            if (jugadores_struct[i].esBot === "0") {
+                let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
+                if (conexionUsuario === null) {
+                    console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
+                } else {
+                    conexionUsuario.send(`EVENTO,Ninguno`);
+                }
+            }
+        }
     }
 }
 

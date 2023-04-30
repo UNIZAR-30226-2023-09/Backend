@@ -24,11 +24,11 @@ async function ComprarSkin(socket, ID_jugador, skin) {
             let aux = info.split(",");
             let gemas = aux[1];
             escribirEnArchivo(`El jugador ${ID_jugador} ha comprado la skin ${skin} y ahora tiene ${gemas} gemas.`);
-            socket.send(`SKIN_COMPRADA_OK, ${ID_jugador}, ${gemas}`);
+            socket.send(`SKIN_COMPRADA_OK,${ID_jugador},${gemas}`);
         }
         else {
             escribirEnArchivo(`El jugador ${ID_jugador} ha intentado comprar la skin ${skin} pero no tiene suficientes gemas.`)
-            socket.send(`SKIN_COMPRADA_NOOK, ${ID_jugador}, ${skin}`);
+            socket.send(`SKIN_COMPRADA_NOOK,${ID_jugador},${skin}`);
         }
     }
 
@@ -46,7 +46,7 @@ async function VerSkins(socket, ID_jugador) {
     // Devuelve el listado de skins con id.Precio que estan en el sistema
     let listadoSkins = await API.obtenerSkinsJugador(ID_jugador);
     escribirEnArchivo(`El jugador ${ID_jugador} ha solicitado ver la tienda.`);
-    socket.send(`LISTA_SKIN, ${listadoSkins}`);
+    socket.send(`LISTA_SKIN,${listadoSkins}`);
 }
 exports.VerSkins = VerSkins;
 

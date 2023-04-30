@@ -197,7 +197,7 @@ server.on("connection", (socket) => {
 
         if (mensaje[0] == "COMPRAR_SUBASTA") {
             // ID_Partida, ID_jugador, compra, propiedad, precio
-            funcionesTablero.ComprarSubasta(mensaje[1], mensaje[2], mensaje[3]);
+            funcionesTablero.ComprarSubasta(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
 
     });
