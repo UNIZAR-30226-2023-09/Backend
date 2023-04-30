@@ -43,7 +43,7 @@ echo -e "#\033[1;38;5;208m En este momento, $(who | wc -l) personas están traba
 echo "##########################################################################"
 echo "# Comandos de utilidad:                                                  #"
 echo "#                                                                        #"
-echo "# - server [install/start/stop/restart/status/clear]                     #"
+echo "# - server [install/start/stop/restart/status/clear/view/logs]           #"
 echo "#      · install: instalar Docker, Docker-Compose y Git                  #"
 echo "#      · start:   descargar repositorios y poner en marcha contenedores  #"
 echo "#      · stop:    finalizar y eliminar contenedores                      #"
