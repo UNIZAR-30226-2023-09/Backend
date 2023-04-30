@@ -154,12 +154,9 @@ async function finDeRonda(ID_partida, jugadores_struct) {
 
 // Función que actualiza los dineros de los bancos y el evento de los jugadores al final de la ronda
 async function actualizarFinRonda(jugadores_struct, ID_partida) {
-    for (let i = 0; i < jugadores_struct.length; i++) {
-        // Comprobar si el jugador tiene dinero en el banco y si es así, multiplicar 
-        // por el interés y actualizar el saldo del banco
-        await ActualizarInteresesBanco(jugadores_struct, i, ID_partida);
-
-    }
+    // Comprobar si el jugador tiene dinero en el banco y si es así, multiplicar 
+    // por el interés y actualizar el saldo del banco
+    await ActualizarInteresesBanco(jugadores_struct, ID_partida);
 
     // Actualizar la economia de la partida sumando o restando de manera aleatoria 
     // 0.1 hasta un minimo de 0.7 y un maximo de 1.3
@@ -187,22 +184,30 @@ async function actualizarFinRonda(jugadores_struct, ID_partida) {
 }
 
 // Función que actualiza los intereses de los bancos de los jugadores de la partida.
-async function ActualizarInteresesBanco(jugadores_struct, i, ID_partida) {
-    let dineroBanco = await APIpartida.dineroBanco(jugadores_struct[i].id, ID_partida);
-    if (dineroBanco > 0) {
-        let interes = 1.1;
-        let dinero = dineroBanco * interes;
-        // Redondear el dinero
-        dinero = Math.round(dinero);
-        await APIpartida.modificarDineroBanco(ID_partida, jugadores_struct[i].id, dinero);
-        // Enviar a los jugadores la nueva cantidad de dinero que tienen en el banco
-        if (jugadores_struct[i].esBot === "0") {
-            let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
-            if (conexionUsuario === null) {
-                console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
-            } else {
-                // Enviar al usuario el nuevo dinero que tiene en el banco
-                conexionUsuario.send(`ACTUALIZAR_BANCO,${dinero}`)
+async function ActualizarInteresesBanco(jugadores_struct, ID_partida) {
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        let dineroBanco = await APIpartida.dineroBanco(jugadores_struct[i].id, ID_partida);
+        if (dineroBanco > 0) {
+            let interes = 1.1;
+            let dinero = dineroBanco * interes;
+            // Redondear el dinero
+            dinero = Math.round(dinero);
+            let bien = await APIpartida.modificarDineroBanco(ID_partida, jugadores_struct[i].id, dinero);
+            if (!bien) {
+                escribirEnArchivo("Error al actualizar el dinero del banco del jugador: " + jugadores_struct[i].id + " Partida: " + ID_partida);
+                return;
+            }
+            escribirEnArchivo("Se ha actualizado el dinero del banco del jugador: " + jugadores_struct[i].id + " Partida: " + ID_partida + " Dinero: " + dinero);
+            // Enviar a los jugadores la nueva cantidad de dinero que tienen en el banco
+            if (jugadores_struct[i].esBot === "0") {
+                let conexionUsuario = con.buscarUsuario(jugadores_struct[i].id);
+                if (conexionUsuario === null) {
+                    console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
+                } else {
+                    // Enviar al usuario el nuevo dinero que tiene en el banco
+                    console.log("ACTUALIZAR_BANCO," + dinero + "");
+                    conexionUsuario.send(`ACTUALIZAR_BANCO,${dinero}`)
+                }
             }
         }
     }

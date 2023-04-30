@@ -3237,7 +3237,7 @@ function modificarDineroBanco(idPartida, idJugador, cantidad) {
                 // dineroActual += parseInt(cantidad); // Añadimos la cantidad al dinero actual del jugador en el banco
 
                 // Actualizamos la cantidad de dinero del jugador en el banco
-                const updateQuery = `UPDATE juega SET dineroInvertido = ${cantidad} WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
+                const updateQuery = `UPDATE juega SET dineroInvertido = '${cantidad}' WHERE idPartida = ${idPartida} AND email = '${idJugador}'`;
                 con.query(updateQuery, (error, result2) => {
                     if (error) {
                         con.end();
