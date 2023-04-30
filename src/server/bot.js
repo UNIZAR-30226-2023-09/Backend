@@ -159,6 +159,13 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     else if (posicion == 31) {
         try {
             API.enviarCarcel(IDJugador, IDpartida);
+            let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
+            for (let i = 0; i < jugadores_struct.length; i++) {
+                if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != IDJugador) {
+                    let socket = con.con.buscarUsuario(jugadores_struct[i].id);
+                    socket.send(`DENTRO_CARCEL,${IDJugador}`);
+                }
+            }
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.

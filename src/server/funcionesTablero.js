@@ -105,7 +105,7 @@ async function moverJugador(ID_jugador, ID_partida) {
         API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
         posicionNueva = await API.obtenerPosicion(ID_jugador, ID_partida);
         // Enviar a todos los jugadores que el jugador esta en la carcel
-        enviarJugadoresCarcel(ID_partida, ID_jugador);
+        enviarJugadoresCarcel(ID_jugador, ID_partida);
 
     } else {
         // Movemos al jugador -> obtenemos su nueva posición
@@ -241,11 +241,15 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     // Comprobar si la nueva casilla es la de ir a la cárcel
     else if (posicion == 31) {
         try {
+            escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de ir a la carcel en la partida " + ID_partida);
             API.enviarCarcel(ID_jugador, ID_partida);
             // Obtener todos los jugadores y enviarles que estoy en la carcel
             let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
-            socket.send(`DENTRO_CARCEL,${ID_jugador}`);
-            escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de ir a la carcel en la partida " + ID_partida);
+            for (let i = 0; i < jugadores_struct.length; i++) {
+                if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
+                    socket.send(`DENTRO_CARCEL,${ID_jugador}`);
+                }
+            }
         }
 
         catch (error) {
@@ -404,7 +408,8 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 }
 
                 // Mandarle al jugador de la propiedad en la que has caido la actualizacion
-                if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
+                let esBot = await API.jugadorEsBot(IDjugador_propiedad, ID_partida);
+                if (!esBot) {
                     let conexion = con.buscarUsuario(IDjugador_propiedad);
                     conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
                 }
@@ -485,7 +490,8 @@ async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
                 }
 
                 // Mandarle al jugador de la propiedad en la que has caido la actualizacion
-                if (API.jugadorEsBot(IDjugador_propiedad, ID_partida) === 0) {
+                let esBot = await API.jugadorEsBot(IDjugador_propiedad, ID_partida);
+                if (!esBot) {
                     let conexion = con.buscarUsuario(IDjugador_propiedad);
                     conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
                 }
@@ -854,15 +860,18 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
         gema = 1;
     }
     await API.modificarGemas(ID_jugador, gema);
-    let esBot = API.jugadorEsBot(ID_jugador, ID_partida);
+    let esBot = await API.jugadorEsBot(ID_jugador, ID_partida);
     if (!esBot) {
         socket.send(`ELIMINADO,${posicion},${gema}`);
+        escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " + ID_partida + " y ha recibido " + gema + " gemas.");
     }
 
     // Comprobamos si es el ultimo jugador
     if (jugadores_struct.length === 1) {
-        if (!esBot) {
-            socket.send(`GANADOR,${5}`);
+        if (jugadores_struct[0].esBot === "0") {
+            let conexion = con.buscarUsuario(jugadores_struct[0].id);
+            conexion.send(`GANADOR,${5}`);
+            escribirEnArchivo("El jugador " + jugadores_struct[0].id + " ha ganado la partida " + ID_partida + " y ha recibido 5 gemas.");
         }
         await API.modificarGemas(ID_jugador, 5);
         await API.acabarPartida(ID_partida);
