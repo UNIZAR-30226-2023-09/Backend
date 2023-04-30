@@ -19,7 +19,8 @@ async function ComprarSkin(socket, ID_jugador, skin) {
         // Compramos la skin
         if (await API.comprarSkin(ID_jugador, skin)) {
             // TODO: obtener las nuevas gemas del jugador y mandarlas 
-            let info = APIjugador.obtenerInformacionJugador(ID_jugador);
+            let info = await APIjugador.obtenerInformacionJugador(ID_jugador);
+            console.log(info);
             let aux = info.split(",");
             let gemas = aux[1];
             socket.send(`SKIN_COMPRADA_OK,${ID_jugador},${gemas}`);
