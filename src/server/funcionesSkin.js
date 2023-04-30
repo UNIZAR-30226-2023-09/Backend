@@ -9,6 +9,7 @@
 
 const con = require('./conexiones');
 const API = require('../API/skins');
+const APIjugador = require('../API/jugadorAPI');
 const bot = require('./bot');
 const fs = require('fs');
 
@@ -18,7 +19,7 @@ async function ComprarSkin(socket, ID_jugador, skin) {
         // Compramos la skin
         if (await API.comprarSkin(ID_jugador, skin)) {
             // TODO: obtener las nuevas gemas del jugador y mandarlas 
-            let info = API.obtenerInformacionJugador(ID_jugador);
+            let info = APIjugador.obtenerInformacionJugador(ID_jugador);
             let aux = info.split(",");
             let gemas = aux[1];
             socket.send(`SKIN_COMPRADA_OK,${ID_jugador},${gemas}`);

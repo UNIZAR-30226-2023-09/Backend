@@ -38,7 +38,7 @@ function insertarUsuario(userData) {
                             resolve(false);
                         } else {
                             const sql = `INSERT INTO Jugador (gemas, nombre, pass, email, skinEquipada) VALUES (?, ?, ?, ?, ?)`;
-                            const gemasInt = parseInt(gemas, 100); // TODO: Cambiar gemas iniciales
+                            const gemasInt = parseInt(100); // TODO: Cambiar gemas iniciales
                             const values = [gemasInt, username.trim(), password.trim(), email.trim(), "PLEX"];
                             con.query(sql, values, (error, results2, fields) => {
                                 if (error) {
@@ -253,7 +253,7 @@ function obtenerInformacionJugador(id_jugador) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
-        const query1 = `SELECT * FROM jugador WHERE email = '${id_jugador}'`;
+        const query1 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
         con.query(query1, (error, results1) => {
             if (error) {
                 con.end(); // Cerrar conexión
