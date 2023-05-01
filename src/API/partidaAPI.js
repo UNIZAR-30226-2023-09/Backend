@@ -1502,7 +1502,7 @@ async function precioAlquiler(id_jugadorRecibe, propiedad, idPartida) {
         if (propiedad === 6 || propiedad === 16 || propiedad === 26 || propiedad === 36) {
             alquiler = await alquileresAeropuertos(idPartida, id_jugadorRecibe, alquiler);
         } else {
-
+            let precioPropiedad = await obtenerPrecioPropiedad(idPartida, propiedad);
             // Calcular el alquiler en función del número de casas.
             if (numCasas === 0) {
                 alquiler = precioPropiedad * 0.1;
@@ -1530,18 +1530,18 @@ exports.precioAlquiler = precioAlquiler;
 // al jugadorRecibe
 async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad) {
     try {
-        precioPropiedad = ParseInt(precioPropiedad);
+        precioPropiedad = parseInt(precioPropiedad);
         // Quitarle los decimales
         precioPropiedad = Math.trunc(precioPropiedad);
         //le sumamos ese dinero al jugadorRecibe.
-        const res = await modificarDinero(idPartida, id_jugadorPaga, -alquiler);
+        const res = await modificarDinero(idPartida, id_jugadorPaga, -precioPropiedad);
 
         //le restamos el dinero al jugadorPaga.
-        const res2 = await modificarDinero(idPartida, id_jugadorRecibe, alquiler);
+        const res2 = await modificarDinero(idPartida, id_jugadorRecibe, precioPropiedad);
 
         if (res2 && res) {
             //devolvemos el dinero que ha pagado el jugadorPaga.
-            return alquiler;
+            return true;
         }
         else {
             return -1;
@@ -2860,7 +2860,6 @@ exports.actualizarPosicionJugador = actualizarPosicionJugador;
 /*
 =================== JUGADOR ACABA PARTIDA =========================================================
 */
-
 function jugadorAcabadoPartida(email, idPartida) {
     return new Promise((resolve, reject) => {
         // Creamos una conexión a la base de datos

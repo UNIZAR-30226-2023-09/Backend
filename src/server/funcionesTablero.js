@@ -436,7 +436,8 @@ async function GestionPagoAlquiler(ID_jugador, ID_partida, IDjugador_propiedad, 
     escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPagaAntes + "€ antes de pagar el alquiler en la partida " + ID_partida);
 
     let precioPagar = await API.precioAlquiler(IDjugador_propiedad, posicion, ID_partida);
-    let precio = precioPagar * ECONOMIA;
+    let economia = await API.obtenerEconomia(ID_partida);
+    let precio = precioPagar * economia;
     API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio);
     // obtener dinero de ambos jugadores
     let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);

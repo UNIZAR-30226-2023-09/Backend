@@ -13,7 +13,6 @@ const jugador = require('./funcionesJugador');
 const Tablero = require('./funcionesTablero');
 const APIpartida = require('../API/partidaAPI');
 const fs = require('fs');
-const ECONOMIA = 1;
 
 let sigueVivo = true;
 
@@ -245,9 +244,10 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
 async function CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_propiedad, propiedad) {
     let precioPagar = await API.precioAlquiler(IDjugador_propiedad, posicion, IDpartida);
     // Multiplicamos el precio a pagar por la economía
-    let precio = precioPagar * ECONOMIA;
+    let economia = await API.obtenerEconomia(IDpartida);
+    let precio = precioPagar * economia;
     // Pagamos el alquiler con el nuevo precio
-    if (API.pagarAlquiler(IDJugador, IDjugador_propiedad, posicion, IDpartida, precio)) {
+    if (await API.pagarAlquiler(IDJugador, IDjugador_propiedad, posicion, IDpartida, precio)) {
         let dineroJugadorPaga = await API.obtenerDinero(IDJugador, IDpartida);
         escribirEnArchivo("El bot " + IDJugador + " ha pagado " + precio + " al jugador " + IDjugador_propiedad + " por la propiedad " + propiedad + " en la partida " + IDpartida);
         let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, dineroJugadorPaga);
