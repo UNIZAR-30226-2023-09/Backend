@@ -445,7 +445,7 @@ async function GestionPagoAlquiler(ID_jugador, ID_partida, IDjugador_propiedad, 
     let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
     if (sigue) {
         socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
-        escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precioAlquiler + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
+        escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
         escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPaga + "€ despues de pagar el alquiler en la partida " + ID_partida);
         escribirEnArchivo("El jugador " + IDjugador_propiedad + " tiene " + dineroJugadorRecibe + "€ despues de recibir el alquiler en la partida " + ID_partida);
     } else {
