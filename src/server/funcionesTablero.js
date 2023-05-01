@@ -254,48 +254,92 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     // Si no es ninguna de las anteriores -> es casilla de propiedad
     else {
         // Obtener a quien pertenece la propiedad
-        let IDjugador_propiedad;
-        try {
-            IDjugador_propiedad = await API.obtenerJugadorPropiedad(posicion, ID_partida);
-        }
-        catch (error) {
-            // Si hay un error en la Promesa, devolvemos false.
-            console.error("Error en la Promesa: ", error);
-            return false;
-        }
-
-        // Comprobamos si la propiedad no pertenece a ningún jugador
-        if (IDjugador_propiedad == -1) {
-            await GestionCompraPropiedad(ID_partida, posicion, socket, ID_jugador);
-            // Recibe mensaje: SI/NO
-            //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
-            //              (funcion ComprarPropiedad)
-            //      Si el mensaje es NO -> muy bien jugado, no hacer nada
-        }
-        // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
-        else if (IDjugador_propiedad != ID_jugador) {
-            try {
-                // Pagar al jugador que posee la propiedad
-                // obtenerPrecioPropiedad(propiedad, ID_partida)
-                // 
-                // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
-                // Pagamos el alquiler con el nuevo precio
-                await GestionPagoAlquiler(ID_jugador, ID_partida, IDjugador_propiedad, posicion, socket);
-            }
-
-            catch (error) {
-                // Si hay un error en la Promesa, devolvemos false.
-                console.error("Error en la Promesa: ", error);
-                return false;
-            }
-        }
-        else {
-            // Pertenece al propio jugador, no habría que hacer nada especial
-            socket.send(`NADA`);
-        }
+        await GestionPropiedad(posicion, ID_partida, socket, ID_jugador);
     }
     // Este mensaje sirve para desbloquear al usuario
     socket.send("CASILLA");
+}
+
+// Gestiona el caer en una propiedad normal
+async function GestionPropiedad(posicion, ID_partida, socket, ID_jugador) {
+    let IDjugador_propiedad;
+    try {
+        IDjugador_propiedad = await API.obtenerJugadorPropiedad(posicion, ID_partida);
+    }
+    catch (error) {
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        //return false;
+    }
+
+    // Comprobamos si la propiedad no pertenece a ningún jugador
+    if (IDjugador_propiedad == -1) {
+        await GestionCompraPropiedad(ID_partida, posicion, socket, ID_jugador);
+        // Recibe mensaje: SI/NO
+        //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
+        //              (funcion ComprarPropiedad)
+        //      Si el mensaje es NO -> muy bien jugado, no hacer nada
+    }
+
+    // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
+    else if (IDjugador_propiedad != ID_jugador) {
+        try {
+            // Pagar al jugador que posee la propiedad
+            // obtenerPrecioPropiedad(propiedad, ID_partida)
+            // 
+            // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
+            // Pagamos el alquiler con el nuevo precio
+            await GestionPagoAlquiler(ID_jugador, ID_partida, IDjugador_propiedad, posicion, socket);
+        }
+
+        catch (error) {
+            // Si hay un error en la Promesa, devolvemos false.
+            console.error("Error en la Promesa: ", error);
+            //return false;
+        }
+    }
+    else {
+        // Pertenece al propio jugador, no habría que hacer nada especial
+        // Comprobar si la casilla es un aeropuerto o una estación 
+        await GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket);
+    }
+}
+
+// Gestiona el desplazamiento entre aeropuertos del mismo propietario
+async function GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket) {
+    if (posicion == 6 || posicion == 16 || posicion == 26 || posicion == 36) {
+        let propiedadesJugador = await API.obtenerPropiedades(ID_partida, ID_jugador);
+        let numEstaciones = 0;
+        let aeropuertos = [];
+        let posicionADesplazarse;
+        // Dividir propiedadesJugador en un array con cada una de las componentes
+        let arrayPropiedades = propiedadesJugador.split(",");
+        // Recorrer el array y contar el número de estaciones que tiene el jugadorRecibe
+        for (let i = 0; i < arrayPropiedades.length; i++) {
+            // Quitar los primeros 9 caracteres de cada componente del array
+            arrayPropiedades[i] = arrayPropiedades[i].substring(9);
+            if (arrayPropiedades[i] === "6" || arrayPropiedades[i] === "16" || arrayPropiedades[i] === "26" || arrayPropiedades[i] === "36") {
+                numEstaciones++;
+                // Añadir al array de aeropuertos el aeropuerto
+                aeropuertos.push(arrayPropiedades[i]);
+                aeropuertoActual = numEstaciones - 1;
+            }
+        }
+
+        if (numEstaciones > 1) {
+            for (let i = 0; i < aeropuertos.length; i++) {
+                if (posicion === aeropuertos[i]) {
+                    posicionADesplazarse = aeropuertos[(i + 1) % aeropuertos.length];
+                }
+            }
+        }
+        // Enviarle al jugador su nueva posicion
+        escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de la estacion " + posicion + " en la partida " + ID_partida + " y se desplaza al aeropuerto " + posicionADesplazarse);
+        socket.send(`DESPLAZAR_JUGADOR${posicionADesplazarse}`);
+    } else {
+
+        socket.send(`NADA`);
+    }
 }
 
 async function GestionTax(ID_partida, ID_jugador, socket) {
@@ -401,7 +445,8 @@ async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
             socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
             await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
             // Si estaba en la primera casilla de superPoder va al aeropuerto
-            CaerCasilla(socket, ID_jugador, ID_partida, nuevaPosicion);
+            await GestionPropiedad(posicion, ID_partida, socket, ID_jugador);
+            // CaerCasilla(socket, ID_jugador, ID_partida, nuevaPosicion);
 
             break;
         case 6:
@@ -468,77 +513,77 @@ async function gestionarMuerteJugador(ID_jugador, ID_partida, socket) {
     return partidaContinua;
 }
 
-async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
-    // Obtener a quien pertenece la propiedad
-    let IDjugador_propiedad;
-    try {
-        IDjugador_propiedad = await API.obtenerJugadorPropiedad(posicion, ID_partida);
-    }
-    catch (error) {
-        // Si hay un error en la Promesa, devolvemos false.
-        console.error("Error en la Promesa: ", error);
-        return false;
-    }
+// async function CaerCasilla(socket, ID_jugador, ID_partida, posicion) {
+//     // Obtener a quien pertenece la propiedad
+//     let IDjugador_propiedad;
+//     try {
+//         IDjugador_propiedad = await API.obtenerJugadorPropiedad(posicion, ID_partida);
+//     }
+//     catch (error) {
+//         // Si hay un error en la Promesa, devolvemos false.
+//         console.error("Error en la Promesa: ", error);
+//         return false;
+//     }
 
-    // Comprobamos si la propiedad no pertenece a ningún jugador
-    if (IDjugador_propiedad == -1) {
-        // Modificar precio en funcion de la economia
-        let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
-        let economia = await API.obtenerEconomia(ID_partida);
-        precio = precio * economia;
-        precio = Math.round(precio);
-        // Dar opción de comprarla
-        socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`);
-        escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
+//     // Comprobamos si la propiedad no pertenece a ningún jugador
+//     if (IDjugador_propiedad == -1) {
+//         // Modificar precio en funcion de la economia
+//         let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
+//         let economia = await API.obtenerEconomia(ID_partida);
+//         precio = precio * economia;
+//         precio = Math.round(precio);
+//         // Dar opción de comprarla
+//         socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`);
+//         escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
 
-        // Recibe mensaje: SI/NO
-        //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
-        //              (funcion ComprarPropiedad)
-        //      Si el mensaje es NO -> muy bien jugado, no hacer nada
-    }
-    // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
-    else if (IDjugador_propiedad != ID_jugador) {
-        try {
-            // Pagar al jugador que posee la propiedad
-            // obtenerPrecioPropiedad(propiedad, ID_partida)
-            // 
-            // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
-            let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, posicion);
-            // 
-            let precio = precioPagar;
-            // Pagamos el alquiler con el nuevo precio
-            if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio)) {
-                // obtener dinero de ambos jugadores
-                let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
-                let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
-                let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
-                if (sigue) {
-                    socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
-                    escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion);
-                } else {
-                    partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
-                }
+//         // Recibe mensaje: SI/NO
+//         //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
+//         //              (funcion ComprarPropiedad)
+//         //      Si el mensaje es NO -> muy bien jugado, no hacer nada
+//     }
+//     // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
+//     else if (IDjugador_propiedad != ID_jugador) {
+//         try {
+//             // Pagar al jugador que posee la propiedad
+//             // obtenerPrecioPropiedad(propiedad, ID_partida)
+//             // 
+//             // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
+//             let precioPagar = await API.obtenerPrecioPropiedad(ID_partida, posicion);
+//             // 
+//             let precio = precioPagar;
+//             // Pagamos el alquiler con el nuevo precio
+//             if (await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio)) {
+//                 // obtener dinero de ambos jugadores
+//                 let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
+//                 let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
+//                 let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
+//                 if (sigue) {
+//                     socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
+//                     escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precio + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion);
+//                 } else {
+//                     partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
+//                 }
 
-                // Mandarle al jugador de la propiedad en la que has caido la actualizacion
-                let esBot = await API.jugadorEsBot(IDjugador_propiedad, ID_partida);
-                if (!esBot) {
-                    let conexion = con.buscarUsuario(IDjugador_propiedad);
-                    conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
-                }
-            }
-        }
+//                 // Mandarle al jugador de la propiedad en la que has caido la actualizacion
+//                 let esBot = await API.jugadorEsBot(IDjugador_propiedad, ID_partida);
+//                 if (!esBot) {
+//                     let conexion = con.buscarUsuario(IDjugador_propiedad);
+//                     conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
+//                 }
+//             }
+//         }
 
-        catch (error) {
-            // Si hay un error en la Promesa, devolvemos false.
-            console.error("Error en la Promesa: ", error);
-            return false;
-        }
-    }
-    else {
-        // Pertenece al propio jugador, no habría que hacer nada especial
-        socket.send(`NADA`);
-    }
-}
+//         catch (error) {
+//             // Si hay un error en la Promesa, devolvemos false.
+//             console.error("Error en la Promesa: ", error);
+//             return false;
+//         }
+//     }
+//     else {
+//         // Pertenece al propio jugador, no habría que hacer nada especial
+//         socket.send(`NADA`);
+//     }
+// }
 
 // Realiza la acción de apostar dinero
 async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
@@ -1023,7 +1068,7 @@ async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
 // ha subastado.
 async function Subastar(socket, ID_jugador, ID_partida, propiedad, precio) {
     // TODO: Comprobar que no exista otra subasta, y actualizar turnos en finTurno
-    let haySubasta = API.obtenerNumTurnosActivos(ID_partida);
+    let haySubasta = await API.obtenerNumTurnosActivos(ID_partida);
     if (haySubasta > 0) {
         socket.send(`SUBASTA_OCUPADA`);
         return;

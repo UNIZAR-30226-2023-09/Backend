@@ -98,8 +98,9 @@ async function FinTurno(ID_jugador, ID_partida) {
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
 
     // Actualizar los turnos vivos que le quedan a la subasta
-    let haySubasta = API.obtenerNumTurnosActivos(ID_partida);
+    let haySubasta = await APIpartida.obtenerNumTurnosActivos(ID_partida);
     if (haySubasta > 0) {
+        escribirEnArchivo("Quedan " + haySubasta + " turnos de subasta");
         await API.actualizarNumTurnosSubasta(ID_partida, haySubasta - 1);
     }
 
