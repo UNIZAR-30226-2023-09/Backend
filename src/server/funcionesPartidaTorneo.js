@@ -19,7 +19,8 @@ async function CrearPartida(socket, ID_jugador) {
     try {
         // Creamos la partida y guardamos su ID
         let skinJugador = await APIpartida.obtenerSkinEquipada(ID_jugador);
-        let id_partida = await APIpartida.crearPartida(ID_jugador, skinJugador);
+        let skinTablero = await APIpartida.obtenerSkinTableroEquipada(ID_jugador);
+        let id_partida = await APIpartida.crearPartida(ID_jugador, skinJugador, skinTablero);
         if (id_partida == -1) {
             socket.send(`CREADAP_NOOK,${ID_jugador}`);
         }
@@ -42,7 +43,8 @@ async function UnirsePartida(socket, ID_jugador, ID_partida) {
     try {
         // Unimos al jugador a la partida 
         let skinJugador = await APIpartida.obtenerSkinEquipada(ID_jugador);
-        if (await APIpartida.unirsePartida(ID_jugador, ID_partida, skinJugador)) {
+        let skinTablero = await APIpartida.obtenerSkinTableroEquipada(ID_jugador);
+        if (await APIpartida.unirsePartida(ID_jugador, ID_partida, skinJugador, skinTablero)) {
             socket.send(`UNIRP_OK,${ID_partida},${ID_jugador}`);
         }
         else { // TODO: ¿Motivo?

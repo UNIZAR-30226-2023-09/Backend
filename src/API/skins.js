@@ -244,6 +244,39 @@ function equiparSkin(idJugador, idSkin) {
 
 exports.equiparSkin = equiparSkin;
 
+// Equipa una skin a un jugador
+// Devuelve true si se ha equipado correctamente o false si no se ha podido equipar
+function equiparSkinTablero(idJugador, idSkin) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+
+        const query = `SELECT * FROM tieneSkins WHERE idSkin = '${idSkin}' AND email = '${idJugador}'`;
+        con.query(query, (error, results) => {
+            if (error) { // Caso -- Error
+                con.end();
+                reject(error);
+            } else if (results.length === 0) { // Caso -- El jugador no tiene la skin
+                con.end();
+                resolve(false);
+            } else { // Caso -- El jugador tiene la skin
+                const query2 = `UPDATE Jugador SET skinTablero = '${idSkin}' WHERE email = '${idJugador}'`;
+                con.query(query2, (error, results2) => {
+                    if (error) { // Caso -- Error
+                        con.end();
+                        reject(error);
+                    } else { // Caso -- Update hecho correctamente
+                        con.end();
+                        resolve(true);
+                    }
+                });
+            }
+        });
+    });
+}
+
+exports.equiparSkinTablero = equiparSkinTablero;
+
 /*
 =================== INSERTAR SKIN =========================================================
 */
@@ -263,7 +296,7 @@ function insertarSkin(idUsuario, idSkin) {
 
         // Ejecutamos la consulta SQL
         con.query(query, values, (error, result) => {
-            
+
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
                 con.end(); // Cerrar conexión

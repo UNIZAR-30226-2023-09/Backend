@@ -69,13 +69,26 @@ function escribirEnArchivo(datos) {
 
 // El jugador dado se equipa la skin dada
 async function EquiparSkin(socket, ID_jugador, skin) {
+    // TODO: Ver si la skin es un tablero
     try {
-        // Equipamos la skin
-        if (await API.equiparSkin(ID_jugador, skin)) {
-            socket.send(`SKIN_EQUIPADA_OK, ${ID_jugador}, ${skin}`);
-        }
-        else {
-            socket.send(`SKIN_EQUIPADA_NOOK, ${ID_jugador}, ${skin}`);
+        // Comprobar si es skin de tablero
+        // Mirar cuantos caracteres tiene la skin
+        let numCaracteres = skin.length;
+        if (numCaracteres === 8) {
+            // Es skin de tablero
+            if (await API.equiparSkinTablero(ID_jugador, skin)) {
+                socket.send(`SKIN_EQUIPADA_OK, ${ID_jugador}, ${skin}`);
+            }
+            else {
+                socket.send(`SKIN_EQUIPADA_NOOK, ${ID_jugador}, ${skin}`);
+            }
+        } else {
+            if (await API.equiparSkin(ID_jugador, skin)) {
+                socket.send(`SKIN_EQUIPADA_OK, ${ID_jugador}, ${skin}`);
+            }
+            else {
+                socket.send(`SKIN_EQUIPADA_NOOK, ${ID_jugador}, ${skin}`);
+            }
         }
     }
     catch (error) {

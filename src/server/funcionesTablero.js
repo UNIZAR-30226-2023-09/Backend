@@ -316,7 +316,7 @@ async function GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket) 
         let arrayPropiedades = propiedadesJugador.split(",");
         // Recorrer el array y contar el número de estaciones que tiene el jugadorRecibe
         for (let i = 0; i < arrayPropiedades.length; i++) {
-            console.log("Reviseando propiedad: " + arrayPropiedades[i] + " en la posicion " + i + " del array");
+            console.log("Revisando propiedad: " + arrayPropiedades[i] + " en la posicion " + i + " del array");
             // Quitar los primeros 9 caracteres de cada componente del array
             arrayPropiedades[i] = arrayPropiedades[i].substring(9);
             if (arrayPropiedades[i] === "6" || arrayPropiedades[i] === "16" || arrayPropiedades[i] === "26" || arrayPropiedades[i] === "36") {
