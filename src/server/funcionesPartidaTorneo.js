@@ -64,7 +64,7 @@ exports.UnirsePartida = UnirsePartida;
 async function CrearTorneo(socket, ID_jugador) {
     try {
         // Creamos el torneo y guardamos su ID
-        let id_torneo = await APItorneo.crearTorneo(ID_jugador);
+        let id_torneo = await APItorneo.crearTorneo(ID_jugador, 3);
         if (id_torneo == -1) {
             socket.send(`CREADOT_NOOK,${ID_jugador}`);
         }

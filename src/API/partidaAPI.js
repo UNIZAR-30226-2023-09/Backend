@@ -3535,7 +3535,7 @@ function venderPropiedadBanca(idPartida, idJugador, nPropiedad) {
                 } else {
 
                     dineroDevolver = (results[0].numCasProp * dineroDevolver) + (results[0].precioPropiedad / 2);
-                    const sql = `UPDATE  Partida SET ${numCasProp} = null WHERE idPartida = '${idPartida}'`;
+                    const sql = `UPDATE  Partida SET ${numCasProp} = 0 WHERE idPartida = '${idPartida}'`;
                     con.query(sql, (error, results3) => {                           // Caso -- Error
                         if (error) {
                             con.end();
