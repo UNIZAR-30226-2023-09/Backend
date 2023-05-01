@@ -16,6 +16,7 @@ CREATE TABLE Jugador (
     nombre          VARCHAR(255) NOT NULL,
     pass            VARCHAR(255) NOT NULL,
     skinEquipada    VARCHAR(255) NOT NULL,
+    skinTablero    VARCHAR(255) NOT NULL,
     email           VARCHAR(255) PRIMARY KEY,
     FOREIGN KEY (skinEquipada) REFERENCES Skins(idSkin)
 );
@@ -228,6 +229,7 @@ CREATE TABLE juega (
     posicion        INT NOT NULL,
     dinero          FLOAT NOT NULL,
     skin            VARCHAR(255) NOT NULL,
+    skinTablero     VARCHAR(255) NOT NULL,
     puestoPartida   INT,
     email           VARCHAR(255),
     idPartida       INT,
@@ -257,8 +259,8 @@ INSERT INTO Skins (precioGemas, idSkin) VALUES
 (20, 'JEANCARLO'),
 (0, 'JULS'),
 (3, 'LUCAS'),
-(50, 'TITE');
-(0, 'TABLERO1');
-(20, 'TABLERO2');
-(100, 'TABLERO3');
+(50, 'TITE'),
+(0, 'TABLERO1'),
+(20, 'TABLERO2'),
+(100, 'TABLERO3'),
 (50, 'TABLERO4');

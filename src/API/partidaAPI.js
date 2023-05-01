@@ -971,7 +971,7 @@ exports.obtenerPropiedades = obtenerPropiedades;
 
 // Devuelve el id de la partida creada
 // crearPartida(id_jugador) crea partida rapida sin asociarse a ningun torneo.
-function crearPartida(id_jugador, skin) {
+function crearPartida(id_jugador, skin, skinTablero) {
     return new Promise((resolve, reject) => {
         const con = db.crearConexion();
         con.connect();
@@ -1025,8 +1025,8 @@ function crearPartida(id_jugador, skin) {
                             else {
                                 //ahora hay que enlazarlo con la tabla juega
                                 let maxIdPartida = results3[0].maximo;  //id de la partida creada.
-                                const query3 = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-                  email, idPartida, propiedadSubastar, precioSubastar) VALUES ( false, false, 0, true, 0.0, 0, 1, 1000.0,'${skin}', 0 , '${id_jugador}', ${maxIdPartida},null,null)`;
+                                const query3 = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, skinTablero, puestoPartida, 
+                  email, idPartida, propiedadSubastar, precioSubastar) VALUES ( false, false, 0, true, 0.0, 0, 1, 1000.0,'${skin}','${skinTablero}', 0 , '${id_jugador}', ${maxIdPartida},null,null)`;
                                 con.query(query3, (error, results3) => {
                                     if (error) {
                                         reject(error);
@@ -1078,6 +1078,32 @@ function obtenerSkinEquipada(idJugador) {
 }
 exports.obtenerSkinEquipada = obtenerSkinEquipada;
 
+// Dado un jugador devuelve la skin que tiene equipada en la tabla jugador
+// Devuelve false si el jugador no existe
+// Devuelve la skin en caso contrario
+function obtenerSkinTableroEquipada(idJugador) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+
+        const query = `SELECT skinTablero FROM Jugador WHERE email = '${idJugador}'`;
+        con.query(query, (error, results) => {
+            if (error) { // Caso -- Error
+                con.end();
+                reject(error);
+            } else if (results.length === 0) { // Caso -- El jugador no tiene la skin
+                con.end();
+                resolve(false);
+            } else {
+                con.end();
+                let skin = results[0].skinTablero;
+                resolve(skin);
+            }
+        });
+    });
+}
+exports.obtenerSkinTableroEquipada = obtenerSkinTableroEquipada;
+
 
 /*
   =================== UNIRSE A PARTIDA =========================================
@@ -1087,7 +1113,7 @@ exports.obtenerSkinEquipada = obtenerSkinEquipada;
 // Devuelve true en caso contrario
 
 
-function unirsePartida(idJugador, idPartida, skin) {
+function unirsePartida(idJugador, idPartida, skin, skinTablero) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
@@ -1132,8 +1158,8 @@ function unirsePartida(idJugador, idPartida, skin) {
                                         resolve(false);
                                     } else {                                            // Caso -- El jugador no esta jugando ninguna partida
                                         const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades,jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, 
-                                        dinero, skin, puestoPartida, email, idPartida,propiedadSubastar, precioSubastar) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-                                        const values = [false, false, 0, true, 0.0, 0, 1, 1000.0, skin, 0, idJugador, idPartida, null, null];
+                                        dinero, skin,skinTablero, puestoPartida, email, idPartida,propiedadSubastar, precioSubastar) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                        const values = [false, false, 0, true, 0.0, 0, 1, 1000.0, skin, skinTablero, 0, idJugador, idPartida, null, null];
                                         con.query(sql, values, (error, results5) => {      // Caso -- Error
                                             if (error) {
                                                 con.end();
@@ -2437,8 +2463,8 @@ function unirBotPartida(idJugador, idPartida) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
-        const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, puestoPartida, 
-        email, idPartida,propiedadSubastar, precioSubastar) VALUES ( true, true, 0, true, 0.0, 0, 1, 1000.0, 'TITE', 0 , '${idJugador}', ${idPartida},null,null)`;
+        const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades, jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, dinero, skin, skinTablero, puestoPartida, 
+        email, idPartida,propiedadSubastar, precioSubastar) VALUES ( true, true, 0, true, 0.0, 0, 1, 1000.0, 'TITE','TABLERO1', 0 , '${idJugador}', ${idPartida},null,null)`;
         con.query(sql, (error, results) => {      // Caso -- Error
             if (error) {
                 console.log(sql);
@@ -3752,63 +3778,62 @@ exports.obtenerNombreSubasta = obtenerNombreSubasta;
 //FUNCION INTERNA DE devolverPropiedadesBanca.
 function devuelvaPropiedadMuerto(idPartida, idJugador, propiedad) {
     return new Promise((resolve, reject) => {
-      // Creamos una conexión a la base de datos
-      const con = db.crearConexion();
-      con.connect();
-      const nombrePropiedad = `propiedad${propiedad}`;
-  
-      // Comprobamos si el jugador actual ya es dueño de la propiedad
-      const query = `SELECT ${nombrePropiedad} FROM Partida WHERE idPartida = ${idPartida}`;
-      con.query(query, (error, result) => {
-        if (error) {
-          con.end();
-          reject(error);
-        } else {
-          const propietarioActual = result[0][nombrePropiedad];
-          if (propietarioActual === idJugador) {
-            con.end();
-            resolve(-1); // El jugador ya es dueño de la propiedad
-          } else {
-            // Actualizamos la propiedad con el nuevo dueño
-            const query = `UPDATE Partida SET ${nombrePropiedad} = ${idJugador} WHERE idPartida = ${idPartida}`;
-            con.query(query, (error, result) => {
-              if (error) {
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+        const nombrePropiedad = `propiedad${propiedad}`;
+
+        // Comprobamos si el jugador actual ya es dueño de la propiedad
+        const query = `SELECT ${nombrePropiedad} FROM Partida WHERE idPartida = ${idPartida}`;
+        con.query(query, (error, result) => {
+            if (error) {
                 con.end();
                 reject(error);
-              } else {
-                con.end();
-                resolve(true); // La propiedad ha sido actualizada con éxito
-              }
-            });
-          }
-        }
-      });
+            } else {
+                const propietarioActual = result[0][nombrePropiedad];
+                if (propietarioActual === idJugador) {
+                    con.end();
+                    resolve(-1); // El jugador ya es dueño de la propiedad
+                } else {
+                    // Actualizamos la propiedad con el nuevo dueño
+                    const query = `UPDATE Partida SET ${nombrePropiedad} = ${idJugador} WHERE idPartida = ${idPartida}`;
+                    con.query(query, (error, result) => {
+                        if (error) {
+                            con.end();
+                            reject(error);
+                        } else {
+                            con.end();
+                            resolve(true); // La propiedad ha sido actualizada con éxito
+                        }
+                    });
+                }
+            }
+        });
     });
-  }
-  
-  
-  //funcion que dada una partida y un jugador, devuelva todas las propiedades a la banca.
-  async function devolverPropiedadesBanca(idPartida, idJugador) {
+}
+
+
+//funcion que dada una partida y un jugador, devuelva todas las propiedades a la banca.
+async function devolverPropiedadesBanca(idPartida, idJugador) {
     try {
-      // Obtener la lista de propiedades de un jugador. Si no tiene ninguna propiedad devuelve la cadena vacia (null).
-      let propiedades = await obtenerPropiedades(idPartida, idJugador);
-      // Separar las propiedades que tiene el jugador
-      let propiedadesArr = propiedades ? propiedades.split(',') : [];
-  
-      // Actualizar a null la propiedad de la partida correspondiente a cada propiedad del jugador
-      for (let i = 0; i < propiedadesArr.length; i++) {
-        let propiedad = propiedadesArr[i];
-        let numeroPropiedad = propiedad.replace("propiedad", "");
-        await devuelvaPropiedadMuerto(idPartida, null, numeroPropiedad);
-      }
-  
-      return true;
+        // Obtener la lista de propiedades de un jugador. Si no tiene ninguna propiedad devuelve la cadena vacia (null).
+        let propiedades = await obtenerPropiedades(idPartida, idJugador);
+        // Separar las propiedades que tiene el jugador
+        let propiedadesArr = propiedades ? propiedades.split(',') : [];
+
+        // Actualizar a null la propiedad de la partida correspondiente a cada propiedad del jugador
+        for (let i = 0; i < propiedadesArr.length; i++) {
+            let propiedad = propiedadesArr[i];
+            let numeroPropiedad = propiedad.replace("propiedad", "");
+            await devuelvaPropiedadMuerto(idPartida, null, numeroPropiedad);
+        }
+
+        return true;
     } catch (error) {
-      // Si hay un error en la Promesa, devolvemos false.
-      console.error("Error en la Promesa: ", error);
-      return false;
+        // Si hay un error en la Promesa, devolvemos false.
+        console.error("Error en la Promesa: ", error);
+        return false;
     }
-  }
-  exports.devolverPropiedadesBanca = devolverPropiedadesBanca;
-  
-  
+}
+exports.devolverPropiedadesBanca = devolverPropiedadesBanca;
+
