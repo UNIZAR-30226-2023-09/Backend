@@ -342,3 +342,6 @@ function actualizarNumTurnosSubasta(idPartida, numTurnosSubasta);
 
 //Dada una partida, devuelve el numero de turnos activos. Sino hay subasta(es null) devuelve 0.
 function obtenerNumTurnosActivos(idPartida);
+
+//funcion que dada una partida y un jugador, devuelva todas las propiedades a la banca.
+async function devolverPropiedadesBanca(idPartida, idJugador) ;

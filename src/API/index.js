@@ -1273,7 +1273,23 @@ async function obtenerResultadoActualizarNumTurnosSubasta(idPartida, numTurnosSu
   }
 }
 
-  
+//FUNCIONA OKEY.
+async function obtenerResultadoDevolverPropiedadesBanca(idPartida, idJugador) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.devolverPropiedadesBanca(idPartida, idJugador);
+    console.log("El resultado obtenido de devolver propiedades a la banca:", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
   
 
 // obtenerResultadoObtenerNumTurnosActivos(1);
@@ -1412,6 +1428,7 @@ async function obtenerResultadoActualizarNumTurnosSubasta(idPartida, numTurnosSu
 
 // obtenerResultadoObtenerNombreSubasta(1,'cesar@example.com');
 
+// obtenerResultadoDevolverPropiedadesBanca(1,'juan@example.com');
 
 
 
