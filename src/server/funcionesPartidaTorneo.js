@@ -127,7 +127,8 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                         console.log('NO SE ENCUENTRA ESE USUARIO NO BOT');
                         return;
                     }
-                    conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${i},${jugadores_struct[0].id},${jugadores_struct[1].id},${jugadores_struct[2].id},${jugadores_struct[3].id},${skins}`);
+                    let skinTablero = await APIpartida.obtenerSkinTableroEquipada(jugadores_struct[i].id);
+                    conexionUsuario.send(`EMPEZAR_OK,${ID_partida},${i},${jugadores_struct[0].id},${jugadores_struct[1].id},${jugadores_struct[2].id},${jugadores_struct[3].id},${skins},${skinTablero}`);
                 }
             }
 
