@@ -1027,7 +1027,7 @@ function crearPartida(id_jugador, skin, skinTablero) {
             }
             else {
                 const jugador_id = results1[0].email;
-                const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, precioPropiedad1,
+                const query2 = `INSERT INTO Partida (ronda, bote, evento, economia, numTurnosSubasta, precioPropiedad1,
           precioPropiedad2,precioPropiedad3,precioPropiedad4,precioPropiedad5,precioPropiedad6,precioPropiedad7,precioPropiedad8,
           precioPropiedad9,precioPropiedad10,precioPropiedad11,precioPropiedad12,precioPropiedad13,precioPropiedad14,precioPropiedad15,
           precioPropiedad16,precioPropiedad17,precioPropiedad18,precioPropiedad19,precioPropiedad20,precioPropiedad21,precioPropiedad22,
@@ -1039,8 +1039,10 @@ function crearPartida(id_jugador, skin, skinTablero) {
           nCasasPropiedad18,nCasasPropiedad19,nCasasPropiedad20,nCasasPropiedad21,nCasasPropiedad22,nCasasPropiedad23,nCasasPropiedad24,
           nCasasPropiedad25,nCasasPropiedad26,nCasasPropiedad27,nCasasPropiedad28,nCasasPropiedad29,nCasasPropiedad30,nCasasPropiedad31,
           nCasasPropiedad32,nCasasPropiedad33,nCasasPropiedad34,nCasasPropiedad35,nCasasPropiedad36,nCasasPropiedad37,nCasasPropiedad38,
-          nCasasPropiedad39,nCasasPropiedad40) VALUES (1, 0.0, 'Ninguno', 1.0, 0.0,60.0,60.0,0.0,0.0,200.0,100.0,100.0,
-          0.0,120.0,0.0,140.0,140.0,0.0,160.0,200.0,180.0,0.0,180.0,200.0,0.0,220.0,220.0,0.0,240.0,200.0,260.0,0.0,260.0,280.0,0.0,300.0,300.0,0.0,320.0,200.0,350.0,350.0,0.0,400.0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)`;
+          nCasasPropiedad39,nCasasPropiedad40) VALUES (1, 0.0, 'Ninguno', 1.0,0, 0.0,60.0,60.0,0.0,0.0,200.0,100.0,100.0,
+          0.0,120.0,0.0,140.0,140.0,0.0,160.0,200.0,180.0,0.0,180.0,200.0,0.0,220.0,220.0,0.0,240.0,200.0,260.0,0.0,260.0,
+          280.0,0.0,300.0,300.0,0.0,320.0,200.0,350.0,350.0,0.0,400.0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,0,0,0)`;
                 con.query(query2, (error, results2) => {
                     if (error) {
                         reject(error);
@@ -2065,18 +2067,18 @@ function obtenerPropiedadesEdificaciones(idJugador, idPartida) {
                                         resultado += `${fila.propiedad}:${fila.nCasas},`;
                                     });
                                     // En caso de que sea la ultima iteracion del bucle se cierra la conexion
-                                    if (i === 40){
+                                    if (i === 40) {
                                         con.end();
                                         // Esto es para quitarle la ultima coma puesta
-                                        resolve(resultado.slice(0,-1))
+                                        resolve(resultado.slice(0, -1))
                                     }
                                 }
-                            });  
+                            });
                         }
                     }
                 });
             }
-        }); 
+        });
     });
 }
 
@@ -3915,14 +3917,14 @@ function obtenerEstadoPartida(idPartida, idJugador) {
                 resolve(false);
             } else {                                            // Caso --  Existe esa partida
 
-                cadenaFinal[0] =  results[0].idPartida + "," +
-                             results[0].ronda + "," + 
-                             results[0].bote + "," +   
-                             results[0].economia + "," +
-                             results[0].evento + "," +
-                            
-                             results[0].perteneceTorneo + "," + 
-                             results[0].turno;
+                cadenaFinal[0] = results[0].idPartida + "," +
+                    results[0].ronda + "," +
+                    results[0].bote + "," +
+                    results[0].economia + "," +
+                    results[0].evento + "," +
+
+                    results[0].perteneceTorneo + "," +
+                    results[0].turno;
 
 
                 const query2 = `SELECT * FROM Partida where idPartida = '${idPartida}'`;
@@ -3934,20 +3936,20 @@ function obtenerEstadoPartida(idPartida, idJugador) {
                     } else {                                            // Caso --  Existen la partida
 
                         var vectorPropiedad = [];
-                       
+
                         var vectorCasas = [];
 
                         for (var i = 1; i < 41; i++) {
-                            vectorPropiedad.push( results2[0]["propiedad" + i]);
-                            
-                            vectorCasas.push(  results2[0]["nCasasPropiedad" + i]);
+                            vectorPropiedad.push(results2[0]["propiedad" + i]);
+
+                            vectorCasas.push(results2[0]["nCasasPropiedad" + i]);
                         }
 
                         let aux = [];
 
                         for (var i = 0; i < 40; i++) {
-                            aux.push(vectorPropiedad[i] + "," 
-                                    + vectorCasas[i]);
+                            aux.push(vectorPropiedad[i] + ","
+                                + vectorCasas[i]);
                         }
 
                         cadenaFinal[1] = aux.join(";");
@@ -3961,26 +3963,26 @@ function obtenerEstadoPartida(idPartida, idJugador) {
                             } else {                                            // Caso --  Existen la partida
 
                                 const respuesta = [];
-                                 results3.forEach((row, i) => {
+                                results3.forEach((row, i) => {
 
-                                    if (results3[i].email === idJugador){
+                                    if (results3[i].email === idJugador) {
 
-                                        respuesta[i] =   results3[i].email + "," +
-                                                         results3[i].posicion + "," +
-                                                         results3[i].dinero + "," +
-                                                         results3[i].dineroInvertido + "," +
-                                                         results3[i].skin + "," +
-                                                         results3[i].skinTablero + "," +
-                                                         results3[i].turno;
+                                        respuesta[i] = results3[i].email + "," +
+                                            results3[i].posicion + "," +
+                                            results3[i].dinero + "," +
+                                            results3[i].dineroInvertido + "," +
+                                            results3[i].skin + "," +
+                                            results3[i].skinTablero + "," +
+                                            results3[i].turno;
 
                                     } else {
-                                    
-                                        respuesta[i] =   results3[i].email + "," +
-                                                         results3[i].jugadorVivo + "," +
-                                                         results3[i].posicion + "," +
-                                                         results3[i].dinero + "," +
-                                                         results3[i].skin + "," +
-                                                         results3[i].turno;
+
+                                        respuesta[i] = results3[i].email + "," +
+                                            results3[i].jugadorVivo + "," +
+                                            results3[i].posicion + "," +
+                                            results3[i].dinero + "," +
+                                            results3[i].skin + "," +
+                                            results3[i].turno;
 
                                     }
                                 });
