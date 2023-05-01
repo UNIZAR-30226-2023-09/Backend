@@ -24,6 +24,7 @@ function insertarUsuario(userData) {
         var con = db.crearConexion();
         con.connect(function (err) {
             if (err) {
+                con.end(); // Cerrar conexión
                 reject(err);
             } else {
                 const [username, password, email, gemas] = userData.split(',');
