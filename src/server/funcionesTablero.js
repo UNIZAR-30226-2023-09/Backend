@@ -888,17 +888,11 @@ async function propiedadesParaEdificar(tablero, propiedades, ID_Partida) {
     for (let grupo in gruposDePropiedades) {
         const propiedadesDelGrupo = gruposDePropiedades[grupo];
         const propiedadesFaltantes = propiedadesDelGrupo.filter(p => !propiedadesArray.includes(p));
-        if (propiedadesFaltantes.length === 0 && propiedadesArray.some(p => propiedadesDelGrupo.includes(p))) {
-            for (let i = 0; i < propiedadesDelGrupo.length; i++) {
-                const propiedad = propiedadesDelGrupo[i];
-                if (tablero.includes(propiedad)) {
-                    const numEdificaciones = await API.obtenerNumCasasPropiedad(ID_Partida, propiedad);
-                    if (numEdificaciones < 5) {
-                        propiedadesParaConstruir.push(propiedad);
-                    }
-                }
+        propiedadesDelGrupo.forEach(p => {
+            if (tablero.includes(p)) {
+                propiedadesParaConstruir.push(p);
             }
-        }
+        });
     }
     return propiedadesParaConstruir;
 }
