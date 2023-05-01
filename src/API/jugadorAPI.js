@@ -126,6 +126,7 @@ function comprobarInicioSesion(email, contrasenya) {
         var con = db.crearConexion();
         con.connect(function (err) {
             if (err) {
+                con.end(); // Cerrar conexión
                 reject(err);
             } else {
                 const query = `SELECT pass,gemas FROM Jugador WHERE email = '${email}'`;

@@ -627,7 +627,6 @@ function meterDineroBanco(idJugador, idPartida, cantidad) {
 
 exports.meterDineroBanco = meterDineroBanco;
 
-
 /*
 ===================ID_PARTIDA DE UN JUGADOR=========================================
 */
@@ -638,36 +637,77 @@ function jugadorEnPartida(email) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
-        const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
+        const query = `SELECT B.idPartida AS id FROM juega A INNER JOIN Partida B ON A.idPartida = B.idPartida 
+        WHERE A.email = '${email}' AND B.enCurso = true AND A.jugadorVivo = true`;
         con.query(query, (error, results) => {
             if (error) {
+                con.end(); // Cerrar la conexión
                 reject(error);
-            } else if (results.length === 0) {
-                resolve(-1);
+            } else if (results.length === 1) {
+                con.end(); // Cerrar la conexión
+                resolve(results[0].id);
             } else {
-                let activa = false;
-                for (let i = 0; i < results.length; i++) {
-                    let partida = results[i].idPartida;
-                    const query2 = `SELECT * FROM Partida WHERE idPartida = '${partida}' AND enCurso='1'`;
-                    con.query(query2, (error, results2) => {
-                        if (error) {
-                            reject(error);
-                        } else if (results2.length != 0) {
-                            activa = true;
-                            resolve(partida);
-                        }
-                        if (i === results.length - 1 && !activa) {
-                            resolve(-1);
-                        }
-                    });
-                }
+                con.end(); // Cerrar la conexión
+                resolve(-1);
             }
-            con.end(); // Cerrar la conexión después de terminar el bucle.
         });
     });
 }
 
 exports.jugadorEnPartida = jugadorEnPartida;
+
+
+
+/*
+===================ID_PARTIDA DE UN JUGADOR=======NO SE USA =====
+*/
+
+// Devuelve el id de la partida ACTIVA en la que esta el usuario "email". 
+//En caso de que no tenga ninguna partida activa, devuelve -1.
+function jugadorEnPartida2(email) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT DISTINCT idPartida FROM juega WHERE email = '${email}'`;
+        con.query(query, (error, results) => {
+            if (error) {
+                con.end(); // Cerrar la conexión
+                reject(error);
+            } else if (results.length === 0) {
+                con.end(); // Cerrar la conexión
+                resolve(-1);
+            } else {
+                let acabar_bucle = false;
+                for (let i = 0; i < results.length && !acabar_bucle; i++) {
+                    let partida = results[i].idPartida;
+                    const query2 = `SELECT * FROM Partida WHERE idPartida = '${partida}' AND enCurso='1'`;
+                    con.query(query2, (error, results2) => {
+                        if (error) {
+                            acabar_bucle = true;
+                            con.end(); // ojo cambio
+                            reject(error);
+                        } else if (results2.length != 0) {
+                            acabar_bucle = true;
+                            con.end(); // ojo cambio
+                            resolve(partida);
+                        } else {
+
+                            if (i === results.length - 1 && !acabar_bucle) {
+                                acabar_bucle = true;
+                                con.end(); // ojo cambio
+                                resolve(-1);
+                            }
+                        }
+                    });
+                }
+                //con.end(); // Cerrar la conexión
+            }
+            //con.end(); // Cerrar la conexión después de terminar el bucle.
+        });
+    });
+}
+
+exports.jugadorEnPartida2 = jugadorEnPartida2;
 
 
 
