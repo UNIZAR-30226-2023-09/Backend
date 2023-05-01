@@ -1499,19 +1499,25 @@ async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPart
         //le aplicamos la formula para saber que dinero tiene que pagar.
         let alquiler;
 
-        // Calcular el alquiler en función del número de casas.
-        if (numCasas === 0) {
-            alquiler = precioPropiedad * 0.1;
-        } else if (numCasas === 1) {
-            alquiler = precioPropiedad / 2;
-        } else if (numCasas === 2) {
-            alquiler = precioPropiedad;
-        } else if (numCasas === 3) {
-            alquiler = precioPropiedad * 2;
-        } else if (numCasas === 4) {
-            alquiler = precioPropiedad * 3;
-        } else if (numCasas === 5) {
-            alquiler = precioPropiedad * 5;
+        // Caso especial alquiler de estacion.
+        if (propiedad === 6 || propiedad === 16 || propiedad === 26 || propiedad === 36) {
+            alquiler = await alquileresAeropuertos(idPartida, id_jugadorRecibe, alquiler);
+        } else {
+
+            // Calcular el alquiler en función del número de casas.
+            if (numCasas === 0) {
+                alquiler = precioPropiedad * 0.1;
+            } else if (numCasas === 1) {
+                alquiler = precioPropiedad / 2;
+            } else if (numCasas === 2) {
+                alquiler = precioPropiedad;
+            } else if (numCasas === 3) {
+                alquiler = precioPropiedad * 2;
+            } else if (numCasas === 4) {
+                alquiler = precioPropiedad * 3;
+            } else if (numCasas === 5) {
+                alquiler = precioPropiedad * 5;
+            }
         }
 
         //le sumamos ese dinero al jugadorRecibe.
@@ -1537,8 +1543,33 @@ async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPart
 exports.pagarAlquiler = pagarAlquiler;
 
 
-
-
+// Gestiona el pago especial de alquileres de aeropuertos, en función del número 
+// de estaciones que tenga el jugadorRecibe
+async function alquileresAeropuertos(idPartida, id_jugadorRecibe, alquiler) {
+    let propiedadesJugador = await obtenerPropiedades(idPartida, id_jugadorRecibe);
+    let numEstaciones = 0;
+    // Dividir propiedadesJugador en un array con cada una de las componentes
+    let arrayPropiedades = propiedadesJugador.split(",");
+    // Recorrer el array y contar el número de estaciones que tiene el jugadorRecibe
+    for (let i = 0; i < arrayPropiedades.length; i++) {
+        // Quitar los primeros 9 caracteres de cada componente del array
+        arrayPropiedades[i] = arrayPropiedades[i].substring(9);
+        if (arrayPropiedades[i] === "6" || arrayPropiedades[i] === "16" || arrayPropiedades[i] === "26" || arrayPropiedades[i] === "36") {
+            numEstaciones++;
+        }
+    }
+    // Si el jugadorRecibe tiene 1 estacion, el alquiler es de 25.
+    if (numEstaciones === 1) {
+        alquiler = 25;
+    } else if (numEstaciones === 2) {
+        alquiler = 50;
+    } else if (numEstaciones === 3) {
+        alquiler = 100;
+    } else if (numEstaciones === 4) {
+        alquiler = 200;
+    }
+    return alquiler;
+}
 
 /*
 ===================SACAR DINERO BANCO=========================================

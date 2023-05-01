@@ -241,6 +241,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     }
 }
 
+// Gestiona el pago de alquileres a otros jugadores.
 async function CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_propiedad, propiedad) {
     let precioPagar = await API.obtenerPrecioPropiedad(IDpartida, posicion);
     // Multiplicamos el precio a pagar por la economía
