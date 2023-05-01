@@ -333,11 +333,12 @@ async function GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket) 
             }
         }
 
+        console.log("Aeropuertos:", aeropuertos);
         if (numEstaciones > 1) {
             console.log("El jugador tiene más de un aeropuerto")
             for (let i = 0; i < aeropuertos.length; i++) {
                 console.log("Comprobando a que aeropuerto se desplaza")
-                if (posicion === aeropuertos[i]) {
+                if (parseInt(posicion) === parseInt(aeropuertos[i])) {
                     console.log("El jugador se desplaza al aeropuerto " + aeropuertos[(i + 1) % aeropuertos.length]);
                     posicionADesplazarse = aeropuertos[(i + 1) % aeropuertos.length];
                     socket.send(`DESPLAZAR_JUGADOR${posicionADesplazarse}`);
