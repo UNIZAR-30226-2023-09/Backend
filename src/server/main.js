@@ -161,6 +161,16 @@ server.on("connection", (socket) => {
             funcionesPartidaTorneo.UnirseTorneo(socket, mensaje[1], mensaje[2]);
         }
 
+        if (mensaje[0] == "empezarPartidaTorneo") {
+            // socket, ID_Torneo, ID_Lider
+            funcionesPartidaTorneo.EmpezarTorneo(socket, mensaje[1], mensaje[2]);
+        }
+
+        if (mensaje[0] == "pagarLiberarseCarcel") {
+            // socket, ID_jugador, ID_partida
+            funcionesTablero.PagarLiberarseCarcel(socket, mensaje[1], mensaje[2]);
+        }
+
         /*------------------------------------------------------*/
         // Se solicita hacer un intercambio
         if (mensaje[0] == "SUBASTAR") {

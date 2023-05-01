@@ -301,7 +301,11 @@ async function GestionPropiedad(posicion, ID_partida, socket, ID_jugador) {
     else {
         // Pertenece al propio jugador, no habría que hacer nada especial
         // Comprobar si la casilla es un aeropuerto o una estación 
-        await GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket);
+        let ronda = await API.obtenerRonda(ID_partida);
+        if (ronda > 10) {
+            // Permite viajar si la ronda es mayor que 10
+            await GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket);
+        }
     }
 }
 
@@ -449,6 +453,7 @@ async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
             socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
             await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
             // Si estaba en la primera casilla de superPoder va al aeropuerto
+
             await GestionPropiedad(nuevaPosicion, ID_partida, socket, ID_jugador);
             // CaerCasilla(socket, ID_jugador, ID_partida, nuevaPosicion);
 
@@ -826,7 +831,7 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
     }
     else {
         // Tiene dinero -> edificamos y devolvemos el nuevo dinero disponible
-        let dineroResultante = await API.edificarPropiedad(ID_jugador, ID_partida, propiedad);
+        let dineroResultante = await API.edificarPropiedad(ID_jugador, ID_partida, propiedad, precio);
         socket.send(`EDIFICAR_OK,${propiedad},${dineroResultante}`);
     }
 
@@ -1172,3 +1177,32 @@ async function enviarJugadoresCarcel(ID_jugador, ID_partida) {
         }
     }
 }
+
+// Enviar a todos los jugadores que el jugador esta en la carcel
+async function enviarJugadoresFueraCarcel(ID_jugador, ID_partida) {
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].esBot === "0") {
+            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+            if (socketJugador != null) {
+                socketJugador.send(`FUERA_CARCEL,${ID_jugador}`);
+            }
+        }
+    }
+}
+
+// Funcion que le resta 50 al jugador en la partida dada y le libera de la carcel
+async function PagarLiberarseCarcel(socket, ID_jugador, ID_partida) {
+    let dinero = await APIJugador.obtenerDinero(ID_jugador, ID_partida);
+    if (dinero < 50) {
+        socket.send(`CARCEL_NO_PAGADA`);
+        return;
+    }
+    let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
+    // Si estás en la cárcel y has sacado dobles -> sales
+    API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
+    await API.modificarDinero(ID_partida, ID_jugador, -50);
+    socket.send(`CARCEL_PAGADA`);
+    enviarJugadoresFueraCarcel(ID_jugador, ID_partida);
+}
+exports.PagarLiberarseCarcel = PagarLiberarseCarcel;

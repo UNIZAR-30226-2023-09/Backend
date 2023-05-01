@@ -2088,7 +2088,7 @@ exports.propiedadesEdificar = propiedadesEdificar;
 
 // OJOO maximo de casas a edificar es 5
 
-function edificarPropiedad(idJugador, idPartida, propiedad) {
+function edificarPropiedad(idJugador, idPartida, propiedad, dineroQuitar) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
@@ -2125,7 +2125,6 @@ function edificarPropiedad(idJugador, idPartida, propiedad) {
                                     con.end();                                              // Caso -- Propiedad no es suya o ya ha edificado todo
                                     resolve(false);
                                 } else {                                                    // Caso -- Propiedad es suya
-                                    let dineroQuitar = results3[0].precio * (20 * (results3[0].nCasas + 1) / 100);
                                     const sql4 = `SELECT dinero FROM juega WHERE idPartida = '${idPartida}' 
                                                     AND email = '${idJugador}'`;
                                     con.query(sql4, (error, results7) => {                  // Caso -- Error
