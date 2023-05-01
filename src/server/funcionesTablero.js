@@ -881,19 +881,22 @@ exports.EdificarPropiedad = EdificarPropiedad;
 
 // Dado un string que contiene las propiedades de un jugador concatenadas con comas,
 // devuelve un array con aquellas propiedades en las que puede edificar
-async function propiedadesParaEdificar(tablero, propiedades, ID_Partida) {
+function propiedadesParaEdificar(tablero, propiedades) {
     const propiedadesParaConstruir = [];
     const propiedadesArray = propiedades.split(","); // convertimos la cadena de propiedades en un array
 
     for (let grupo in gruposDePropiedades) {
         const propiedadesDelGrupo = gruposDePropiedades[grupo];
         const propiedadesFaltantes = propiedadesDelGrupo.filter(p => !propiedadesArray.includes(p));
-        propiedadesDelGrupo.forEach(p => {
-            if (tablero.includes(p)) {
-                propiedadesParaConstruir.push(p);
-            }
-        });
+        if (propiedadesFaltantes.length === 0 && propiedadesArray.some(p => propiedadesDelGrupo.includes(p))) {
+            propiedadesDelGrupo.forEach(p => {
+                if (tablero.includes(p)) {
+                    propiedadesParaConstruir.push(p);
+                }
+            });
+        }
     }
+
     return propiedadesParaConstruir;
 }
 
