@@ -2006,21 +2006,25 @@ exports.obtenerSiguienteJugador2 = obtenerSiguienteJugador2;
 
 
 
+
 /*
 =================== OBTENER LISTADO DE PROPIEDADES A EDIFICAR   =========================================================
 */
 
 //  Se obtienen todas las propiedades que tiene el usuario se obtiene el numero de 
 //  casas que tiene en cada una y se devuelve un string indicando que propiedades 
-//  tiene el usuario y cuanto le costaría edificar teniendo en cuenta el numero de 
-//  casas que tiene en cada propiedad, se obtiene un string de la siguiente forma:
-//  propiedad1-precio1,propiedad2-precio2,propiedad3-precio3,etc…
-//Si el jugador o la partida no existen devuelve false
+//  tiene el usuario y el numero de casas que tiene en cada propiedad, se obtiene 
+//  un string de la siguiente forma:
+//
+//  propiedad1:nCasas,propiedad2:nCasas,propiedad3:nCasas,etc…
+//
+//  Si el jugador o la partida no existen devuelve false
+//
 
 
 // OJOO , el nCasas al comprar la propiedad se debe poner a 0 pq esta puesto a null
 
-function propiedadesEdificar(idJugador, idPartida) {
+function obtenerPropiedadesEdificaciones(idJugador, idPartida) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
@@ -2047,7 +2051,7 @@ function propiedadesEdificar(idJugador, idPartida) {
                         // Iterar por todas las propiedades de la tabla
                         for (let i = 1; i <= 40; i++) {
                             // Construir la consulta SQL para obtener las propiedades del usuario 'idJugador' en 'idPartida'
-                            let consulta = `SELECT CONCAT('propiedad', ${i}) AS propiedad, precioPropiedad${i} AS precio, nCasasPropiedad${i} AS nCasas FROM Partida 
+                            let consulta = `SELECT CONCAT('propiedad', ${i}) AS propiedad, nCasasPropiedad${i} AS nCasas FROM Partida 
                             WHERE propiedad${i} = '${idJugador}' AND idPartida = '${idPartida}';`;
                             // Ejecutar la consulta en la base de datos y obtener el resultado
                             con.query(consulta, (err, res) => {
@@ -2057,26 +2061,27 @@ function propiedadesEdificar(idJugador, idPartida) {
                                 } else {
                                     // Iterar por el resultado y agregar cada propiedad al resultado final
                                     res.forEach((fila) => {
-                                        precioAux = fila.precio * (20 * fila.nCasas / 100)
-                                        resultado += `${fila.propiedad}-${precioAux},`;
+                                        //precioAux = fila.precio * (20 * fila.nCasas / 100)
+                                        resultado += `${fila.propiedad}:${fila.nCasas},`;
                                     });
-                                    if (i === 40) {
+                                    // En caso de que sea la ultima iteracion del bucle se cierra la conexion
+                                    if (i === 40){
                                         con.end();
-                                        resolve(resultado.slice(0, -1))
+                                        // Esto es para quitarle la ultima coma puesta
+                                        resolve(resultado.slice(0,-1))
                                     }
                                 }
-                            });
+                            });  
                         }
                     }
                 });
             }
-        });
+        }); 
     });
 }
 
 
-exports.propiedadesEdificar = propiedadesEdificar;
-
+exports.obtenerPropiedadesEdificaciones = obtenerPropiedadesEdificaciones;
 
 
 /*

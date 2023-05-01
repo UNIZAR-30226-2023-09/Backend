@@ -676,7 +676,7 @@ async function obtenerSustituirJugadorPorBot(idJugador, idPartida) {
 async function obtenerPropiedadesEdificar(idJugador, idPartida) {
     try {
         // Hacemos la llamada a la función que devuelve una Promesa.
-        const resultado = await test.propiedadesEdificar(idJugador, idPartida);
+        const resultado = await test.obtenerPropiedadesEdificaciones(idJugador, idPartida);
         console.log("El resultado obtenido de obtener propiedades que edificiar es:", resultado);
         return resultado;
   
