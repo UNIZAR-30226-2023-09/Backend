@@ -260,6 +260,7 @@ async function CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_pr
         let esBot = await API.jugadorEsBot(IDjugador_propiedad, IDpartida);
         if (!esBot) {
             let conexion = con.buscarUsuario(IDjugador_propiedad);
+            let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, IDpartida);
             conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${IDjugador_propiedad},${dineroJugadorPaga}`);
         }
     }
