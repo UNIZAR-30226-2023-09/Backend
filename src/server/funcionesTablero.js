@@ -340,12 +340,14 @@ async function GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket) 
                 if (posicion === aeropuertos[i]) {
                     console.log("El jugador se desplaza al aeropuerto " + aeropuertos[(i + 1) % aeropuertos.length]);
                     posicionADesplazarse = aeropuertos[(i + 1) % aeropuertos.length];
+                    socket.send(`DESPLAZAR_JUGADOR${posicionADesplazarse}`);
                 }
             }
+        } else {
+            socket.send(`NADA`);
         }
         // Enviarle al jugador su nueva posicion
         escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de la estacion " + posicion + " en la partida " + ID_partida + " y se desplaza al aeropuerto " + posicionADesplazarse);
-        socket.send(`DESPLAZAR_JUGADOR${posicionADesplazarse}`);
     } else {
 
         socket.send(`NADA`);

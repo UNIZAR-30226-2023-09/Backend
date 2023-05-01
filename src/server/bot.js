@@ -436,3 +436,16 @@ async function enviarJugadoresFueraCarcel(ID_jugador, ID_partida) {
         }
     }
 }
+
+// Enviar a todos los jugadores que el jugador esta en la carcel
+async function enviarJugadoresCarcel(ID_jugador, ID_partida) {
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].esBot === "0") {
+            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+            if (socketJugador != null) {
+                socketJugador.send(`DENTRO_CARCEL,${ID_jugador}`);
+            }
+        }
+    }
+}
