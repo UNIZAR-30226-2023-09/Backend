@@ -33,12 +33,18 @@ async function moverBot(IDJugador, IDpartida) {
     // Si estás en la cárcel restamos un turno
     if (estaCarcel > 0) {
         API.restarTurnoCarcel(IDJugador, IDpartida, 1);
+        if (estaCarcel === 1) {
+            await enviarJugadoresFueraCarcel(IDJugador, IDpartida);
+        } else {
+            await enviarJugadoresCarcel(IDJugador, IDpartida);
+        }
     }
 
     // Si estás en la cárcel y has sacado dobles -> sales
     if (dado1 === dado2 && estaCarcel > 0) {
         API.restarTurnoCarcel(IDJugador, IDpartida, estaCarcel);
         estaCarcel = 0;
+        await enviarJugadoresFueraCarcel(ID_jugador, ID_partida);
     }
     // Movemos al jugador -> obtenemos su nueva posición
     let posicionNueva = await API.moverJugador(IDJugador, sumaDados, IDpartida);
@@ -416,4 +422,17 @@ function escribirEnArchivo(datos) {
 function Usuario(id, esBot) {
     this.id = id;
     this.esBot = esBot;
+}
+
+// Enviar a todos los jugadores que el jugador esta en la carcel
+async function enviarJugadoresFueraCarcel(ID_jugador, ID_partida) {
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
+            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+            if (socketJugador != null) {
+                socketJugador.send(`FUERA_CARCEL,${ID_jugador}`);
+            }
+        }
+    }
 }
