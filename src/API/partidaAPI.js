@@ -3886,12 +3886,12 @@ exports.devolverPropiedadesBanca = devolverPropiedadesBanca;
 /*
 =================== OBTENER ESTADO GLOBAL DE LA PARTIDA =========================================================
 */
-// Devuelve el esta global de una partida pasandole el id de la partida.
+// Devuelve el esta global de una partida pasandole el id de un jugador.
 //  En caso de que no exista el jugador devuelve false
 //  Devuelve estado con el siguietne formato
 //  
 //
-function obtenerEstadoPartida(idPartida) {
+function obtenerEstadoPartida(idPartida, idJugador) {
     return new Promise((resolve, reject) => {
 
         let cadenaFinal = [];
@@ -3911,14 +3911,14 @@ function obtenerEstadoPartida(idPartida) {
                 resolve(false);
             } else {                                            // Caso --  Existe esa partida
 
-                cadenaFinal[0] = "idPartida" + ":" + results[0].idPartida + "," +
-                    "ronda" + ":" + results[0].ronda + "," +
-                    "bote" + ":" + results[0].bote + "," +
-                    "economia" + ":" + results[0].economia + "," +
-                    "evento" + ":" + results[0].evento + "," +
-                    "enCurso" + ":" + results[0].enCurso + "," +
-                    "perteneceTorneo" + ":" + results[0].perteneceTorneo + "," +
-                    "turno" + ":" + results[0].turno;
+                cadenaFinal[0] =  results[0].idPartida + "," +
+                             results[0].ronda + "," + 
+                             results[0].bote + "," +   
+                             results[0].economia + "," +
+                             results[0].evento + "," +
+                            
+                             results[0].perteneceTorneo + "," + 
+                             results[0].turno;
 
 
                 const query2 = `SELECT * FROM Partida where idPartida = '${idPartida}'`;
@@ -3930,21 +3930,20 @@ function obtenerEstadoPartida(idPartida) {
                     } else {                                            // Caso --  Existen la partida
 
                         var vectorPropiedad = [];
-                        var vectorPrecio = [];
+                       
                         var vectorCasas = [];
 
                         for (var i = 1; i < 41; i++) {
-                            vectorPropiedad.push("propiedad" + i + ":" + results2[0]["propiedad" + i]);
-                            vectorPrecio.push("precioPropiedad" + i + ":" + results2[0]["precioPropiedad" + i]);
-                            vectorCasas.push("nCasasPropiedad" + i + ":" + results2[0]["nCasasPropiedad" + i]);
+                            vectorPropiedad.push( results2[0]["propiedad" + i]);
+                            
+                            vectorCasas.push(  results2[0]["nCasasPropiedad" + i]);
                         }
 
                         let aux = [];
 
                         for (var i = 0; i < 40; i++) {
-                            aux.push(vectorPropiedad[i] + ","
-                                + vectorPrecio[i] + ","
-                                + vectorCasas[i]);
+                            aux.push(vectorPropiedad[i] + "," 
+                                    + vectorCasas[i]);
                         }
 
                         cadenaFinal[1] = aux.join(";");
@@ -3958,20 +3957,28 @@ function obtenerEstadoPartida(idPartida) {
                             } else {                                            // Caso --  Existen la partida
 
                                 const respuesta = [];
-                                results3.forEach((row, i) => {
+                                 results3.forEach((row, i) => {
 
-                                    respuesta[i] = "email" + ":" + results3[i].email + "," +
-                                        "turno" + ":" + results3[i].turno + "," +
-                                        "esBotInicial" + ":" + results3[i].esBotInicial + "," +
-                                        "esBot" + ":" + results3[i].esBot + "," +
-                                        "jugadorVivo" + ":" + results3[i].jugadorVivo + "," +
-                                        "numPropiedades" + ":" + results3[i].numPropiedades + "," +
-                                        "dineroInvertido" + ":" + results3[i].dineroInvertido + "," +
-                                        "nTurnosCarcel" + ":" + results3[i].nTurnosCarcel + "," +
-                                        "posicion" + ":" + results3[i].posicion + "," +
-                                        "dinero" + ":" + results3[i].dinero + "," +
-                                        "skin" + ":" + results3[i].skin + "," +
-                                        "puestoPartida" + ":" + results3[i].puestoPartida;
+                                    if (results3[i].email === idJugador){
+
+                                        respuesta[i] =   results3[i].email + "," +
+                                                         results3[i].posicion + "," +
+                                                         results3[i].dinero + "," +
+                                                         results3[i].dineroInvertido + "," +
+                                                         results3[i].skin + "," +
+                                                         results3[i].skinTablero + "," +
+                                                         results3[i].turno;
+
+                                    } else {
+                                    
+                                        respuesta[i] =   results3[i].email + "," +
+                                                         results3[i].jugadorVivo + "," +
+                                                         results3[i].posicion + "," +
+                                                         results3[i].dinero + "," +
+                                                         results3[i].skin + "," +
+                                                         results3[i].turno;
+
+                                    }
                                 });
 
                                 cadenaFinal[2] = respuesta.join(";")
