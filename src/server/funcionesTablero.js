@@ -149,22 +149,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     else if (posicion == 5) {
         try {
             // 50€ + 20€ * número de propiedades
-            let sigue = true;
-            let partidaContinua = true;
-            let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
-            let cantidad = 50 + 10 * numPropiedades;
-            let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
-            await enviarDineroBote(ID_partida, ID_jugador, dineroBote);
-            if (await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
-                let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
-                sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
-                if (sigue) {
-                    socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
-                    escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de impuestos");
-                } else {
-                    partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
-                }
-            }
+            await GestionTax(ID_partida, ID_jugador, socket);
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -177,21 +162,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     else if (posicion == 39) {
         try {
             // 100€ + 50€ * número de propiedades
-            let sigue = true;
-            let partidaContinua = true;
-            let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
-            let cantidad = 100 + 30 * numPropiedades;
-            let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
-            await enviarDineroBote(ID_partida, ID_jugador, dineroBote);
-            if (await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
-                let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
-                sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
-                if (sigue) {
-                    socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
-                } else {
-                    partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
-                }
-            }
+            await GestionLuxuryTax(ID_partida, ID_jugador, socket);
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -241,15 +212,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     // Comprobar si la nueva casilla es la de ir a la cárcel
     else if (posicion == 31) {
         try {
-            escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de ir a la carcel en la partida " + ID_partida);
-            API.enviarCarcel(ID_jugador, ID_partida);
-            // Obtener todos los jugadores y enviarles que estoy en la carcel
-            let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
-            for (let i = 0; i < jugadores_struct.length; i++) {
-                if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
-                    socket.send(`DENTRO_CARCEL,${ID_jugador}`);
-                }
-            }
+            await GestionIrCarcel(ID_jugador, ID_partida, socket);
         }
 
         catch (error) {
@@ -264,17 +227,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
         try {
             // Obtener dinero aleatorio entre -250 y 250
             // Generar un número aleatorio entre -250 y 250
-            let cantidad = Math.floor(Math.random() * 501) - 250;
-            if (await API.modificarDinero(ID_partida, ID_jugador, cantidad)) {
-                let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
-                sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
-                if (sigue) {
-                    socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
-                } else {
-                    let partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
-                }
-            }
-            escribirEnArchivo("El jugador " + ID_jugador + " ha obtenido " + cantidad + "€" + "por caer en la casilla de Treasure en la partida " + ID_partida);
+            await GestionTreasure(ID_partida, ID_jugador, socket);
         }
 
         catch (error) {
@@ -287,57 +240,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     // Comprobar si es casilla de superpoder
     else if (posicion == 9 || posicion == 18) {
         // Obtener carta
-        let superPoder = Math.ceil(Math.random() * 5) + 1;
-        let nuevaPosicion;
-        socket.send(`SUPERPODER,${superPoder}`);
-        switch (superPoder) {
-            case 1:
-                // Elegir que vas a sacar en la proxima tirada
-                socket.send(`ELEGIR_CASILLA`);
-                break;
-            case 2:
-                // Ir a la casilla del banco
-                socket.send(`DESPLAZAR_JUGADOR,28`);
-                nuevaPosicion = 28;
-                await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
-                let dineroBanco = await API.dineroBanco(ID_jugador, ID_partida);
-                socket.send(`ACCION_BANCO,${ID_jugador},${ID_partida},${dineroBanco}`);
-                break;
-            case 3:
-                // Ir a la casilla del casino
-                socket.send(`DESPLAZAR_JUGADOR,14`);
-                nuevaPosicion = 14;
-                await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
-                socket.send(`DINERO_APOSTAR,${ID_jugador}`);
-                break;
-            case 4:
-                // Ir a la casilla de salida
-                socket.send(`DESPLAZAR_JUGADOR,1`);
-                nuevaPosicion = 1;
-                await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
-                if (await API.modificarDinero(ID_partida, ID_jugador, 300)) {
-                    let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
-                    socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
-                }
-                break;
-            case 5:
-                // Volver 3 casillas atras
-                nuevaPosicion = posicion - 3;
-                socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
-                await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
-                // Si estaba en la primera casilla de superPoder va al aeropuerto
-                CaerCasilla(socket, ID_jugador, ID_partida, nuevaPosicion);
-
-                break;
-            case 6:
-                // "Aumentar" la suerte en el casino
-                socket.send(`AUMENTAR_SUERTE`);
-                break;
-            default:
-                break;
-        }
-
-        escribirEnArchivo("El jugador " + ID_jugador + " ha sacado la carta de superpoder " + superPoder + "en la partida " + ID_partida);
+        await GestionSuperPoder(socket, ID_jugador, ID_partida, posicion);
 
     }
 
@@ -393,6 +296,123 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     }
     // Este mensaje sirve para desbloquear al usuario
     socket.send("CASILLA");
+}
+
+async function GestionTax(ID_partida, ID_jugador, socket) {
+    let sigue = true;
+    let partidaContinua = true;
+    let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
+    let cantidad = 50 + 10 * numPropiedades;
+    let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
+    await enviarDineroBote(ID_partida, ID_jugador, dineroBote);
+    if (await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
+        let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
+        sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
+        if (sigue) {
+            socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de impuestos");
+        } else {
+            partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
+        }
+    }
+}
+
+async function GestionLuxuryTax(ID_partida, ID_jugador, socket) {
+    let sigue = true;
+    let partidaContinua = true;
+    let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
+    let cantidad = 100 + 30 * numPropiedades;
+    let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
+    await enviarDineroBote(ID_partida, ID_jugador, dineroBote);
+    if (await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
+        let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
+        sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
+        if (sigue) {
+            socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+        } else {
+            partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
+        }
+    }
+}
+
+async function GestionIrCarcel(ID_jugador, ID_partida, socket) {
+    escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de ir a la carcel en la partida " + ID_partida);
+    API.enviarCarcel(ID_jugador, ID_partida);
+    // Obtener todos los jugadores y enviarles que estoy en la carcel
+    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
+            socket.send(`DENTRO_CARCEL,${ID_jugador}`);
+        }
+    }
+}
+
+async function GestionTreasure(ID_partida, ID_jugador, socket) {
+    let cantidad = Math.floor(Math.random() * 501) - 250;
+    if (await API.modificarDinero(ID_partida, ID_jugador, cantidad)) {
+        let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
+        sigue = SigueEnPartida(ID_jugador, ID_partida, nuevoDinero);
+        if (sigue) {
+            socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+        } else {
+            let partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
+        }
+    }
+    escribirEnArchivo("El jugador " + ID_jugador + " ha obtenido " + cantidad + "€" + "por caer en la casilla de Treasure en la partida " + ID_partida);
+}
+
+async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
+    let superPoder = Math.ceil(Math.random() * 5) + 1;
+    let nuevaPosicion;
+    socket.send(`SUPERPODER,${superPoder}`);
+    switch (superPoder) {
+        case 1:
+            // Elegir que vas a sacar en la proxima tirada
+            socket.send(`ELEGIR_CASILLA`);
+            break;
+        case 2:
+            // Ir a la casilla del banco
+            socket.send(`DESPLAZAR_JUGADOR,28`);
+            nuevaPosicion = 28;
+            await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
+            let dineroBanco = await API.dineroBanco(ID_jugador, ID_partida);
+            socket.send(`ACCION_BANCO,${ID_jugador},${ID_partida},${dineroBanco}`);
+            break;
+        case 3:
+            // Ir a la casilla del casino
+            socket.send(`DESPLAZAR_JUGADOR,14`);
+            nuevaPosicion = 14;
+            await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
+            socket.send(`DINERO_APOSTAR,${ID_jugador}`);
+            break;
+        case 4:
+            // Ir a la casilla de salida
+            socket.send(`DESPLAZAR_JUGADOR,1`);
+            nuevaPosicion = 1;
+            await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
+            if (await API.modificarDinero(ID_partida, ID_jugador, 300)) {
+                let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
+                socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            }
+            break;
+        case 5:
+            // Volver 3 casillas atras
+            nuevaPosicion = posicion - 3;
+            socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
+            await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
+            // Si estaba en la primera casilla de superPoder va al aeropuerto
+            CaerCasilla(socket, ID_jugador, ID_partida, nuevaPosicion);
+
+            break;
+        case 6:
+            // "Aumentar" la suerte en el casino
+            socket.send(`AUMENTAR_SUERTE`);
+            break;
+        default:
+            break;
+    }
+
+    escribirEnArchivo("El jugador " + ID_jugador + " ha sacado la carta de superpoder " + superPoder + "en la partida " + ID_partida);
 }
 
 async function GestionCompraPropiedad(ID_partida, posicion, socket, ID_jugador) {
