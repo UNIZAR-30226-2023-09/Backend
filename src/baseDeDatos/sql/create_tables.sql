@@ -258,3 +258,7 @@ INSERT INTO Skins (precioGemas, idSkin) VALUES
 (0, 'JULS'),
 (3, 'LUCAS'),
 (50, 'TITE');
+(0, 'TABLERO1');
+(20, 'TABLERO2');
+(100, 'TABLERO3');
+(50, 'TABLERO4');

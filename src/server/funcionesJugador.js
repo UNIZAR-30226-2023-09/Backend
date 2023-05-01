@@ -96,6 +96,13 @@ async function FinTurno(ID_jugador, ID_partida) {
     let finRonda = resultado[1];
 
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
+
+    // Actualizar los turnos vivos que le quedan a la subasta
+    let haySubasta = API.obtenerNumTurnosActivos(ID_partida);
+    if (haySubasta > 0) {
+        await API.actualizarNumTurnosSubasta(ID_partida, haySubasta - 1);
+    }
+
     // Comprobar si es fin de ronda y realizar lo oportuno con esta
     if (finRonda == 1) {
         // Actualizar informacion fin de ronda

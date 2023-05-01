@@ -665,6 +665,7 @@ async function VenderPropiedad(socket, ID_jugador, propiedad, ID_partida) {
     try {
         // Obtener precio propiedad
         let dineroPropiedad = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
+        dineroPropiedad = dineroPropiedad * 0.5;
         // Obtener precio jugador
         let ok = await API.venderPropiedadBanca(ID_partida, ID_jugador, propiedad);
 
@@ -1020,8 +1021,14 @@ async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
 // y el precio por la que lo quiere subastar, se envia a todos los jugadores de la
 // partida el mensaje de que se ha subastado la propiedad y el precio por la que se
 // ha subastado.
-async function Subastar(ID_jugador, ID_partida, propiedad, precio) {
+async function Subastar(socket, ID_jugador, ID_partida, propiedad, precio) {
     // TODO: Comprobar que no exista otra subasta, y actualizar turnos en finTurno
+    let haySubasta = API.obtenerNumTurnosActivos(ID_partida);
+    if (haySubasta > 0) {
+        socket.send(`SUBASTA_OCUPADA`);
+        return;
+    }
+    await API.actualizarNumTurnosSubasta(ID_partida, 4);
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     // Actualizar la subasta en la base de datos
     precio = parseInt(precio);

@@ -216,7 +216,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
 
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad === -1) {
-            await CasillaComprarPropiedad(IDJugador, IDpartida, propiedad, posicion);
+            await CasillaComprarPropiedad(IDJugador, IDpartida, posicion, posicion);
         }
         // Comprobamos si la propiedad es de otro jugador -> tiene que pagarle
         else if (IDjugador_propiedad != IDJugador) {

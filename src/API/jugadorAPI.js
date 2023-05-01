@@ -38,7 +38,7 @@ function insertarUsuario(userData) {
                             resolve(false);
                         } else {
                             const sql = `INSERT INTO Jugador (gemas, nombre, pass, email, skinEquipada) VALUES (?, ?, ?, ?, ?)`;
-                            const gemasInt = parseInt(100); // TODO: Cambiar gemas iniciales
+                            const gemasInt = parseInt(1000); // TODO: Cambiar gemas iniciales
                             const values = [gemasInt, username.trim(), password.trim(), email.trim(), "PLEX"];
                             con.query(sql, values, (error, results2, fields) => {
                                 if (error) {
@@ -320,4 +320,3 @@ exports.insertarUsuarioConSkin = insertarUsuarioConSkin;
 
 
 
-  

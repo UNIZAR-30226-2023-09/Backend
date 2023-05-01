@@ -165,7 +165,7 @@ server.on("connection", (socket) => {
         // Se solicita hacer un intercambio
         if (mensaje[0] == "SUBASTAR") {
             // ID_partida,ID_jugador, propiedad, precio
-            funcionesTablero.Subastar(mensaje[1], mensaje[2], mensaje[3], mensaje[4]);
+            funcionesTablero.Subastar(socket, mensaje[1], mensaje[2], mensaje[3], mensaje[4]);
         }
 
         // Se quiere comprar una skin
