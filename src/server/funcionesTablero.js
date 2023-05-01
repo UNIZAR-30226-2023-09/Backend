@@ -316,19 +316,23 @@ async function GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket) 
         let arrayPropiedades = propiedadesJugador.split(",");
         // Recorrer el array y contar el número de estaciones que tiene el jugadorRecibe
         for (let i = 0; i < arrayPropiedades.length; i++) {
+            console.log("Reviseando propiedad: " + arrayPropiedades[i] + " en la posicion " + i + " del array");
             // Quitar los primeros 9 caracteres de cada componente del array
             arrayPropiedades[i] = arrayPropiedades[i].substring(9);
             if (arrayPropiedades[i] === "6" || arrayPropiedades[i] === "16" || arrayPropiedades[i] === "26" || arrayPropiedades[i] === "36") {
+                console.log("El jugador tiene una estacion");
                 numEstaciones++;
                 // Añadir al array de aeropuertos el aeropuerto
                 aeropuertos.push(arrayPropiedades[i]);
-                aeropuertoActual = numEstaciones - 1;
             }
         }
 
         if (numEstaciones > 1) {
+            console.log("El jugador tiene más de un aeropuerto")
             for (let i = 0; i < aeropuertos.length; i++) {
+                console.log("Comprobando a que aeropuerto se desplaza")
                 if (posicion === aeropuertos[i]) {
+                    console.log("El jugador se desplaza al aeropuerto " + aeropuertos[(i + 1) % aeropuertos.length]);
                     posicionADesplazarse = aeropuertos[(i + 1) % aeropuertos.length];
                 }
             }
@@ -445,7 +449,7 @@ async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
             socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
             await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
             // Si estaba en la primera casilla de superPoder va al aeropuerto
-            await GestionPropiedad(posicion, ID_partida, socket, ID_jugador);
+            await GestionPropiedad(nuevaPosicion, ID_partida, socket, ID_jugador);
             // CaerCasilla(socket, ID_jugador, ID_partida, nuevaPosicion);
 
             break;
