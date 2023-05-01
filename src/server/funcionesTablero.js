@@ -464,6 +464,44 @@ async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
             // "Aumentar" la suerte en el casino
             socket.send(`AUMENTAR_SUERTE`);
             break;
+        case 7:
+            // Ir a la carcel
+            await GestionIrCarcel(ID_jugador, ID_partida, socket);
+            break;
+        case 8:
+            // Ir al bote
+            nuevaPosicion = 21;
+            await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
+            socket.send(`DESPLAZAR_JUGADOR,21`);
+            let dineroBote = await API.obtenerDineroBote(ID_jugador, ID_partida);
+            socket.send(`OBTENER_BOTE,${ID_jugador},${dineroBote}`);
+            escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla del bote en la partida " + ID_partida);
+            // Enviar a los demas usuarios el dinero del bote actualizado
+            await enviarDineroBote(ID_partida, ID_jugador, 0);
+            break;
+        case 9:
+            // Ir a la casilla de Zaragoza
+            nuevaPosicion = 25;
+            socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
+            await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
+            await GestionPropiedad(nuevaPosicion, ID_partida, socket, ID_jugador);
+        case 10:
+            // Easter egg: Zarazaga nos pone un 10
+            break;
+        case 11:
+            // Ir a la casilla de tokyo
+            nuevaPosicion = 7;
+            socket.send(`DESPLAZAR_JUGADOR,${nuevaPosicion}`);
+            await API.desplazarJugadorACasilla(ID_jugador, nuevaPosicion, ID_partida);
+            await GestionPropiedad(nuevaPosicion, ID_partida, socket, ID_jugador);
+            break;
+        case 12:
+            // Ganar 2 euros
+            if (await API.modificarDinero(ID_partida, ID_jugador, 2)) {
+                let nuevoDinero = await API.obtenerDinero(ID_jugador, ID_partida);
+                socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
+            }
+            break;
         default:
             break;
     }
@@ -795,7 +833,7 @@ async function PropiedadesDispEdificar(socket, ID_jugador, ID_partida) {
     // Obtener una lista de los nombres de las propiedades (en string concatenado)
     let nombresPropiedades = obtenerNombresDePropiedades(propiedadesDisponibles, tablero);
 
-    let propiedadesParaConstruir = propiedadesParaEdificar(tablero, nombresPropiedades);
+    let propiedadesParaConstruir = propiedadesParaEdificar(tablero, nombresPropiedades, ID_partida);
     if (propiedadesParaConstruir.length === 0) {
         socket.send(`EDIFICAR,${ID_jugador}`);
         return;
@@ -842,7 +880,7 @@ exports.EdificarPropiedad = EdificarPropiedad;
 
 // Dado un string que contiene las propiedades de un jugador concatenadas con comas,
 // devuelve un array con aquellas propiedades en las que puede edificar
-function propiedadesParaEdificar(tablero, propiedades) {
+async function propiedadesParaEdificar(tablero, propiedades, ID_Partida) {
     const propiedadesParaConstruir = [];
     const propiedadesArray = propiedades.split(","); // convertimos la cadena de propiedades en un array
 
@@ -850,16 +888,20 @@ function propiedadesParaEdificar(tablero, propiedades) {
         const propiedadesDelGrupo = gruposDePropiedades[grupo];
         const propiedadesFaltantes = propiedadesDelGrupo.filter(p => !propiedadesArray.includes(p));
         if (propiedadesFaltantes.length === 0 && propiedadesArray.some(p => propiedadesDelGrupo.includes(p))) {
-            propiedadesDelGrupo.forEach(p => {
-                if (tablero.includes(p)) {
-                    propiedadesParaConstruir.push(p);
+            for (let i = 0; i < propiedadesDelGrupo.length; i++) {
+                const propiedad = propiedadesDelGrupo[i];
+                if (tablero.includes(propiedad)) {
+                    const numEdificaciones = await API.obtenerNumCasasPropiedad(ID_Partida, propiedad);
+                    if (numEdificaciones < 5) {
+                        propiedadesParaConstruir.push(propiedad);
+                    }
                 }
-            });
+            }
         }
     }
-
     return propiedadesParaConstruir;
 }
+
 
 
 function obtenerIndicePropiedades(tablero, propiedades) {
