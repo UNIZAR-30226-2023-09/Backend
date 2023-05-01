@@ -304,7 +304,7 @@ async function GestionPropiedad(posicion, ID_partida, socket, ID_jugador) {
         // Pertenece al propio jugador, no habría que hacer nada especial
         // Comprobar si la casilla es un aeropuerto o una estación 
         let ronda = await API.obtenerRonda(ID_partida);
-        if (ronda > 10) {
+        if (ronda > 1) { // TODO: Ronda mayor que 10
             // Permite viajar si la ronda es mayor que 10
             await GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket);
         }
@@ -419,7 +419,7 @@ async function GestionTreasure(ID_partida, ID_jugador, socket) {
 
 async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
     // let superPoder = Math.ceil(Math.random() * 5) + 1;
-    let superPoder = 5;
+    let superPoder = 2;
     let nuevaPosicion;
     socket.send(`SUPERPODER,${superPoder}`);
     switch (superPoder) {

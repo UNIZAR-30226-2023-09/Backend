@@ -44,7 +44,7 @@ async function moverBot(IDJugador, IDpartida) {
     if (dado1 === dado2 && estaCarcel > 0) {
         API.restarTurnoCarcel(IDJugador, IDpartida, estaCarcel);
         estaCarcel = 0;
-        await enviarJugadoresFueraCarcel(ID_jugador, ID_partida);
+        await enviarJugadoresFueraCarcel(IDJugador, IDpartida);
     }
     // Movemos al jugador -> obtenemos su nueva posición
     let posicionNueva = await API.moverJugador(IDJugador, sumaDados, IDpartida);
