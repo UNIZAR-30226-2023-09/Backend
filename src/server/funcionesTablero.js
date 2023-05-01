@@ -385,7 +385,7 @@ async function GestionLuxuryTax(ID_partida, ID_jugador, socket) {
 
 async function GestionIrCarcel(ID_jugador, ID_partida, socket) {
     escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de ir a la carcel en la partida " + ID_partida);
-    API.enviarCarcel(ID_jugador, ID_partida);
+    await API.enviarCarcel(ID_jugador, ID_partida);
     // Obtener todos los jugadores y enviarles que estoy en la carcel
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     for (let i = 0; i < jugadores_struct.length; i++) {
