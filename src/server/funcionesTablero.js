@@ -877,7 +877,11 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
     else {
         // Tiene dinero -> edificamos y devolvemos el nuevo dinero disponible
         let dineroResultante = await API.edificarPropiedad(ID_jugador, ID_partida, propiedad, precioProp);
-        socket.send(`EDIFICAR_OK,${propiedad},${dineroResultante}`);
+        if (dineroResultante === false) {
+            socket.send(`EDIFICAR_NOOK,${propiedad}`);
+        } else {
+            socket.send(`EDIFICAR_OK,${propiedad},${dineroResultante}`);
+        }
     }
 
 }
