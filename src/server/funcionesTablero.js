@@ -389,7 +389,7 @@ async function GestionIrCarcel(ID_jugador, ID_partida, socket) {
     // Obtener todos los jugadores y enviarles que estoy en la carcel
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     for (let i = 0; i < jugadores_struct.length; i++) {
-        if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
+        if (jugadores_struct[i].esBot === "0") {
             socket.send(`DENTRO_CARCEL,${ID_jugador}`);
         }
     }

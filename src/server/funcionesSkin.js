@@ -77,17 +77,17 @@ async function EquiparSkin(socket, ID_jugador, skin) {
         if (numCaracteres === 8) {
             // Es skin de tablero
             if (await API.equiparSkinTablero(ID_jugador, skin)) {
-                socket.send(`SKIN_EQUIPADA_OK, ${ID_jugador}, ${skin}`);
+                socket.send(`SKIN_EQUIPADA_OK,${ID_jugador},${skin}`);
             }
             else {
-                socket.send(`SKIN_EQUIPADA_NOOK, ${ID_jugador}, ${skin}`);
+                socket.send(`SKIN_EQUIPADA_NOOK,${ID_jugador},${skin}`);
             }
         } else {
             if (await API.equiparSkin(ID_jugador, skin)) {
-                socket.send(`SKIN_EQUIPADA_OK, ${ID_jugador}, ${skin}`);
+                socket.send(`SKIN_EQUIPADA_OK,${ID_jugador},${skin}`);
             }
             else {
-                socket.send(`SKIN_EQUIPADA_NOOK, ${ID_jugador}, ${skin}`);
+                socket.send(`SKIN_EQUIPADA_NOOK,${ID_jugador},${skin}`);
             }
         }
     }
