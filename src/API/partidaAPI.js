@@ -638,7 +638,7 @@ function jugadorEnPartida(email) {
         var con = db.crearConexion();
         con.connect();
         const query = `SELECT B.idPartida AS id FROM juega A INNER JOIN Partida B ON A.idPartida = B.idPartida 
-        WHERE A.email = '${email}' AND B.enCurso = true`;
+        WHERE A.email = '${email}' AND B.enCurso = true AND A.jugadorVivo = true`;
         con.query(query, (error, results) => {
             if (error) {
                 con.end(); // Cerrar la conexión
