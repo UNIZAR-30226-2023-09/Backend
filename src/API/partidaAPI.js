@@ -3837,3 +3837,116 @@ async function devolverPropiedadesBanca(idPartida, idJugador) {
 }
 exports.devolverPropiedadesBanca = devolverPropiedadesBanca;
 
+
+
+
+
+
+
+/*
+=================== OBTENER ESTADO GLOBAL DE LA PARTIDA =========================================================
+*/
+// Devuelve el esta global de una partida pasandole el id de un jugador.
+//  En caso de que no exista el jugador devuelve false
+//  Devuelve estado con el siguietne formato
+//  
+//
+function obtenerEstadoPartida(idPartida) {
+    return new Promise((resolve, reject) => {
+
+        let cadenaFinal = [];
+
+        var con = db.crearConexion();
+        con.connect();
+
+        const query = `SELECT idPartida, ronda, bote, evento, economia, enCurso, perteneceTorneo, turno 
+                        FROM Partida where idPartida = '${idPartida}'`;
+
+        con.query(query, (error, results) => {                  // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                  // Caso -- No existe ninguna partida con ese id
+                con.end();
+                resolve(false);
+            } else {                                            // Caso --  Existe esa partida
+
+                cadenaFinal[0] = "idPartida"           + ":" + results[0].idPartida + "," +
+                            "ronda"             + ":" + results[0].ronda + "," + 
+                             "bote"             + ":" + results[0].bote + "," +   
+                             "economia"         + ":" + results[0].economia + "," +
+                             "evento"           + ":" + results[0].evento + "," +
+                             "enCurso"          + ":" + results[0].enCurso + "," +
+                             "perteneceTorneo"  + ":" + results[0].perteneceTorneo + "," + 
+                             "turno"            + ":" + results[0].turno;
+
+
+                const query2 = `SELECT * FROM Partida where idPartida = '${idPartida}'`;
+
+                con.query(query2, (error, results2) => {                // Caso -- Error
+                    if (error) {
+                        con.end();
+                        reject(error);
+                    } else {                                            // Caso --  Existen la partida
+
+                        var vectorPropiedad = [];
+                        var vectorPrecio = [];
+                        var vectorCasas = [];
+
+                        for (var i = 1; i < 41; i++) {
+                            vectorPropiedad.push("propiedad" + i + ":" + results2[0]["propiedad" + i]);
+                            vectorPrecio.push( "precioPropiedad" + i + ":" + results2[0]["precioPropiedad" + i]);
+                            vectorCasas.push( "nCasasPropiedad" + i + ":" + results2[0]["nCasasPropiedad" + i]);
+                        }
+
+                        let aux = [];
+
+                        for (var i = 0; i < 40; i++) {
+                            aux.push(vectorPropiedad[i] + "," 
+                                    + vectorPrecio[i] + "," 
+                                    + vectorCasas[i]);
+                        }
+
+                        cadenaFinal[1] = aux.join(";");
+
+                        const query3 = `SELECT * FROM juega where idPartida = '${idPartida}'`;
+
+                        con.query(query3, (error, results3) => {                // Caso -- Error
+                            if (error) {
+                                con.end();
+                                reject(error);
+                            } else {                                            // Caso --  Existen la partida
+
+                                const respuesta = [];
+                                 results3.forEach((row, i) => {
+
+                                    respuesta[i] =  "email"             + ":" + results3[i].email + "," +
+                                                    "turno"             + ":" + results3[i].turno + "," +
+                                                    "esBotInicial"      + ":" + results3[i].esBotInicial + "," +
+                                                    "esBot"             + ":" + results3[i].esBot + "," +
+                                                    "jugadorVivo"       + ":" + results3[i].jugadorVivo + "," +
+                                                    "numPropiedades"    + ":" + results3[i].numPropiedades + "," +
+                                                    "dineroInvertido"   + ":" + results3[i].dineroInvertido + "," +
+                                                    "nTurnosCarcel"     + ":" + results3[i].nTurnosCarcel + "," +
+                                                    "posicion"          + ":" + results3[i].posicion + "," +
+                                                    "dinero"            + ":" + results3[i].dinero + "," +
+                                                    "skin"              + ":" + results3[i].skin + "," +
+                                                    "puestoPartida"     + ":" + results3[i].puestoPartida;
+                                });
+
+                                cadenaFinal[2] = respuesta.join(";")
+
+                                con.end();
+                                resolve(cadenaFinal.join("|"));
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+    });
+}
+
+
+exports.obtenerEstadoPartida = obtenerEstadoPartida;

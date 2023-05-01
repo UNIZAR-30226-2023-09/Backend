@@ -1290,7 +1290,22 @@ async function obtenerResultadoDevolverPropiedadesBanca(idPartida, idJugador) {
   }
 }
 
-  
+
+//FUNCIONA OKEY.
+async function obtenerObtenerEstadoPartida(idPartida){
+  try {
+      // Hacemos la llamada a la función que devuelve una Promesa.
+      const resultado = await test.obtenerEstadoPartida(idPartida);
+      console.log("El estado global es:", resultado);
+      return resultado;
+
+  } catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+  }
+}
+
 
 // obtenerResultadoObtenerNumTurnosActivos(1);
 
@@ -1461,3 +1476,6 @@ async function obtenerResultadoDevolverPropiedadesBanca(idPartida, idJugador) {
 //obtenerComprarSkin('AEoooo@gmail.com', 'default2');
 // obtenerObtenerSkinsJugador('jugador1@example.com');
 
+
+
+// obtenerObtenerEstadoPartida(1);
