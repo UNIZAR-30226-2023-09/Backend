@@ -831,7 +831,7 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
     }
     else {
         // Tiene dinero -> edificamos y devolvemos el nuevo dinero disponible
-        let dineroResultante = await API.edificarPropiedad(ID_jugador, ID_partida, propiedad, precio);
+        let dineroResultante = await API.edificarPropiedad(ID_jugador, ID_partida, propiedad, precioProp);
         socket.send(`EDIFICAR_OK,${propiedad},${dineroResultante}`);
     }
 
@@ -1202,7 +1202,8 @@ async function PagarLiberarseCarcel(socket, ID_jugador, ID_partida) {
     // Si estás en la cárcel y has sacado dobles -> sales
     API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
     await API.modificarDinero(ID_partida, ID_jugador, -50);
-    socket.send(`CARCEL_PAGADA`);
+
+    socket.send(`CARCEL_PAGADA,${dinero - 50}`);
     enviarJugadoresFueraCarcel(ID_jugador, ID_partida);
 }
 exports.PagarLiberarseCarcel = PagarLiberarseCarcel;
