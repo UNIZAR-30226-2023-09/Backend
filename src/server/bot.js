@@ -162,7 +162,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
             for (let i = 0; i < jugadores_struct.length; i++) {
                 if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != IDJugador) {
-                    let socket = con.con.buscarUsuario(jugadores_struct[i].id);
+                    let socket = con.buscarUsuario(jugadores_struct[i].id);
                     socket.send(`DENTRO_CARCEL,${IDJugador}`);
                 }
             }
@@ -243,7 +243,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
 
 // Gestiona el pago de alquileres a otros jugadores.
 async function CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_propiedad, propiedad) {
-    let precioPagar = await API.obtenerPrecioPropiedad(IDpartida, posicion);
+    let precioPagar = await API.precioAlquiler(IDjugador_propiedad, posicion, IDpartida);
     // Multiplicamos el precio a pagar por la economía
     let precio = precioPagar * ECONOMIA;
     // Pagamos el alquiler con el nuevo precio
@@ -257,7 +257,8 @@ async function CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_pr
             escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
             sigueVivo = false;
         }
-        if (API.jugadorEsBot(IDjugador_propiedad, IDpartida) === 0) {
+        let esBot = await API.jugadorEsBot(IDjugador_propiedad, IDpartida);
+        if (!esBot) {
             let conexion = con.buscarUsuario(IDjugador_propiedad);
             conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${IDjugador_propiedad},${dineroJugadorPaga}`);
         }

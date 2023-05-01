@@ -363,17 +363,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
 
         // Comprobamos si la propiedad no pertenece a ningún jugador
         if (IDjugador_propiedad == -1) {
-            let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
-
-            // Actualizar el precio de la propiedad en funcion de la economia
-            let economia = await API.obtenerEconomia(ID_partida);
-            precio = precio * economia;
-            // redondear el precio para que no tenga decimales
-            precio = Math.round(precio);
-
-            // Dar opción de comprarla
-            socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`)
-            escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
+            await GestionCompraPropiedad(ID_partida, posicion, socket, ID_jugador);
             // Recibe mensaje: SI/NO
             //      Si el mensaje es SI -> Comprobar si tiene dinero, si tiene comprarla
             //              (funcion ComprarPropiedad)
@@ -387,32 +377,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 // 
                 // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
                 // Pagamos el alquiler con el nuevo precio
-                let dineroJugadorPagaAntes = await API.obtenerDinero(ID_jugador, ID_partida);
-                let dineroJugadorRecibeAntes = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
-                // Escribir el dinero de los jugadores antes 
-                escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPagaAntes + "€ antes de pagar el alquiler en la partida " + ID_partida);
-
-                let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
-                let precioAlquiler = await API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio);
-                // obtener dinero de ambos jugadores
-                let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
-                let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
-                let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
-                if (sigue) {
-                    socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
-                    escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precioAlquiler + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
-                    escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPaga + "€ despues de pagar el alquiler en la partida " + ID_partida);
-                    escribirEnArchivo("El jugador " + IDjugador_propiedad + " tiene " + dineroJugadorRecibe + "€ despues de recibir el alquiler en la partida " + ID_partida);
-                } else {
-                    let partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
-                }
-
-                // Mandarle al jugador de la propiedad en la que has caido la actualizacion
-                let esBot = await API.jugadorEsBot(IDjugador_propiedad, ID_partida);
-                if (!esBot) {
-                    let conexion = con.buscarUsuario(IDjugador_propiedad);
-                    conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`)
-                }
+                await GestionPagoAlquiler(ID_jugador, ID_partida, IDjugador_propiedad, posicion, socket);
             }
 
             catch (error) {
@@ -428,6 +393,50 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     }
     // Este mensaje sirve para desbloquear al usuario
     socket.send("CASILLA");
+}
+
+async function GestionCompraPropiedad(ID_partida, posicion, socket, ID_jugador) {
+    let precio = await API.obtenerPrecioPropiedad(ID_partida, posicion);
+
+    // Actualizar el precio de la propiedad en funcion de la economia
+    let economia = await API.obtenerEconomia(ID_partida);
+    precio = precio * economia;
+    // redondear el precio para que no tenga decimales
+    precio = Math.round(precio);
+
+    // Dar opción de comprarla
+    socket.send(`QUIERES_COMPRAR_PROPIEDAD,${posicion},${ID_jugador},${ID_partida},${precio}`);
+    escribirEnArchivo("El jugador " + ID_jugador + " puede comprar la propiedad " + posicion + "en la partida " + ID_partida + " por " + precio + "€");
+}
+
+async function GestionPagoAlquiler(ID_jugador, ID_partida, IDjugador_propiedad, posicion, socket) {
+    let dineroJugadorPagaAntes = await API.obtenerDinero(ID_jugador, ID_partida);
+    let dineroJugadorRecibeAntes = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
+    // Escribir el dinero de los jugadores antes 
+    escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPagaAntes + "€ antes de pagar el alquiler en la partida " + ID_partida);
+
+    let precioPagar = await API.precioAlquiler(IDjugador_propiedad, posicion, ID_partida);
+    let precio = precioPagar * ECONOMIA;
+    API.pagarAlquiler(ID_jugador, IDjugador_propiedad, posicion, ID_partida, precio);
+    // obtener dinero de ambos jugadores
+    let dineroJugadorPaga = await API.obtenerDinero(ID_jugador, ID_partida);
+    let dineroJugadorRecibe = await API.obtenerDinero(IDjugador_propiedad, ID_partida);
+    let sigue = SigueEnPartida(ID_jugador, ID_partida, dineroJugadorPaga);
+    if (sigue) {
+        socket.send(`NUEVO_DINERO_ALQUILER,${dineroJugadorPaga},${dineroJugadorRecibe}`);
+        escribirEnArchivo("El jugador " + ID_jugador + " ha pagado " + precioAlquiler + "€ al jugador " + IDjugador_propiedad + " por la propiedad " + posicion + " en la partida " + ID_partida);
+        escribirEnArchivo("El jugador " + ID_jugador + " tiene " + dineroJugadorPaga + "€ despues de pagar el alquiler en la partida " + ID_partida);
+        escribirEnArchivo("El jugador " + IDjugador_propiedad + " tiene " + dineroJugadorRecibe + "€ despues de recibir el alquiler en la partida " + ID_partida);
+    } else {
+        let partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
+    }
+
+    // Mandarle al jugador de la propiedad en la que has caido la actualizacion
+    let esBot = await API.jugadorEsBot(IDjugador_propiedad, ID_partida);
+    if (!esBot) {
+        let conexion = con.buscarUsuario(IDjugador_propiedad);
+        conexion.send(`NUEVO_DINERO_ALQUILER_RECIBES,${dineroJugadorRecibe},${ID_jugador},${dineroJugadorPaga}`);
+    }
 }
 
 async function gestionarMuerteJugador(ID_jugador, ID_partida, socket) {

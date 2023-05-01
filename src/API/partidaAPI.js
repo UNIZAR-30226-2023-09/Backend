@@ -1489,9 +1489,8 @@ exports.obtenerPrecioPropiedad = obtenerPrecioPropiedad;
 ===================PAGAR ALQUILER=========================================
 */
 
-// jugadorPaga paga el alquiler al jugadorRecibe por estar en propiedad si pertenece 
-// al jugadorRecibe
-async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad) {
+// Funcion que devuelve el precio del alquiler de una propiedad
+async function precioAlquiler(id_jugadorRecibe, propiedad, idPartida) {
     try {
         //sacamos el numero de casas que tiene en dicha propiedad.
         const numCasas = await obtenerNumCasasPropiedad(idPartida, propiedad);
@@ -1519,7 +1518,21 @@ async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPart
                 alquiler = precioPropiedad * 5;
             }
         }
+        return alquiler;
+    } catch (error) {
+        console.error("Error en la promesa de precioAlquiler: " + error);
+    }
+    return -1;
+}
+exports.precioAlquiler = precioAlquiler;
 
+// jugadorPaga paga el alquiler al jugadorRecibe por estar en propiedad si pertenece 
+// al jugadorRecibe
+async function pagarAlquiler(id_jugadorPaga, id_jugadorRecibe, propiedad, idPartida, precioPropiedad) {
+    try {
+        precioPropiedad = ParseInt(precioPropiedad);
+        // Quitarle los decimales
+        precioPropiedad = Math.trunc(precioPropiedad);
         //le sumamos ese dinero al jugadorRecibe.
         const res = await modificarDinero(idPartida, id_jugadorPaga, -alquiler);
 
