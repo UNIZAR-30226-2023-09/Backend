@@ -37,9 +37,9 @@ function insertarUsuario(userData) {
                             con.end(); // Cerrar conexión
                             resolve(false);
                         } else {
-                            const sql = `INSERT INTO Jugador (gemas, nombre, pass, email, skinEquipada) VALUES (?, ?, ?, ?, ?)`;
+                            const sql = `INSERT INTO Jugador (gemas, nombre, pass, email, skinEquipada, skinTablero) VALUES (?, ?, ?, ?, ?, ?)`;
                             const gemasInt = parseInt(1000); // TODO: Cambiar gemas iniciales
-                            const values = [gemasInt, username.trim(), password.trim(), email.trim(), "PLEX"];
+                            const values = [gemasInt, username.trim(), password.trim(), email.trim(), "PLEX", "TABLERO1"];
                             con.query(sql, values, (error, results2, fields) => {
                                 if (error) {
                                     con.end(); // Cerrar conexión
@@ -302,7 +302,11 @@ async function insertarUsuarioConSkin(userData) {
 
             if (res) {
                 // Insertamos segunda skin default
-                await skin.insertarSkin(email, "JULS");
+                res = await skin.insertarSkin(email, "JULS");
+            }
+            if (res) {
+                // Insertamos segunda skin default
+                res = await skin.insertarSkin(email, "TABLERO1");
             }
             return true;
         }
