@@ -1200,7 +1200,7 @@ function unirsePartida(idJugador, idPartida, skin, skinTablero) {
                                         resolve(false);
                                     } else {                                            // Caso -- El jugador no esta jugando ninguna partida
                                         const sql = `INSERT INTO juega ( esBotInicial, esBot, numPropiedades,jugadorVivo, dineroInvertido, nTurnosCarcel, posicion, 
-                                        dinero, skin,skinTablero, puestoPartida, email, idPartida,propiedadSubastar, precioSubastar) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+                                        dinero, skin,skinTablero, puestoPartida, email, idPartida,propiedadSubastar, precioSubastar) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
                                         const values = [false, false, 0, true, 0.0, 0, 1, 1000.0, skin, skinTablero, 0, idJugador, idPartida, null, null];
                                         con.query(sql, values, (error, results5) => {      // Caso -- Error
                                             if (error) {
