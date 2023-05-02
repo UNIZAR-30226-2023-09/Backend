@@ -3633,7 +3633,6 @@ exports.obtenerSkinsPartida = obtenerSkinsPartida;
 
 
 
-//Dada una partida, devuelve el numero de turnos activos. Sino hay subasta(es null) devuelve 0.
 function obtenerNumTurnosActivos(idPartida) {
     return new Promise((resolve, reject) => {
         // Creamos una conexión a la base de datos
@@ -3647,16 +3646,22 @@ function obtenerNumTurnosActivos(idPartida) {
         con.query(query, (error, result) => {
             // Cerramos la conexión
             con.end();
+
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
                 reject(error);
             } else {
-                resolve(result[0].numTurnosSubasta);
+                if (result.length > 0) {
+                    resolve(result[0].numTurnosSubasta);
+                } else {
+                    resolve(0);
+                }
             }
         });
     });
 }
 exports.obtenerNumTurnosActivos = obtenerNumTurnosActivos;
+
 
 
 
@@ -3672,7 +3677,7 @@ function actualizarNumTurnosSubasta(idPartida, numTurnosSubasta) {
         const query = `UPDATE Partida SET numTurnosSubasta = ${numTurnosSubasta} WHERE idPartida = '${idPartida}' `;
 
         // Ejecutamos la consulta SQL
-        con.query(query, values, (error, result) => {
+        con.query(query, (error, result) => {
             // Cerramos la conexión
             con.end();
             // Verificamos si hubo algún error en la consulta SQL

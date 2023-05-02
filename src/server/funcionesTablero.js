@@ -1125,7 +1125,7 @@ async function enviarDineroBote(IDpartida, IDJugador, dineroBote) {
 // y el precio por la que lo quiere subastar, se envia a todos los jugadores de la
 // partida el mensaje de que se ha subastado la propiedad y el precio por la que se
 // ha subastado.
-async function Subastar(socket, ID_jugador, ID_partida, propiedad, precio) {
+async function Subastar(socket, ID_partida, ID_jugador, propiedad, precio) {
     // TODO: Comprobar que no exista otra subasta, y actualizar turnos en finTurno
     let haySubasta = await API.obtenerNumTurnosActivos(ID_partida);
     if (haySubasta > 0) {
@@ -1136,8 +1136,9 @@ async function Subastar(socket, ID_jugador, ID_partida, propiedad, precio) {
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     // Actualizar la subasta en la base de datos
     precio = parseInt(precio);
-    await APIJugador.actualizarPropiedadSubasta(ID_partida, propiedad, ID_jugador);
-    await APIJugador.actualizarPrecioSubasta(ID_partida, precio, ID_jugador);
+    socket.send("SUBASTA_OK");
+    await API.actualizarPropiedadSubasta(ID_partida, propiedad, ID_jugador);
+    await API.actualizarPrecioSubasta(ID_partida, precio, ID_jugador);
     for (let i = 0; i < jugadores_struct.length; i++) {
         if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
             let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
@@ -1154,9 +1155,9 @@ exports.Subastar = Subastar;
 // que se ha comprado la propiedad.
 async function ComprarSubasta(socket, ID_jugador, ID_partida, ID_propietario) {
     // Obtener el dinero que tiene el jugador que compra
-    let dinero = await APIJugador.obtenerDinero(ID_jugador, ID_partida);
+    let dinero = await API.obtenerDinero(ID_jugador, ID_partida);
     // Obtener el precio de la subasta
-    let precioSubasta = await APIJugador.obtenerPrecioSubasta(ID_partida, ID_propietario);
+    let precioSubasta = await API.obtenerPrecioSubasta(ID_partida, ID_propietario);
     if (precioSubasta === null) {
         socket.send(`SUBASTA_NO_OK`);
         escribirEnArchivo(`El jugador ${ID_jugador} ha intentado comprar la propiedad ${propiedadSubasta} de ${ID_propietario} pero no se ha podido obtener el precio de la subasta`)
@@ -1169,7 +1170,7 @@ async function ComprarSubasta(socket, ID_jugador, ID_partida, ID_propietario) {
         return;
     }
     // Obtener la propiedad que se subasta
-    let propiedadSubasta = await APIJugador.obtenerNombreSubasta(ID_partida, ID_propietario);
+    let propiedadSubasta = await API.obtenerNombreSubasta(ID_partida, ID_propietario);
     // Obtener el numero de edificaciones que tiene la propiedad
     let edificaciones = await API.obtenerNumCasasPropiedad(ID_partida, propiedadSubasta);
     // Si tiene edificaciones, no se acepta la subasta
@@ -1188,28 +1189,27 @@ async function ComprarSubasta(socket, ID_jugador, ID_partida, ID_propietario) {
     await API.expropieseSeñorAlcalde(ID_partida, ID_jugador, propiedadSubasta);
 
     // Quitar la propiedad de la subasta, y poner precio a null
-    await APIJugador.actualizarPropiedadSubasta(ID_partida, null, ID_propietario);
-    await APIJugador.actualizarPrecioSubasta(ID_partida, null, ID_propietario);
+    await API.actualizarPropiedadSubasta(ID_partida, null, ID_propietario);
+    await API.actualizarPrecioSubasta(ID_partida, null, ID_propietario);
+
+    let dineroComprador = await API.obtenerDinero(ID_jugador, ID_partida);
+    let dineroPropietario = await API.obtenerDinero(ID_propietario, ID_partida);
 
     // Enviar al vendedor que la compra ha sido correcta
     let esBot = await API.jugadorEsBot(ID_propietario, ID_partida);
     if (!esBot) {
         let socketVendedor = con.buscarUsuario(ID_propietario);
         if (socketVendedor != null) {
-            socketVendedor.send(`SUBASTA_COMPRADA,${ID_jugador},${propiedadSubasta}`);
+            socketVendedor.send(`SUBASTA_COMPRADA,${ID_jugador},${dineroPropietario},${propiedadSubasta}`);
         }
     }
 
-    // Enviar a todos los jugadores que se ha comprado la propiedad
-    let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
-
-    await APIJugador.actualizarPropietario(ID_jugador, ID_propietario, ID_partida);
-    for (let i = 0; i < jugadores_struct.length; i++) {
-        if (jugadores_struct[i].esBot === "0") {
-            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
-            if (socketJugador != null) {
-                socketJugador.send(`COMPRAR_SUBASTA,${ID_jugador},${propiedadSubasta}`);
-            }
+    // Enviar al comprador que la compra ha sido correcta
+    esBot = await API.jugadorEsBot(ID_jugador, ID_partida);
+    if (!esBot) {
+        let socketVendedor = con.buscarUsuario(ID_jugador);
+        if (socketVendedor != null) {
+            socketVendedor.send(`SUBASTA_COMPRADA_TU,${ID_propietario},${dineroComprador},${propiedadSubasta}`);
         }
     }
 }

@@ -104,7 +104,7 @@ async function FinTurno(ID_jugador, ID_partida) {
     let haySubasta = await APIpartida.obtenerNumTurnosActivos(ID_partida);
     if (haySubasta > 0) {
         escribirEnArchivo("Quedan " + haySubasta + " turnos de subasta");
-        await API.actualizarNumTurnosSubasta(ID_partida, haySubasta - 1);
+        await APIpartida.actualizarNumTurnosSubasta(ID_partida, haySubasta - 1);
     }
 
     // Comprobar si es fin de ronda y realizar lo oportuno con esta
