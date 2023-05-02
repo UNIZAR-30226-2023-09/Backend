@@ -342,7 +342,7 @@ async function GestionViajeAeropuerto(posicion, ID_partida, ID_jugador, socket) 
                     console.log("El jugador se desplaza al aeropuerto " + aeropuertos[(i + 1) % aeropuertos.length]);
                     posicionADesplazarse = aeropuertos[(i + 1) % aeropuertos.length];
                     await API.desplazarJugadorACasilla(ID_jugador, posicionADesplazarse, ID_partida);
-                    socket.send(`DESPLAZAR_JUGADOR_AVION${posicionADesplazarse}`);
+                    socket.send(`DESPLAZAR_JUGADOR_AVION,${posicionADesplazarse}`);
                 }
             }
         } else {
