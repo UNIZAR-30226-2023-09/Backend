@@ -953,12 +953,53 @@ exports.comprarPropiedad = comprarPropiedad;
 
 
 
+
 /*
 ===================OBTENER PROPIEDADES JUGADOR EN PARTIDA =========================================
 */
 // Obtener la lista de propiedades de un jugador. Si no tiene ninguna propiedad devuelve la cadena vacia (null).
 //Las propiedades van devueltas en una cadena separada por comas: "propiedad1,propiedad2".
-function obtenerPropiedades(id_partida, id_jugador) {
+function obtenerPropiedades(idPartida, idJugador) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT * FROM Partida WHERE idPartida = '${idPartida}'`;
+        con.query(query, (error, results) => {                // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                  // Caso -- No existe ninguna partida
+                con.end();
+                resolve(false);
+            } else {                                            // Caso --  Existen la partida
+                let vectorPropiedad = [];
+                for (var i = 1; i < 41; i++) {
+
+                    if (results[0]["propiedad" + i] === idJugador){
+                        vectorPropiedad.push("propiedad" + i);
+                    }
+                }
+                if (vectorPropiedad.length === 0){
+                    con.end();
+                    resolve(null);
+                } else {
+                    con.end();
+                    resolve(vectorPropiedad.join(","));
+                }
+            }
+        });
+    });
+}
+
+
+exports.obtenerPropiedades = obtenerPropiedades;
+
+/*
+===================OBTENER PROPIEDADES JUGADOR EN PARTIDA =========================================
+*/
+// Obtener la lista de propiedades de un jugador. Si no tiene ninguna propiedad devuelve la cadena vacia (null).
+//Las propiedades van devueltas en una cadena separada por comas: "propiedad1,propiedad2".
+function obtenerPropiedades2(id_partida, id_jugador) {
     return new Promise((resolve, reject) => {
         var con = db.crearConexion();
         con.connect();
@@ -997,7 +1038,7 @@ function obtenerPropiedades(id_partida, id_jugador) {
 }
 
 
-exports.obtenerPropiedades = obtenerPropiedades;
+exports.obtenerPropiedades2 = obtenerPropiedades2;
 
 
 
