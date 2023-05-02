@@ -335,7 +335,7 @@ async function CasillaLuxuryTax(IDpartida, IDJugador) {
     let cantidad = 100 + 50 * numPropiedades;
     let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
     await enviarDineroBote(IDpartida, IDJugador, dineroBote);
-    let nuevoDinero = API.modificarDinero(IDpartida, IDJugador, -cantidad);
+    let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, -cantidad);
     let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
     escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos luxury");
     if (!sigue) {
@@ -392,7 +392,7 @@ async function ComprarPropiedad(IDJugador, propiedad, IDpartida) {
         let precio = precioPropiedad * economia;
         // redondear el precio para que no tenga decimales
         precio = Math.round(precio);
-        API.comprarPropiedad(IDpartida, IDJugador, propiedad, precio);
+        await API.comprarPropiedad(IDpartida, IDJugador, propiedad, precio);
     }
     catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
