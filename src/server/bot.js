@@ -25,6 +25,7 @@ let sigueVivo = true;
  */
 async function moverBot(IDJugador, IDpartida) {
     // Calculamos los valores de los dados en funcion del evento actual 
+    escribirEnArchivo("moverBot", "IDJugador: " + IDJugador + " IDpartida: " + IDpartida)
     let dado1 = Math.ceil(Math.random() * 6);
     let dado2 = Math.ceil(Math.random() * 6);
     let sumaDados = await calcularSumaDados(IDpartida, dado1, dado2);
@@ -32,7 +33,7 @@ async function moverBot(IDJugador, IDpartida) {
 
     // Si estás en la cárcel restamos un turno
     if (estaCarcel > 0) {
-        API.restarTurnoCarcel(IDJugador, IDpartida, 1);
+        await API.restarTurnoCarcel(IDJugador, IDpartida, 1);
         if (estaCarcel === 1) {
             await enviarJugadoresFueraCarcel(IDJugador, IDpartida);
         } else {
@@ -42,7 +43,7 @@ async function moverBot(IDJugador, IDpartida) {
 
     // Si estás en la cárcel y has sacado dobles -> sales
     if (dado1 === dado2 && estaCarcel > 0) {
-        API.restarTurnoCarcel(IDJugador, IDpartida, estaCarcel);
+        await API.restarTurnoCarcel(IDJugador, IDpartida, estaCarcel);
         estaCarcel = 0;
         await enviarJugadoresFueraCarcel(IDJugador, IDpartida);
     }
@@ -163,14 +164,14 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     // Comprobar si la nueva casilla es la de ir a la cárcel
     else if (posicion == 31) {
         try {
-            API.enviarCarcel(IDJugador, IDpartida);
-            let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
-            for (let i = 0; i < jugadores_struct.length; i++) {
-                if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != IDJugador) {
-                    let socket = con.buscarUsuario(jugadores_struct[i].id);
-                    socket.send(`DENTRO_CARCEL,${IDJugador}`);
-                }
-            }
+            // API.enviarCarcel(IDJugador, IDpartida);
+            // let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
+            // for (let i = 0; i < jugadores_struct.length; i++) {
+            //     if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != IDJugador) {
+            //         let socket = con.buscarUsuario(jugadores_struct[i].id);
+            //         socket.send(`DENTRO_CARCEL,${IDJugador}`);
+            //     }
+            // }
         }
         catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
@@ -239,9 +240,11 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     }
 
     if (dadosDobles) {
+        escribirEnArchivo("El bot " + IDJugador + " ha sacado dobles, vuelve a tirar");
         jugar(IDJugador, IDpartida);
     }
     else {
+        escribirEnArchivo("El bot " + IDJugador + " ha terminado su turno");
         jugador.FinTurno(IDJugador, IDpartida);
     }
 }
@@ -428,7 +431,7 @@ function Usuario(id, esBot) {
 async function enviarJugadoresFueraCarcel(ID_jugador, ID_partida) {
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     for (let i = 0; i < jugadores_struct.length; i++) {
-        if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
+        if (jugadores_struct[i].esBot === "0") {
             let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
             if (socketJugador != null) {
                 socketJugador.send(`FUERA_CARCEL,${ID_jugador}`);

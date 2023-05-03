@@ -975,11 +975,11 @@ function obtenerPropiedades(idPartida, idJugador) {
                 let vectorPropiedad = [];
                 for (var i = 1; i < 41; i++) {
 
-                    if (results[0]["propiedad" + i] === idJugador){
+                    if (results[0]["propiedad" + i] === idJugador) {
                         vectorPropiedad.push("propiedad" + i);
                     }
                 }
-                if (vectorPropiedad.length === 0){
+                if (vectorPropiedad.length === 0) {
                     con.end();
                     resolve(null);
                 } else {

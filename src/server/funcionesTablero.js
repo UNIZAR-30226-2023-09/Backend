@@ -97,13 +97,13 @@ async function moverJugador(ID_jugador, ID_partida) {
     let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
     // Si estás en la cárcel y has sacado dobles -> sales
     if (dado1 === dado2 && estaCarcel > 0) {
-        API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
+        await API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
         estaCarcel = 0;
         posicionNueva = await API.obtenerPosicion(ID_jugador, ID_partida);
         await enviarJugadoresFueraCarcel(ID_jugador, ID_partida);
     } else if (estaCarcel > 0) {
         // Si estás en la cárcel restamos un turno
-        API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
+        await API.restarTurnoCarcel(ID_jugador, ID_partida, 1);
         posicionNueva = await API.obtenerPosicion(ID_jugador, ID_partida);
         // Enviar a todos los jugadores que el jugador esta en la carcel
         if (estaCarcel === 1) {
@@ -1231,7 +1231,7 @@ async function enviarJugadoresCarcel(ID_jugador, ID_partida) {
 async function enviarJugadoresFueraCarcel(ID_jugador, ID_partida) {
     let jugadores_struct = await obtenerJugadoresPartida(ID_partida);
     for (let i = 0; i < jugadores_struct.length; i++) {
-        if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id != ID_jugador) {
+        if (jugadores_struct[i].esBot === "0") {
             let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
             if (socketJugador != null) {
                 socketJugador.send(`FUERA_CARCEL,${ID_jugador}`);
@@ -1249,7 +1249,7 @@ async function PagarLiberarseCarcel(socket, ID_jugador, ID_partida) {
     }
     let estaCarcel = await API.verificarCarcel(ID_jugador, ID_partida);
     // Si estás en la cárcel y has sacado dobles -> sales
-    API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
+    await API.restarTurnoCarcel(ID_jugador, ID_partida, estaCarcel);
     await API.modificarDinero(ID_partida, ID_jugador, -50);
 
     socket.send(`CARCEL_PAGADA,${dinero - 50}`);
