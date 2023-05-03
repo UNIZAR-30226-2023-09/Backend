@@ -445,12 +445,14 @@ function sumarDineroBote(cantidad, idPartida) {
                 const values = [bote, idPartida];
                 con.query(query, values, (error, results) => {
                     if (error) {
+                        con.end(); // Cerrar conexión
                         reject(error);
                     } else {
                         //todo ha ido okey, devolvemos el bote actualizado de la partida.
+                        con.end(); // Cerrar conexión
                         resolve(bote);
                     }
-                    con.end();
+                    //con.end();
                 });
             }
         });
@@ -725,17 +727,21 @@ function obtenerJugadorPropiedad(n_propiedad, id_partida) {
         const query1 = `SELECT ${concat} as nombre_propietario FROM Partida WHERE idPartida = ${id_partida}`;
         con.query(query1, (error, results1) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
             } else if (results1.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1);
             } else {
                 let propietario = results1[0].nombre_propietario;
                 if (propietario == null) {
                     //no tiene propietario, con lo que devolvemos -1.
+                    con.end(); // Cerrar conexión
                     resolve(-1);
                 }
                 else {
                     //tiene propietario, con lo que devolvemos el id_jugador(email).
+                    con.end(); // Cerrar conexión
                     resolve(propietario);
                 }
             }
@@ -1059,12 +1065,12 @@ function crearPartida(id_jugador, skin, skinTablero) {
         const query1 = `SELECT * FROM Jugador WHERE email = '${id_jugador}'`;
         con.query(query1, (error, results1) => {
             if (error) {
+                con.end(); // Cerrar conexión
                 reject(error);
-                con.end();
             }
             else if (results1.length === 0) {
+                con.end(); // Cerrar conexión
                 resolve(-1); // Si no existe jugador
-                con.end();
             }
             else {
                 const jugador_id = results1[0].email;
@@ -1086,24 +1092,24 @@ function crearPartida(id_jugador, skin, skinTablero) {
           0,0,0,0,0,0,0,0,0,0,0,0,0)`;
                 con.query(query2, (error, results2) => {
                     if (error) {
+                        con.end(); // Cerrar conexión
                         reject(error);
-                        con.end();
                     }
                     else if (results1.length === 0) {
+                        con.end(); // Cerrar conexión
                         resolve(-1); // Si no existe jugador
-                        con.end();
                     }
                     else {
                         //obtener el maximo idPartida, ya que sera el ultimo y lo devolvemos.
                         const query3 = `SELECT MAX(idPartida) as maximo FROM Partida`;
                         con.query(query3, (error, results3) => {
                             if (error) {
+                                con.end(); // Cerrar conexión
                                 reject(error);
-                                con.end();
                             }
                             else if (results3.length === 0) {
+                                con.end(); // Cerrar conexión
                                 resolve(-1); // Si no existe jugador
-                                con.end();
                             }
                             else {
                                 //ahora hay que enlazarlo con la tabla juega
@@ -1112,16 +1118,16 @@ function crearPartida(id_jugador, skin, skinTablero) {
                   email, idPartida, propiedadSubastar, precioSubastar) VALUES ( false, false, 0, true, 0.0, 0, 1, 1000.0,'${skin}','${skinTablero}', 0 , '${id_jugador}', ${maxIdPartida},null,null)`;
                                 con.query(query3, (error, results3) => {
                                     if (error) {
+                                        con.end(); // Cerrar conexión
                                         reject(error);
-                                        con.end();
                                     }
                                     else if (results3.length === 0) {
+                                        con.end(); // Cerrar conexión
                                         resolve(-1); // Si no existe jugador
-                                        con.end();
                                     }
                                     else {
+                                        con.end(); // Cerrar conexión
                                         resolve(maxIdPartida);
-                                        con.end();
                                     }
                                 });
                             }
@@ -1301,6 +1307,7 @@ function restarTurnoCarcel(id_jugador, id_partida, turnos) {
                     } else {
                         //si ha ido bien,cerramos conexion
                         con.end();
+                        resolve(true);
                         // ¿ Falta hacer un resolve(true) ??
                     }
                 });
@@ -2091,8 +2098,9 @@ function obtenerPropiedadesEdificaciones(idJugador, idPartida) {
                         resolve(false);
                     } else {
                         let resultado = '';
+                        let acabar_bucle = false;
                         // Iterar por todas las propiedades de la tabla
-                        for (let i = 1; i <= 40; i++) {
+                        for (let i = 1; i <= 40 && !acabar_bucle; i++) {
                             // Construir la consulta SQL para obtener las propiedades del usuario 'idJugador' en 'idPartida'
                             let consulta = `SELECT CONCAT('propiedad', ${i}) AS propiedad, nCasasPropiedad${i} AS nCasas FROM Partida 
                             WHERE propiedad${i} = '${idJugador}' AND idPartida = '${idPartida}';`;
@@ -2100,6 +2108,7 @@ function obtenerPropiedadesEdificaciones(idJugador, idPartida) {
                             con.query(consulta, (err, res) => {
                                 if (err) {
                                     con.end;
+                                    acabar_bucle = true;
                                     reject(err);
                                 } else {
                                     // Iterar por el resultado y agregar cada propiedad al resultado final
@@ -2396,6 +2405,8 @@ async function crearPartidaTorneo(id_jugador, id_torneo) {
         //llamamos a la funcion crearPartida.
         let idPartidaCreada = await crearPartida(id_jugador);
 
+        var con = db.crearConexion();
+        con.connect();
         //actualizamos la partida para que pertenezca al torneo id_torneo.
         const query = `UPDATE Partida SET perteneceTorneo = ${id_torneo} WHERE idPartida = ${idPartidaCreada}`;
         con.query(query, (error, results) => {
@@ -2671,6 +2682,8 @@ function eliminarBotsPartida(idPartida) {
                                     if (i === results.length - 1) {
                                         con.end();
                                         resolve(true);
+                                    } else {
+                                        // AQUI??
                                     }
                                 }
                             });
@@ -3686,15 +3699,18 @@ function obtenerNumTurnosActivos(idPartida) {
         // Ejecutamos la consulta SQL
         con.query(query, (error, result) => {
             // Cerramos la conexión
-            con.end();
+            //con.end();
 
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
+                con.end();
                 reject(error);
             } else {
                 if (result.length > 0) {
+                    con.end();
                     resolve(result[0].numTurnosSubasta);
                 } else {
+                    con.end();
                     resolve(0);
                 }
             }
@@ -3720,11 +3736,13 @@ function actualizarNumTurnosSubasta(idPartida, numTurnosSubasta) {
         // Ejecutamos la consulta SQL
         con.query(query, (error, result) => {
             // Cerramos la conexión
-            con.end();
+            //con.end();
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
+                con.end();
                 reject(error);
             } else {
+                con.end();
                 resolve(true);
             }
         });
@@ -3751,12 +3769,14 @@ function actualizarPrecioSubasta(idPartida, precio, email) {
         // Ejecutamos la consulta SQL
         con.query(query, values, (error, result) => {
             // Cerramos la conexión
-            con.end();
+            //con.end();
 
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
+                con.end();
                 reject(error);
             } else {
+                con.end();
                 resolve(true);
             }
         });
@@ -3783,12 +3803,14 @@ function actualizarPropiedadSubasta(idPartida, nombre, email) {
         // Ejecutamos la consulta SQL
         con.query(query, values, (error, result) => {
             // Cerramos la conexión
-            con.end();
+            //con.end();
 
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
+                con.end();
                 reject(error);
             } else {
+                con.end();
                 resolve(true);
             }
         });
@@ -3817,13 +3839,15 @@ function obtenerPrecioSubasta(idPartida, email) {
         // Ejecutamos la consulta SQL
         con.query(query, values, (error, result) => {
             // Cerramos la conexión
-            con.end();
+            //con.end();
 
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
+                con.end();
                 reject(error);
             } else {
                 // Si no hubo errores, devolvemos el precio de la propiedad subastada
+                con.end();
                 resolve(result[0].precioSubastar);
             }
         });
@@ -3852,11 +3876,13 @@ function obtenerNombreSubasta(idPartida, email) {
         // Ejecutamos la consulta SQL
         con.query(query, values, (error, result) => {
             // Cerramos la conexión
-            con.end();
+            //con.end();
             // Verificamos si hubo algún error en la consulta SQL
             if (error) {
+                con.end();
                 reject(error);
             } else {
+                con.end();
                 resolve(result[0].propiedadSubastar);
             }
         });
