@@ -1250,7 +1250,7 @@ async function enviarJugadoresFueraCarcel(ID_jugador, ID_partida) {
 
 // Funcion que le resta 50 al jugador en la partida dada y le libera de la carcel
 async function PagarLiberarseCarcel(socket, ID_jugador, ID_partida) {
-    let dinero = await APIJugador.obtenerDinero(ID_jugador, ID_partida);
+    let dinero = await API.obtenerDinero(ID_jugador, ID_partida);
     if (dinero < 50) {
         socket.send(`CARCEL_NO_PAGADA`);
         return;
@@ -1262,5 +1262,6 @@ async function PagarLiberarseCarcel(socket, ID_jugador, ID_partida) {
 
     socket.send(`CARCEL_PAGADA,${dinero - 50}`);
     enviarJugadoresFueraCarcel(ID_jugador, ID_partida);
+    escribirEnArchivo(`El jugador ${ID_jugador} ha pagado 50 para salir de la carcel`);
 }
 exports.PagarLiberarseCarcel = PagarLiberarseCarcel;
