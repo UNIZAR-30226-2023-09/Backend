@@ -1524,7 +1524,7 @@ exports.obtenerNumCasasPropiedad = obtenerNumCasasPropiedad;
 
 
 /*
-===================LIBERAR PROPIEDAD JUGADOR=========================================
+===================LIBERAR PROPIEDAD JUGADOR===============NO SE USA===================
 */
 
 // Eliminar al jugador dado la propiedad dada, sumanodle el dinero de la propiedad.
