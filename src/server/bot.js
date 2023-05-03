@@ -25,11 +25,11 @@ let sigueVivo = true;
  */
 async function moverBot(IDJugador, IDpartida) {
     // Calculamos los valores de los dados en funcion del evento actual 
-    escribirEnArchivo("moverBot", "IDJugador: " + IDJugador + " IDpartida: " + IDpartida)
     let dado1 = Math.ceil(Math.random() * 6);
     let dado2 = Math.ceil(Math.random() * 6);
     let sumaDados = await calcularSumaDados(IDpartida, dado1, dado2);
     let estaCarcel = await API.verificarCarcel(IDJugador, IDpartida);
+
 
     // Si estás en la cárcel restamos un turno
     if (estaCarcel > 0) {
@@ -49,6 +49,7 @@ async function moverBot(IDJugador, IDpartida) {
     }
     // Movemos al jugador -> obtenemos su nueva posición
     let posicionNueva = await API.moverJugador(IDJugador, sumaDados, IDpartida);
+    escribirEnArchivo("El bot " + IDJugador + " ha sacado " + dado1 + " y " + dado2 + " y se ha movido a la casilla " + posicionNueva + "\n");
     return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
 

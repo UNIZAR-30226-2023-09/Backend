@@ -113,6 +113,7 @@ async function moverJugador(ID_jugador, ID_partida) {
         // Movemos al jugador -> obtenemos su nueva posición
         posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
     }
+    escribirEnArchivo("El bot " + ID_jugador + "en la partida " + ID_partida + " ha sacado " + dado1 + " y " + dado2 + " y se ha movido a la casilla " + posicionNueva + "\n");
     return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
 
@@ -996,18 +997,25 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
     await API.modificarGemas(ID_jugador, gema);
     let esBot = await API.jugadorEsBot(ID_jugador, ID_partida);
     if (!esBot) {
-        socket.send(`ELIMINADO,${posicion},${gema}`);
+        let info = await APIJugador.obtenerInformacionJugador(jugadores_struct[0].id);
+        let aux = info.split(",");
+        let gemas = parseInt(aux[1]);
+        socket.send(`ELIMINADO,${posicion},${gemas}`);
         escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " + ID_partida + " y ha recibido " + gema + " gemas.");
     }
 
     // Comprobamos si es el ultimo jugador
     if (jugadores_struct.length === 1) {
+        await API.modificarGemas(ID_jugador, 5);
         if (jugadores_struct[0].esBot === "0") {
             let conexion = con.buscarUsuario(jugadores_struct[0].id);
-            conexion.send(`GANADOR,${5}`);
+            let info = await APIJugador.obtenerInformacionJugador(jugadores_struct[0].id);
+            let aux = info.split(",");
+            let gemas = parseInt(aux[1]);
+            conexion.send(`GANADOR,${gemas}`);
             escribirEnArchivo("El jugador " + jugadores_struct[0].id + " ha ganado la partida " + ID_partida + " y ha recibido 5 gemas.");
         }
-        await API.modificarGemas(ID_jugador, 5);
+
         await API.acabarPartida(ID_partida);
         escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
         return false;
