@@ -2983,10 +2983,149 @@ function actualizarPosicionJugador(idJugador, idPartida, posicion) {
 exports.actualizarPosicionJugador = actualizarPosicionJugador;
 
 
+
+
+
+
+
+
 /*
-=================== JUGADOR ACABA PARTIDA =========================================================
+=================== Funcion auxiliar para eliminar al jugador y quitarlo de la partida =========================================================
 */
-function jugadorAcabadoPartida(email, idPartida) {
+// Con esta fucnion se le quita al jugador de la partida poniendo estaVivo a 0 y asignandole 
+// la posicion en la que ha quedado
+
+function matarJugador(email, idPartida) {
+    return new Promise((resolve, reject) => {
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Consulta SQL para actualizar el estado del jugador a "acabado" en la partida
+        const query = `UPDATE juega SET jugadorVivo = false WHERE email = '${email}' AND idPartida = '${idPartida}'`;
+        con.query(query, (error, result) => {
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (result.affectedRows === 0) {
+                // Si no se afectó ninguna fila en la actualización, significa que el jugador no estaba en la partida
+                con.end();
+                resolve(false);
+            } else {
+                // Si se afectó una fila en la actualización, significa que el jugador está acabado en la partida
+                // Consultamos la posición más baja de los jugadores vivos en la partida
+                const queryPosicion = `SELECT COUNT(posicion) AS VIVOS FROM juega WHERE idPartida = '${idPartida}' AND jugadorVivo = true`;
+                con.query(queryPosicion, (errorPosicion, resultPosicion) => {
+                    if (errorPosicion) {
+                        con.end();
+                        reject(errorPosicion);
+                    } else {
+                        let nuevaPosicion = resultPosicion[0].VIVOS + 1;
+                        const queryActualizarPosicion = `UPDATE juega SET posicion = ${nuevaPosicion} WHERE email = '${email}' AND idPartida = '${idPartida}'`;
+                        con.query(queryActualizarPosicion, (errorActualizar, resultActualizar) => {
+                            if (errorActualizar) {
+                                con.end();
+                                reject(errorActualizar);
+                            } else {
+                                con.end();
+                                resolve(true);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+}
+
+// Exportamos la función para que pueda ser utilizada en otros archivos
+exports.matarJugador = matarJugador;
+
+
+
+/*
+===================liberar las propiedades de jugador=========================================
+*/
+
+// Libera las propiedades de la partida dada 
+// En caso de que no exista esa partida devuelve false, en caso contrario true
+//
+
+function liberarPropiedadesJugador(idPartida, propiedades) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+
+        let prop = propiedades.split(",");
+
+        let cons = "SET "
+        prop.forEach((row) => {
+            cons = cons + row + " = null,"
+        });      
+
+        const query = `UPDATE Partida ${cons.slice(0,-1)} WHERE idPartida =  '${idPartida}'`;
+        con.query(query, (error, results) => {
+            if (error) {
+                con.end(); // Cerrar la conexión
+                reject(error);
+            } else if (results.length === 0) {
+                con.end(); // Cerrar la conexión
+                resolve(false);
+            } else {
+                //console.log(results);
+                con.end(); // Cerrar la conexión
+                resolve(true);
+            }
+        });
+    });
+}
+
+exports.liberarPropiedadesJugador = liberarPropiedadesJugador;
+
+
+
+/*
+===================FUNCION PARA QUITAR UN JUGADOR COMPLETAMENTE DE LA PARTIDA (CUANDO SE QUEDA SIN PASTA)=========================================
+*/
+
+// Con esta funcion se le expropia al jugador y además se le elimina de la partida, 
+//se le pone a 0 estaVivo y se le asigna la posicion en que ha quedado
+
+async function jugadorAcabadoPartida(idJugador, idPartida) {
+    try {
+        //sacamos el numero de casas que tiene en dicha propiedad.
+        if (!(await matarJugador(idJugador, idPartida)) ){
+            return false;
+        } else {
+
+            const propiedades = await obtenerPropiedades(idPartida, idJugador);
+
+            if(propiedades === null){
+                console.log("no tiene propiedades")
+                return true;
+            } else {
+
+                if(await liberarPropiedadesJugador(idPartida, propiedades)){        
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error en la promesa de precioAlquiler: " + error);
+    }
+    //return -1;
+}
+exports.jugadorAcabadoPartida = jugadorAcabadoPartida;
+
+
+
+
+/*
+=================== JUGADOR ACABA PARTIDA =============================NO SE USA========================
+*/
+function jugadorAcabadoPartida2(email, idPartida) {
     return new Promise((resolve, reject) => {
         // Creamos una conexión a la base de datos
         const con = db.crearConexion();
@@ -3040,7 +3179,7 @@ function jugadorAcabadoPartida(email, idPartida) {
 }
 
 // Exportamos la función para que pueda ser utilizada en otros archivos
-exports.jugadorAcabadoPartida = jugadorAcabadoPartida;
+exports.jugadorAcabadoPartida2 = jugadorAcabadoPartida2;
 
 
 

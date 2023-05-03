@@ -258,8 +258,6 @@ function obtenerDineroJugadores(idPartida);
 //  SEGUNDA VERSION, por si la primera falla
 function obtenerDineroJugadores2(idPartida);
 
-//funcion la cual determina que un jugador ya esta acabado de la partida.(jugadorVivo = 0).
-function jugadorAcabadoPartida(email, idPartida);
 
 //funcion la cual devuelve el jugador en la posicion establecida de la partida idPartida. Devuelve -1 si hay algo mal y la posicion actualizada si todo ha ido bien. 
 //Devuelve -2 si estaba en la carcel y no actualiza la posicion.
@@ -345,3 +343,22 @@ function obtenerNumTurnosActivos(idPartida);
 
 //funcion que dada una partida y un jugador, devuelva todas las propiedades a la banca.
 async function devolverPropiedadesBanca(idPartida, idJugador) ;
+
+
+
+// Con esta fucnion se le quita al jugador de la partida poniendo estaVivo a 0 y asignandole 
+// la posicion en la que ha quedado
+function matarJugador(email, idPartida)
+
+
+// Libera las propiedades de la partida dada 
+// En caso de que no exista esa partida devuelve false, en caso contrario true
+//
+function liberarPropiedadesJugador(idPartida, propiedades)
+
+
+
+// Con esta funcion se le expropia al jugador y además se le elimina de la partida, 
+//se le pone a 0 estaVivo y se le asigna la posicion en que ha quedado
+
+async function jugadorAcabadoPartida(idJugador, idPartida)
