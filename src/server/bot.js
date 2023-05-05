@@ -50,7 +50,7 @@ async function moverBot(IDJugador, IDpartida) {
     // Movemos al jugador -> obtenemos su nueva posición
     let posicionNueva = await API.moverJugador(IDJugador, sumaDados, IDpartida);
     escribirEnArchivo("El bot " + IDJugador + " ha sacado " + dado1 + " y " + dado2 + " y se ha movido a la casilla " + posicionNueva + "\n");
-    return {dado1, dado2, posicionNueva, estaCarcel, sumaDados};
+    return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
 
 async function calcularSumaDados(IDpartida, dado1, dado2) {
@@ -71,7 +71,7 @@ async function jugar(IDusuario, IDpartida) {
     sigueVivo = true;
 
     try {
-        let {dado1, dado2, posicionNueva, estaCarcel, sumaDados} = await moverBot(IDusuario, IDpartida);
+        let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverBot(IDusuario, IDpartida);
         let dadosDobles = (dado1 === dado2);
         console.log("| Partida:", IDpartida, " | Turno de bot:", IDusuario, "| Posicion:", posicionNueva, "| Dados:", dado1, ",", dado2);
         // Comprobar si ha pasado por la casilla de salida en este turno
@@ -92,30 +92,40 @@ async function jugar(IDusuario, IDpartida) {
 exports.Jugar = jugar;
 
 // Función que gestiona las subastas por parte de los bots
-function GestionVenderPropiedades(IDpartida, IDJugador, numPropiedades) {
-    if (numPropiedades >= 3) {
-        let propiedades = await API.obtenerPropiedades(IDpartida, IDJugador);
-        let aux = propiedades.split(",");
-        let propiedad = aux[0];
-        let precio = await API.obtenerPrecioPropiedad(IDpartida, propiedad);
-        // Sumarle aleatoriamnete entre 0 y 100 al precio de la propiedad
-        precio = precio + Math.floor(Math.random() * 100);
-        let haySubasta = await API.obtenerNumTurnosActivos(IDpartida);
-        if (haySubasta > 0) {
-            return;
-        }
-        await API.actualizarNumTurnosSubasta(IDpartida, 4);
-        let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
-        // Actualizar la subasta en la base de datos
-        precio = parseInt(precio);
-        await API.actualizarPropiedadSubasta(IDpartida, propiedad, IDJugador);
-        await API.actualizarPrecioSubasta(IDpartida, precio, IDJugador);
-        for (let i = 0; i < jugadores_struct.length; i++) {
-            if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id !== ID_jugador) {
-                let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
-                if (socketJugador != null) {
-                    socketJugador.send(`SUBASTA,${IDJugador},${propiedad},${precio}`);
-                }
+async function GestionVenderPropiedades(IDpartida, IDJugador) {
+    let propiedades = await API.obtenerPropiedades(IDpartida, IDJugador);
+    if (propiedades === null) {
+        escribirEnArchivo("El bot " + IDJugador + " no tiene propiedades para vender\n")
+        return;
+    }
+    let aux = propiedades.split(",");
+    // Generar un numero al azar entre 0 y 2 (para vender aleatoriamente una propiedad)
+    let num = Math.floor(Math.random() * 3);
+    let propiedad = aux[num];
+    if (propiedad === undefined) {
+        return;
+    }
+    // quitarle los primeros 9 caracteres a la propiedad
+    propiedad = propiedad.substring(9);
+    let precio = await API.obtenerPrecioPropiedad(IDpartida, propiedad);
+    // Sumarle aleatoriamnete entre 0 y 100 al precio de la propiedad
+    precio = precio + Math.floor(Math.random() * 100);
+    let haySubasta = await API.obtenerNumTurnosActivos(IDpartida);
+    if (haySubasta > 0) {
+        return;
+    }
+    escribirEnArchivo("El bot " + IDJugador + " ha puesto a subasta la propiedad " + propiedad + " por " + precio + "\n");
+    await API.actualizarNumTurnosSubasta(IDpartida, 4);
+    let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
+    // Actualizar la subasta en la base de datos
+    precio = parseInt(precio);
+    await API.actualizarPropiedadSubasta(IDpartida, propiedad, IDJugador);
+    await API.actualizarPrecioSubasta(IDpartida, precio, IDJugador);
+    for (let i = 0; i < jugadores_struct.length; i++) {
+        if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id !== IDJugador) {
+            let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+            if (socketJugador != null) {
+                socketJugador.send(`SUBASTA,${IDJugador},${propiedad},${precio}`);
             }
         }
     }
@@ -154,7 +164,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     }
 
     // Comprobar si es la casilla del luxuryTax
-    else if (posicion == 38) {
+    else if (posicion == 39) {
         try {
             // 100€ + 50€ * número de propiedades
             await CasillaLuxuryTax(IDpartida, IDJugador);
@@ -263,8 +273,12 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
 
     // Obtener el numero de propiedades del bot
     let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
+    // Obtener la ronda en la que estamos 
+    let ronda = await API.obtenerRonda(IDpartida);
     // Comprobar si tiene mas de 3 propiedades para subastarlas
-    GestionVenderPropiedades(IDpartida, IDJugador, numPropiedades);
+    if (ronda % 3 == 0 && numPropiedades >= 3) {
+        await GestionVenderPropiedades(IDpartida, IDJugador);
+    }
 
     if (dadosDobles) {
         escribirEnArchivo("El bot " + IDJugador + " ha sacado dobles, vuelve a tirar");
@@ -433,7 +447,7 @@ async function ComprarPropiedad(IDJugador, propiedad, IDpartida) {
 function escribirEnArchivo(datos) {
     // Obtener la fecha y hora actual en la zona horaria de España
     const fechaActual = new Date();
-    fechaActual.toLocaleString('es-ES', {timeZone: 'Europe/Madrid'});
+    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
     datos = fechaActual.toLocaleString() + datos + " " + "\n";

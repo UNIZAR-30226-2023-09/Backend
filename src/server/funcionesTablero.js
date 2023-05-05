@@ -26,7 +26,7 @@ const gruposDePropiedades = {
 async function LanzarDados(socket, ID_jugador, ID_partida) {
     try {
         // Calculamos el valor de los dados
-        let {dado1, dado2, posicionNueva, estaCarcel, sumaDados} = await moverJugador(ID_jugador, ID_partida);
+        let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverJugador(ID_jugador, ID_partida);
         console.log(`DADOS,${dado1},${dado2},${posicionNueva},${estaCarcel}, sumaDados: ${sumaDados}, jugador: ${ID_jugador}`);
         // Enviar la nueva posición del jugador, el valor de los dados y el numero de turnos en la carcel
         socket.send(`DADOS,${dado1},${dado2},${posicionNueva},${estaCarcel}`);
@@ -114,7 +114,7 @@ async function moverJugador(ID_jugador, ID_partida) {
         posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
     }
     escribirEnArchivo("El bot " + ID_jugador + "en la partida " + ID_partida + " ha sacado " + dado1 + " y " + dado2 + " y se ha movido a la casilla " + posicionNueva + "\n");
-    return {dado1, dado2, posicionNueva, estaCarcel, sumaDados};
+    return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
 
 async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
@@ -407,8 +407,8 @@ async function GestionTreasure(ID_partida, ID_jugador, socket) {
 }
 
 async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
-    let superPoder = Math.ceil(Math.random() * 12);
-    // let superPoder = 5;
+    // let superPoder = Math.ceil(Math.random() * 12);
+    let superPoder = 1;
     let nuevaPosicion;
     socket.send(`SUPERPODER,${superPoder}`);
     switch (superPoder) {
@@ -1082,7 +1082,7 @@ async function asignarGemas(clasificacion) {
 function escribirEnArchivo(datos) {
     // Obtener la fecha y hora actual en la zona horaria de España
     const fechaActual = new Date();
-    fechaActual.toLocaleString('es-ES', {timeZone: 'Europe/Madrid'});
+    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
     datos = fechaActual.toLocaleString() + datos + " " + "\n";
@@ -1143,6 +1143,10 @@ exports.Subastar = Subastar;
 async function ComprarSubasta(socket, ID_jugador, ID_partida, ID_propietario) {
     // Obtener el dinero que tiene el jugador que compra
     let dinero = await API.obtenerDinero(ID_jugador, ID_partida);
+
+    // Obtener la propiedad que se subasta
+    let propiedadSubasta = await API.obtenerNombreSubasta(ID_partida, ID_propietario);
+
     // Obtener el precio de la subasta
     let precioSubasta = await API.obtenerPrecioSubasta(ID_partida, ID_propietario);
     if (precioSubasta === null) {
@@ -1156,8 +1160,6 @@ async function ComprarSubasta(socket, ID_jugador, ID_partida, ID_propietario) {
         escribirEnArchivo(`El jugador ${ID_jugador} ha intentado comprar la propiedad ${propiedadSubasta} de ${ID_propietario} pero no tiene suficiente dinero`)
         return;
     }
-    // Obtener la propiedad que se subasta
-    let propiedadSubasta = await API.obtenerNombreSubasta(ID_partida, ID_propietario);
     // Obtener el numero de edificaciones que tiene la propiedad
     let edificaciones = await API.obtenerNumCasasPropiedad(ID_partida, propiedadSubasta);
     // Si tiene edificaciones, no se acepta la subasta
