@@ -29,7 +29,7 @@ function agregarUsuario(socket, nombreUsuario) {
     }
 
     // Creamos un objeto para almacenar la información del usuario
-    const usuario = { name: nombreUsuario, socket, timeoutId: null };
+    const usuario = {name: nombreUsuario, socket, timeoutId: null};
 
     // Agregamos la conexión del usuario al array de conexiones
     connections.push(usuario);
@@ -133,7 +133,6 @@ function mostrarUsuarios() {
     }
 
 }
-
 
 
 // Creamos un objeto para almacenar todas las funciones que queremos exportar

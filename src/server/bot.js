@@ -50,7 +50,7 @@ async function moverBot(IDJugador, IDpartida) {
     // Movemos al jugador -> obtenemos su nueva posición
     let posicionNueva = await API.moverJugador(IDJugador, sumaDados, IDpartida);
     escribirEnArchivo("El bot " + IDJugador + " ha sacado " + dado1 + " y " + dado2 + " y se ha movido a la casilla " + posicionNueva + "\n");
-    return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
+    return {dado1, dado2, posicionNueva, estaCarcel, sumaDados};
 }
 
 async function calcularSumaDados(IDpartida, dado1, dado2) {
@@ -71,7 +71,7 @@ async function jugar(IDusuario, IDpartida) {
     sigueVivo = true;
 
     try {
-        let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverBot(IDusuario, IDpartida);
+        let {dado1, dado2, posicionNueva, estaCarcel, sumaDados} = await moverBot(IDusuario, IDpartida);
         let dadosDobles = (dado1 === dado2);
         console.log("| Partida:", IDpartida, " | Turno de bot:", IDusuario, "| Posicion:", posicionNueva, "| Dados:", dado1, ",", dado2);
         // Comprobar si ha pasado por la casilla de salida en este turno
@@ -88,15 +88,16 @@ async function jugar(IDusuario, IDpartida) {
         return false;
     }
 }
+
 exports.Jugar = jugar;
 
 // Función que gestiona las subastas por parte de los bots
 function GestionVenderPropiedades(IDpartida, IDJugador, numPropiedades) {
     if (numPropiedades >= 3) {
-        let propiedades = await API.obtenerPropiedades(IDpartida,IDJugador);
+        let propiedades = await API.obtenerPropiedades(IDpartida, IDJugador);
         let aux = propiedades.split(",");
         let propiedad = aux[0];
-        let precio = await API.obtenerPrecioPropiedad(IDpartida,propiedad);
+        let precio = await API.obtenerPrecioPropiedad(IDpartida, propiedad);
         // Sumarle aleatoriamnete entre 0 y 100 al precio de la propiedad
         precio = precio + Math.floor(Math.random() * 100);
         let haySubasta = await API.obtenerNumTurnosActivos(IDpartida);
@@ -145,9 +146,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
         try {
             // 50€ + 20€ * número de propiedades
             await CasillaTax(IDpartida, IDJugador);
-        }
-
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -159,8 +158,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
         try {
             // 100€ + 50€ * número de propiedades
             await CasillaLuxuryTax(IDpartida, IDJugador);
-        }
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -179,8 +177,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla del bote en la partida " + IDpartida);
             // Enviar a los demas usuarios el dinero del bote actualizado
             await enviarDineroBote(IDpartida, IDJugador, 0);
-        }
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -203,8 +200,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             //         socket.send(`DENTRO_CARCEL,${IDJugador}`);
             //     }
             // }
-        }
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -217,8 +213,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             // Obtener dinero aleatorio entre -250 y 250
             // Generar un número aleatorio entre -250 y 250
             await CasillaTreasure(IDpartida, IDJugador);
-        }
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -235,16 +230,13 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     // Si la nueva casilla es la de la cárcel (11) -> no hacer nada
     else if (posicion == 11) {
         // No se hace nada, se pasa turno y ya
-    }
-
-    else {
+    } else {
         // Si no es ninguna de las anteriores -> es casilla de propiedad
         // Obtener a quien pertenece la propiedad
         let IDjugador_propiedad;
         try {
             IDjugador_propiedad = await API.obtenerJugadorPropiedad(posicion, IDpartida);
-        }
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -261,8 +253,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
             console.log("| Partida:", IDpartida, " | Turno de bot:", IDJugador, "| Pagando alquiler a otro jugador");
             try {
                 await CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_propiedad, propiedad);
-            }
-            catch (error) {
+            } catch (error) {
                 // Si hay un error en la Promesa, devolvemos false.
                 console.error("Error en la Promesa: ", error);
                 return false;
@@ -278,8 +269,7 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     if (dadosDobles) {
         escribirEnArchivo("El bot " + IDJugador + " ha sacado dobles, vuelve a tirar");
         jugar(IDJugador, IDpartida);
-    }
-    else {
+    } else {
         escribirEnArchivo("El bot " + IDJugador + " ha terminado su turno");
         jugador.FinTurno(IDJugador, IDpartida);
     }
@@ -432,8 +422,7 @@ async function ComprarPropiedad(IDJugador, propiedad, IDpartida) {
         // redondear el precio para que no tenga decimales
         precio = Math.round(precio);
         await API.comprarPropiedad(IDpartida, IDJugador, propiedad, precio);
-    }
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
@@ -444,7 +433,7 @@ async function ComprarPropiedad(IDJugador, propiedad, IDpartida) {
 function escribirEnArchivo(datos) {
     // Obtener la fecha y hora actual en la zona horaria de España
     const fechaActual = new Date();
-    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+    fechaActual.toLocaleString('es-ES', {timeZone: 'Europe/Madrid'});
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
     datos = fechaActual.toLocaleString() + datos + " " + "\n";

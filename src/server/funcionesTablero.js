@@ -26,7 +26,7 @@ const gruposDePropiedades = {
 async function LanzarDados(socket, ID_jugador, ID_partida) {
     try {
         // Calculamos el valor de los dados
-        let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverJugador(ID_jugador, ID_partida);
+        let {dado1, dado2, posicionNueva, estaCarcel, sumaDados} = await moverJugador(ID_jugador, ID_partida);
         console.log(`DADOS,${dado1},${dado2},${posicionNueva},${estaCarcel}, sumaDados: ${sumaDados}, jugador: ${ID_jugador}`);
         // Enviar la nueva posición del jugador, el valor de los dados y el numero de turnos en la carcel
         socket.send(`DADOS,${dado1},${dado2},${posicionNueva},${estaCarcel}`);
@@ -59,14 +59,14 @@ async function LanzarDados(socket, ID_jugador, ID_partida) {
 
         // Comprobar la casilla y realizar la acción oportuna
         comprobarCasilla(socket, posicionNueva, ID_jugador, ID_partida);
-    }
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 
 }
+
 exports.LanzarDados = LanzarDados;
 
 /**
@@ -114,7 +114,7 @@ async function moverJugador(ID_jugador, ID_partida) {
         posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
     }
     escribirEnArchivo("El bot " + ID_jugador + "en la partida " + ID_partida + " ha sacado " + dado1 + " y " + dado2 + " y se ha movido a la casilla " + posicionNueva + "\n");
-    return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
+    return {dado1, dado2, posicionNueva, estaCarcel, sumaDados};
 }
 
 async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
@@ -140,8 +140,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
                 socket.send(`NUEVO_DINERO_JUGADOR,${ID_jugador},${nuevoDinero}`);
                 escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla de salida");
             }
-        }
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -153,8 +152,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
         try {
             // 50€ + 20€ * número de propiedades
             await GestionTax(ID_partida, ID_jugador, socket);
-        }
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -166,8 +164,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
         try {
             // 100€ + 50€ * número de propiedades
             await GestionLuxuryTax(ID_partida, ID_jugador, socket);
-        }
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -193,9 +190,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             escribirEnArchivo("El jugador " + ID_jugador + " ha caido en la casilla del bote en la partida " + ID_partida);
             // Enviar a los demas usuarios el dinero del bote actualizado
             await enviarDineroBote(ID_partida, ID_jugador, 0);
-        }
-
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -216,9 +211,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
     else if (posicion == 31) {
         try {
             await GestionIrCarcel(ID_jugador, ID_partida, socket);
-        }
-
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -231,9 +224,7 @@ async function comprobarCasilla(socket, posicion, ID_jugador, ID_partida) {
             // Obtener dinero aleatorio entre -250 y 250
             // Generar un número aleatorio entre -250 y 250
             await GestionTreasure(ID_partida, ID_jugador, socket);
-        }
-
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             return false;
@@ -268,8 +259,7 @@ async function GestionPropiedad(posicion, ID_partida, socket, ID_jugador) {
     let IDjugador_propiedad;
     try {
         IDjugador_propiedad = await API.obtenerJugadorPropiedad(posicion, ID_partida);
-    }
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         //return false;
@@ -293,15 +283,12 @@ async function GestionPropiedad(posicion, ID_partida, socket, ID_jugador) {
             // pagarAlquiler(jugadorPaga, jugadorRecibe, precio)
             // Pagamos el alquiler con el nuevo precio
             await GestionPagoAlquiler(ID_jugador, ID_partida, IDjugador_propiedad, posicion, socket);
-        }
-
-        catch (error) {
+        } catch (error) {
             // Si hay un error en la Promesa, devolvemos false.
             console.error("Error en la Promesa: ", error);
             //return false;
         }
-    }
-    else {
+    } else {
         // Pertenece al propio jugador, no habría que hacer nada especial
         // Comprobar si la casilla es un aeropuerto o una estación 
         let ronda = await API.obtenerRonda(ID_partida);
@@ -650,8 +637,7 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
         let cantidadInt = parseInt(cantidad);
         if (dineroJugador < cantidadInt) {
             socket.send(`APOSTAR_NOOK,${ID_jugador},${ID_partida}`);
-        }
-        else {
+        } else {
             let accion;
             let haGanado;
             if (suerte === "1") { // Si la suerte es 1, generar un número aleatorio entre 0 y 9
@@ -678,15 +664,14 @@ async function Apostar(socket, ID_jugador, ID_partida, cantidad, suerte) {
                 let partidaContinua = await gestionarMuerteJugador(ID_jugador, ID_partida, socket);
             }
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 
 }
+
 exports.Apostar = Apostar;
 
 // Meter el dinero dado al banco del jugador en la partida dada
@@ -696,14 +681,13 @@ async function MeterBanco(socket, ID_jugador, ID_partida, cantidad) {
         await API.modificarDinero(ID_partida, ID_jugador, -cantidad);
         let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
         socket.send(`METER_DINERO_BANCO,${ID_jugador},${ID_partida},${dineroJugadorBanco},${dineroJugador}`);
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.MeterBanco = MeterBanco;
 
 // Sacar el dinero dado del banco del jugador en la partida dada
@@ -715,19 +699,17 @@ async function SacarBanco(socket, ID_jugador, ID_partida, cantidad) {
         if (dineroJugadorBanco === -2) {
             // No ha podido sacarlo porque la cantidad era mayor al dinero del jugador en el banco
             socket.send(`SACAR_DINERO_BANCO_NO_OK,${ID_jugador},${ID_partida}`);
-        }
-        else {
+        } else {
             let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
             socket.send(`SACAR_DINERO_BANCO,${ID_jugador},${ID_partida},${dineroJugadorBanco},${dineroJugador}`);
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.SacarBanco = SacarBanco;
 
 // Realizar lo oportuno cuando se quiera comprar una propiedad
@@ -743,20 +725,18 @@ async function ComprarPropiedad(socket, ID_jugador, propiedad, ID_partida) {
         if (correcto === false) { // No se ha podido comprar
             socket.send(`COMPRAR_NO_OK,${ID_jugador},${propiedad},${ID_partida}`)
             escribirEnArchivo("El jugador " + ID_jugador + " no ha podido comprar la propiedad " + propiedad)
-        }
-        else { // Se ha comprado la propiedad, devolvemos el dinero resultante del jugador
+        } else { // Se ha comprado la propiedad, devolvemos el dinero resultante del jugador
 
             socket.send(`COMPRAR_OK,${ID_jugador},${propiedad},${dinero},${ID_partida}`);
             escribirEnArchivo("El jugador " + ID_jugador + " ha comprado la propiedad " + propiedad)
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.ComprarPropiedad = ComprarPropiedad;
 
 // Cuando se quiere vender una propiedad
@@ -771,20 +751,18 @@ async function VenderPropiedad(socket, ID_jugador, propiedad, ID_partida) {
         if (!ok) { // No se ha podido vender
             socket.send(`VENDER_NO_OK,${ID_jugador},${propiedad}`);
             escribirEnArchivo("El jugador " + ID_jugador + " no ha podido vender la propiedad " + propiedad);
-        }
-        else { // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
+        } else { // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
             let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
             socket.send(`VENDER_OK,${propiedad},${dineroJugador}`);
             escribirEnArchivo("El jugador " + ID_jugador + " ha vendido la propiedad " + propiedad + " por " + dineroPropiedad);
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.VenderPropiedad = VenderPropiedad;
 
 // Funcion que vende una edificacion de una propiedad dada la partida y el jugador
@@ -796,21 +774,19 @@ async function VenderEdificacion(socket, ID_jugador, ID_partida, propiedad) {
             // No se ha podido vender, enviamos error
             socket.send(`VENDER_EDIFICACION_NO_OK,${ID_jugador},${propiedad}`)
             escribirEnArchivo("El jugador " + ID_jugador + " no ha podido vender la edificacion de la propiedad " + propiedad);
-        }
-        else {
+        } else {
             // Se ha vendido la propiedad, devolvemos el dinero resultante del jugador
             let dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
             socket.send(`VENDER_EDIFICACION_OK,${propiedad},${dineroJugador}`);
             escribirEnArchivo("El jugador " + ID_jugador + " ha vendido la edificacion de la propiedad " + propiedad);
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.VenderEdificacion = VenderEdificacion;
 
 // Se obtiene la lista de posibles casas a edificar con su precio y se devuelve al cliente
@@ -824,8 +800,7 @@ async function PropiedadesDispEdificar(socket, ID_jugador, ID_partida) {
         "NuevaYork", "LosAngeles", "LuxuryTax", "Chicago"];
     try {
         propiedadesDisponibles = await API.obtenerPropiedades(ID_partida, ID_jugador);
-    }
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
@@ -851,6 +826,7 @@ async function PropiedadesDispEdificar(socket, ID_jugador, ID_partida) {
     socket.send(`EDIFICAR,${ID_jugador},${resultadoFinal}`);
 
 }
+
 exports.PropiedadesDispEdificar = PropiedadesDispEdificar;
 
 // Edifica, si se tiene dinero suficiente, la propiedad dada
@@ -859,8 +835,7 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
     let dineroJugador;
     try {
         dineroJugador = await API.obtenerDinero(ID_jugador, ID_partida);
-    }
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
@@ -873,8 +848,7 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
     if (dineroJugador < precioProp) {
         // No tiene suficiente dinero -> no se edifica
         socket.send(`EDIFICAR_NOOK,${propiedad}`);
-    }
-    else {
+    } else {
         // Tiene dinero -> edificamos y devolvemos el nuevo dinero disponible
         let dineroResultante = await API.edificarPropiedad(ID_jugador, ID_partida, propiedad, precioProp);
         if (dineroResultante === false) {
@@ -885,6 +859,7 @@ async function EdificarPropiedad(socket, ID_jugador, ID_partida, propiedadPrecio
     }
 
 }
+
 exports.EdificarPropiedad = EdificarPropiedad;
 
 // Dado un string que contiene las propiedades de un jugador concatenadas con comas,
@@ -907,7 +882,6 @@ function propiedadesParaEdificar(tablero, propiedades) {
 
     return propiedadesParaConstruir;
 }
-
 
 
 function obtenerIndicePropiedades(tablero, propiedades) {
@@ -1040,6 +1014,7 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
     }
     return true;
 }
+
 exports.enviarJugadorMuertoPartida = enviarJugadorMuertoPartida;
 
 // Funcion que acaba la partida 
@@ -1066,6 +1041,7 @@ async function acabarPartida(ID_partida) {
 function SigueEnPartida(ID_jugador, ID_partida, dinero) {
     return dinero > 0;
 }
+
 exports.SigueEnPartida = SigueEnPartida;
 
 // Almacenar el usuario y si es un bot
@@ -1079,6 +1055,7 @@ async function DesplazarJugador(socket, ID_jugador, ID_partida, posicionDesplaza
     await API.moverJugador(ID_jugador, posicionDesplazada, ID_partida);
     comprobarCasilla(socket, posicionDesplazada, ID_jugador, ID_partida);
 }
+
 exports.DesplazarJugador = DesplazarJugador;
 
 // Devolver el precio de venta de la propiedad
@@ -1086,6 +1063,7 @@ async function PropiedadesDispVender(socket, ID_jugador, ID_partida, propiedad) 
     let precio = await API.obtenerPrecioPropiedad(ID_partida, propiedad);
     socket.send(`PRECIO_VENTA,${precio}`);
 }
+
 exports.PropiedadesDispVender = PropiedadesDispVender;
 
 // Dada una clasificacion que es un string concatenado por comas, con el formato
@@ -1104,7 +1082,7 @@ async function asignarGemas(clasificacion) {
 function escribirEnArchivo(datos) {
     // Obtener la fecha y hora actual en la zona horaria de España
     const fechaActual = new Date();
-    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+    fechaActual.toLocaleString('es-ES', {timeZone: 'Europe/Madrid'});
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
     datos = fechaActual.toLocaleString() + datos + " " + "\n";
@@ -1156,6 +1134,7 @@ async function Subastar(socket, ID_partida, ID_jugador, propiedad, precio) {
         }
     }
 }
+
 exports.Subastar = Subastar;
 
 // Dado el ID del jugador, el ID de la partida, el ID del jugador del que quiere 
@@ -1221,6 +1200,7 @@ async function ComprarSubasta(socket, ID_jugador, ID_partida, ID_propietario) {
         }
     }
 }
+
 exports.ComprarSubasta = ComprarSubasta;
 
 // Enviar a todos los jugadores que el jugador esta en la carcel
@@ -1265,4 +1245,5 @@ async function PagarLiberarseCarcel(socket, ID_jugador, ID_partida) {
     enviarJugadoresFueraCarcel(ID_jugador, ID_partida);
     escribirEnArchivo(`El jugador ${ID_jugador} ha pagado 50 para salir de la carcel`);
 }
+
 exports.PagarLiberarseCarcel = PagarLiberarseCarcel;

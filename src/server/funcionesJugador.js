@@ -24,8 +24,7 @@ async function Registrarse(socket, email, contrasenya, nombre) {
         if (await API.insertarUsuarioConSkin(insert)) {
             socket.send("REGISTRO_OK");
             escribirEnArchivo("Registro correcto" + "Nombre: " + nombre + "Contraseña: " + contrasenya + "Email: " + email);
-        }
-        else {
+        } else {
             // TODO: Habría que ver como mirar el motivo de por qué ha ido mal el registro
             socket.send("REGISTRO_NO_OK");
             escribirEnArchivo("Registro incorrecto" + "Nombre: " + nombre + "Contraseña: " + contrasenya + "Email: " + email);
@@ -37,6 +36,7 @@ async function Registrarse(socket, email, contrasenya, nombre) {
         return false;
     }
 }
+
 exports.Registrarse = Registrarse;
 
 // Inicia sesión del jugador dado si es posible
@@ -63,8 +63,7 @@ async function IniciarSesion(socket, email, contrasenya) {
             }
             socket.send(`INICIO_OK,${email},${gemas}`);
             escribirEnArchivo("Inicio sesion correcto. Email: " + email + " Contraseña: " + contrasenya + " Gemas: " + gemas);
-        }
-        else {
+        } else {
             socket.send(`INICIO_NO_OK`);
             escribirEnArchivo("Inicio sesion incorrecto. Email: " + email + " Contraseña: " + contrasenya);
         }
@@ -132,8 +131,7 @@ async function FinTurno(ID_jugador, ID_partida) {
     // Si le toca a un bot
     if (esBot === "1") {
         bot.Jugar(jugador, ID_partida);
-    }
-    else {   // Es un jugador
+    } else {   // Es un jugador
         // Buscar jugadores en el pool 
         let conexionUsuario = conexion.buscarUsuario(jugador);
         console.log("| Partida:", ID_partida, " | Turno de jugador:", ID_jugador);
@@ -142,6 +140,7 @@ async function FinTurno(ID_jugador, ID_partida) {
 
     escribirEnArchivo("Fin de turno de jugador: " + ID_jugador + " Partida: " + ID_partida + " Siguiente jugador: " + jugador + " Fin de ronda: " + finRonda);
 }
+
 exports.FinTurno = FinTurno;
 
 // Función que envía a los jugadores el mensaje de fin de ronda y la ronda actualizada
@@ -407,7 +406,7 @@ function Usuario(id, esBot) {
 function escribirEnArchivo(datos) {
     // Obtener la fecha y hora actual en la zona horaria de España
     const fechaActual = new Date();
-    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+    fechaActual.toLocaleString('es-ES', {timeZone: 'Europe/Madrid'});
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
     datos = fechaActual.toLocaleString() + " " + datos + " " + "\n";

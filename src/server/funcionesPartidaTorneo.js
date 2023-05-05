@@ -23,13 +23,10 @@ async function CrearPartida(socket, ID_jugador) {
         let id_partida = await APIpartida.crearPartida(ID_jugador, skinJugador, skinTablero);
         if (id_partida == -1) {
             socket.send(`CREADAP_NOOK,${ID_jugador}`);
-        }
-        else {
+        } else {
             socket.send(`CREADAP_OK,${id_partida}`);
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
@@ -46,18 +43,16 @@ async function UnirsePartida(socket, ID_jugador, ID_partida) {
         let skinTablero = await APIpartida.obtenerSkinTableroEquipada(ID_jugador);
         if (await APIpartida.unirsePartida(ID_jugador, ID_partida, skinJugador, skinTablero)) {
             socket.send(`UNIRP_OK,${ID_partida},${ID_jugador}`);
-        }
-        else { // TODO: ¿Motivo?
+        } else { // TODO: ¿Motivo?
             socket.send(`UNIRP_NO_OK,${ID_partida},${ID_jugador}`);
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.UnirsePartida = UnirsePartida;
 
 // El jugador dado crea un nuevo torneo
@@ -67,18 +62,16 @@ async function CrearTorneo(socket, ID_jugador) {
         let id_torneo = await APItorneo.crearTorneo(ID_jugador, 3);
         if (id_torneo == -1) {
             socket.send(`CREADOT_NOOK,${ID_jugador}`);
-        }
-        else {
+        } else {
             socket.send(`CREADOT_OK,${id_torneo}`);
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.CrearTorneo = CrearTorneo;
 
 // Unir al jugador dado al torneo solicitado
@@ -87,18 +80,16 @@ async function UnirseTorneo(socket, ID_jugador, ID_Torneo) {
         // Unimos al jugador al torneo 
         if (await APItorneo.unirseTorneo(ID_jugador, ID_Torneo)) {
             socket.send(`UNIRSET_OK,${ID_Torneo},${ID_jugador}`);
-        }
-        else { // TODO: ¿Motivo?
+        } else { // TODO: ¿Motivo?
             socket.send(`UNIRSET_NO_OK,${ID_Torneo},${ID_jugador}`);
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.UnirseTorneo = UnirseTorneo;
 
 async function EmpezarPartida(socket, ID_partida, ID_jugador) {
@@ -146,18 +137,16 @@ async function EmpezarPartida(socket, ID_partida, ID_jugador) {
                 }
                 conexionUsuario.send(`TURNO,${jugadores_struct[0].id},${ID_partida}`);
             }
-        }
-        else {
+        } else {
             socket.send(`EMPEZAR_NO_OK,${ID_partida}`);
         }
-    }
-
-    catch (error) {
+    } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
         return false;
     }
 }
+
 exports.EmpezarPartida = EmpezarPartida;
 
 // Devuelve las skins de los jugadores en el orden que tienen los jugadores  
@@ -218,6 +207,7 @@ async function Chatear(ID_jugador, ID_partida, mensaje) {
         }
     }
 }
+
 exports.Chatear = Chatear;
 
 // Almacenar el usuario y si es un bot
@@ -239,7 +229,7 @@ function mostrarJugadores(jugadores_struct, IDPartida) {
 function escribirEnArchivo(datos) {
     // Obtener la fecha y hora actual en la zona horaria de España
     const fechaActual = new Date();
-    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+    fechaActual.toLocaleString('es-ES', {timeZone: 'Europe/Madrid'});
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
     datos = fechaActual.toLocaleString() + datos + " " + "\n";
