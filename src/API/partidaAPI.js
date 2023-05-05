@@ -1621,7 +1621,7 @@ async function precioAlquiler(id_jugadorRecibe, propiedad, idPartida) {
             let precioPropiedad = await obtenerPrecioPropiedad(idPartida, propiedad);
             // Calcular el alquiler en función del número de casas.
             if (numCasas === 0) {
-                alquiler = precioPropiedad * 0.1;
+                alquiler = precioPropiedad * 0.5;
             } else if (numCasas === 1) {
                 alquiler = precioPropiedad / 2;
             } else if (numCasas === 2) {
@@ -3061,9 +3061,9 @@ function liberarPropiedadesJugador(idPartida, propiedades) {
         let cons = "SET "
         prop.forEach((row) => {
             cons = cons + row + " = null,"
-        });      
+        });
 
-        const query = `UPDATE Partida ${cons.slice(0,-1)} WHERE idPartida =  '${idPartida}'`;
+        const query = `UPDATE Partida ${cons.slice(0, -1)} WHERE idPartida =  '${idPartida}'`;
         con.query(query, (error, results) => {
             if (error) {
                 con.end(); // Cerrar la conexión
@@ -3094,18 +3094,18 @@ exports.liberarPropiedadesJugador = liberarPropiedadesJugador;
 async function jugadorAcabadoPartida(idJugador, idPartida) {
     try {
         //sacamos el numero de casas que tiene en dicha propiedad.
-        if (!(await matarJugador(idJugador, idPartida)) ){
+        if (!(await matarJugador(idJugador, idPartida))) {
             return false;
         } else {
 
             const propiedades = await obtenerPropiedades(idPartida, idJugador);
 
-            if(propiedades === null){
+            if (propiedades === null) {
                 console.log("no tiene propiedades")
                 return true;
             } else {
 
-                if(await liberarPropiedadesJugador(idPartida, propiedades)){        
+                if (await liberarPropiedadesJugador(idPartida, propiedades)) {
                     return true;
                 } else {
                     return false;

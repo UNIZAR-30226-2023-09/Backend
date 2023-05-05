@@ -360,7 +360,7 @@ async function GestionTax(ID_partida, ID_jugador, socket) {
     let sigue = true;
     let partidaContinua = true;
     let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
-    let cantidad = 50 + 10 * numPropiedades;
+    let cantidad = 50 + 30 * numPropiedades;
     let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
     await enviarDineroBote(ID_partida, ID_jugador, dineroBote);
     if (await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
@@ -379,7 +379,7 @@ async function GestionLuxuryTax(ID_partida, ID_jugador, socket) {
     let sigue = true;
     let partidaContinua = true;
     let numPropiedades = await API.obtenerNumPropiedades(ID_partida, ID_jugador);
-    let cantidad = 100 + 30 * numPropiedades;
+    let cantidad = 200 + 50 * numPropiedades;
     let dineroBote = await API.sumarDineroBote(cantidad, ID_partida);
     await enviarDineroBote(ID_partida, ID_jugador, dineroBote);
     if (await API.modificarDinero(ID_partida, ID_jugador, -cantidad)) {
@@ -1074,9 +1074,10 @@ function Usuario(id, esBot) {
     this.esBot = esBot;
 }
 
-async function DesplazarJugador(socket, ID_jugador, ID_partida, posicion) {
-    socket.send(`DESPLAZAR_JUGADOR,${posicion}`);
-    await API.moverJugador(ID_jugador, posicion, ID_partida);
+async function DesplazarJugador(socket, ID_jugador, ID_partida, posicionDesplazada) {
+    socket.send(`DESPLAZAR_JUGADOR,${posicionDesplazada}`);
+    await API.moverJugador(ID_jugador, posicionDesplazada, ID_partida);
+    comprobarCasilla(socket, posicionDesplazada, ID_jugador, ID_partida);
 }
 exports.DesplazarJugador = DesplazarJugador;
 

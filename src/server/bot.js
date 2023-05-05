@@ -90,6 +90,36 @@ async function jugar(IDusuario, IDpartida) {
 }
 exports.Jugar = jugar;
 
+// Función que gestiona las subastas por parte de los bots
+function GestionVenderPropiedades(IDpartida, IDJugador, numPropiedades) {
+    if (numPropiedades >= 3) {
+        let propiedades = await API.obtenerPropiedades(IDpartida,IDJugador);
+        let aux = propiedades.split(",");
+        let propiedad = aux[0];
+        let precio = await API.obtenerPrecioPropiedad(IDpartida,propiedad);
+        // Sumarle aleatoriamnete entre 0 y 100 al precio de la propiedad
+        precio = precio + Math.floor(Math.random() * 100);
+        let haySubasta = await API.obtenerNumTurnosActivos(IDpartida);
+        if (haySubasta > 0) {
+            return;
+        }
+        await API.actualizarNumTurnosSubasta(IDpartida, 4);
+        let jugadores_struct = await obtenerJugadoresPartida(IDpartida);
+        // Actualizar la subasta en la base de datos
+        precio = parseInt(precio);
+        await API.actualizarPropiedadSubasta(IDpartida, propiedad, IDJugador);
+        await API.actualizarPrecioSubasta(IDpartida, precio, IDJugador);
+        for (let i = 0; i < jugadores_struct.length; i++) {
+            if (jugadores_struct[i].esBot === "0" && jugadores_struct[i].id !== ID_jugador) {
+                let socketJugador = con.buscarUsuario(jugadores_struct[i].id);
+                if (socketJugador != null) {
+                    socketJugador.send(`SUBASTA,${IDJugador},${propiedad},${precio}`);
+                }
+            }
+        }
+    }
+}
+
 async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
     let tablero = ["Salida", "Monterrey", "Guadalajara", "Treasure", "Tax", "AeropuertoNarita",
         "Tokio", "Kioto", "Superpoder", "Osaka", "Carcel", "Roma", "Milan", "Casino", "Napoles",
@@ -240,6 +270,11 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
         }
     }
 
+    // Obtener el numero de propiedades del bot
+    let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
+    // Comprobar si tiene mas de 3 propiedades para subastarlas
+    GestionVenderPropiedades(IDpartida, IDJugador, numPropiedades);
+
     if (dadosDobles) {
         escribirEnArchivo("El bot " + IDJugador + " ha sacado dobles, vuelve a tirar");
         jugar(IDJugador, IDpartida);
@@ -336,7 +371,7 @@ async function CasillaTreasure(IDpartida, IDJugador) {
 
 async function CasillaLuxuryTax(IDpartida, IDJugador) {
     let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
-    let cantidad = 100 + 50 * numPropiedades;
+    let cantidad = 200 + 50 * numPropiedades;
     let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
     await enviarDineroBote(IDpartida, IDJugador, dineroBote);
     let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, -cantidad);
@@ -352,7 +387,7 @@ async function CasillaLuxuryTax(IDpartida, IDJugador) {
 
 async function CasillaTax(IDpartida, IDJugador) {
     let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
-    let cantidad = 50 + 20 * numPropiedades;
+    let cantidad = 50 + 30 * numPropiedades;
     let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
     await enviarDineroBote(IDpartida, IDJugador, dineroBote);
     let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, -cantidad);

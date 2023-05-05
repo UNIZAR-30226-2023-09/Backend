@@ -16,7 +16,7 @@ const conexion = require('./conexiones');
 const PUERTO = 8080 // Puerto a elegir
 
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: PUERTO });
+const server = new WebSocket.Server({port: PUERTO});
 
 // Cuando se lance el servidor que notifique que esta activo
 server.on('listening', () => {
@@ -36,10 +36,10 @@ server.on("connection", (socket) => {
         // para dividirlo o no.
         if (message.includes(",")) {
             mensaje = message.toString().split(",");
-        }
-        else {
+        } else {
             mensaje = [message];
         }
+
 
         // TODO: HACER TODOS LOS MENSAJES RECIBIDOS EN OTROS FICHEROS
 
@@ -48,6 +48,7 @@ server.on("connection", (socket) => {
             // socket, email, contrasenya, nombre
             funcionesJugador.Registrarse(socket, mensaje[1], mensaje[2], mensaje[3]);
         }
+
 
         // Si se quiere iniciar sesión
         if (mensaje[0] == "iniciarSesion") {
