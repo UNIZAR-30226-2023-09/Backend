@@ -69,7 +69,8 @@ async function calcularSumaDados(IDpartida, dado1, dado2) {
 // Funcion que automatiza la jugada de un bot
 async function jugar(IDusuario, IDpartida) {
     sigueVivo = true;
-
+    // Esperar 3 segundos
+    await new Promise(resolve => setTimeout(resolve, 3000));
     try {
         let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverBot(IDusuario, IDpartida);
         let dadosDobles = (dado1 === dado2);
