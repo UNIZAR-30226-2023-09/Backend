@@ -128,6 +128,9 @@ async function FinTurno(ID_jugador, ID_partida) {
         }
     }
 
+    // Actualizar el turno del jugador en la base
+    await APIpartida.actualizarTurno(ID_partida, jugador);
+
     // Si le toca a un bot
     if (esBot === "1") {
         bot.Jugar(jugador, ID_partida);
@@ -406,7 +409,7 @@ function Usuario(id, esBot) {
 function escribirEnArchivo(datos) {
     // Obtener la fecha y hora actual en la zona horaria de España
     const fechaActual = new Date();
-    fechaActual.toLocaleString('es-ES', {timeZone: 'Europe/Madrid'});
+    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
     datos = fechaActual.toLocaleString() + " " + datos + " " + "\n";

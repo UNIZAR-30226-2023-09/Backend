@@ -3957,6 +3957,35 @@ function actualizarPropiedadSubasta(idPartida, nombre, email) {
 }
 exports.actualizarPropiedadSubasta = actualizarPropiedadSubasta;
 
+// Actualiza el turno de una partida para saber quien es el siguiente en jugar
+function actualizarTurno(idPartida, email) {
+    return new Promise((resolve, reject) => {
+        // Creamos una conexión a la base de datos
+        const con = db.crearConexion();
+        con.connect();
+
+        // Construimos la consulta SQL
+        const query = `UPDATE Partida SET turno = ? WHERE idPartida = ?`;
+        const values = [email, idPartida];
+
+        // Ejecutamos la consulta SQL
+        con.query(query, values, (error, result) => {
+            // Cerramos la conexión
+            //con.end();
+
+            // Verificamos si hubo algún error en la consulta SQL
+            if (error) {
+                con.end();
+                reject(error);
+            } else {
+                con.end();
+                resolve(true);
+            }
+        });
+    });
+}
+exports.actualizarTurno = actualizarTurno;
+
 
 
 /*
