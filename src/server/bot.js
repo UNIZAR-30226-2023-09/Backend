@@ -70,7 +70,7 @@ async function calcularSumaDados(IDpartida, dado1, dado2) {
 async function jugar(IDusuario, IDpartida) {
     sigueVivo = true;
     // Esperar 3 segundos
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    //await new Promise(resolve => setTimeout(resolve, 2000));
     try {
         let { dado1, dado2, posicionNueva, estaCarcel, sumaDados } = await moverBot(IDusuario, IDpartida);
         let dadosDobles = (dado1 === dado2);
@@ -272,6 +272,10 @@ async function casillaActual(IDJugador, IDpartida, posicion, dadosDobles) {
         }
     }
 
+    // Obtener el dinero del bot
+    let nuevoDinero = await API.obtenerDinero(IDJugador, IDpartida);
+    await EnviarJugadorMuertoPartida(IDJugador, IDpartida, nuevoDinero);
+
     // Obtener el numero de propiedades del bot
     let numPropiedades = await API.obtenerNumPropiedades(IDpartida, IDJugador);
     // Obtener la ronda en la que estamos 
@@ -300,13 +304,6 @@ async function CasillaPagarAlquiler(IDpartida, posicion, IDJugador, IDjugador_pr
     if (await API.pagarAlquiler(IDJugador, IDjugador_propiedad, posicion, IDpartida, precio)) {
         let dineroJugadorPaga = await API.obtenerDinero(IDJugador, IDpartida);
         escribirEnArchivo("El bot " + IDJugador + " ha pagado " + precio + " al jugador " + IDjugador_propiedad + " por la propiedad " + propiedad + " en la partida " + IDpartida);
-        let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, dineroJugadorPaga);
-        if (!sigue) {
-            await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-            await Tablero.enviarJugadorMuertoPartida(null, IDJugador, IDpartida);
-            escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
-            sigueVivo = false;
-        }
         let esBot = await API.jugadorEsBot(IDjugador_propiedad, IDpartida);
         if (!esBot) {
             let conexion = con.buscarUsuario(IDjugador_propiedad);
@@ -364,14 +361,7 @@ async function CasillaSuperpoder(IDJugador, IDpartida) {
 
 async function CasillaTreasure(IDpartida, IDJugador) {
     let cantidad = Math.floor(Math.random() * 501) - 250;
-    let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, cantidad);
-    let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
-    if (!sigue) {
-        await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-        await Tablero.enviarJugadorMuertoPartida(null, IDJugador, IDpartida);
-        escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
-        sigueVivo = false;
-    }
+    await API.modificarDinero(IDpartida, IDJugador, cantidad);
 }
 
 async function CasillaLuxuryTax(IDpartida, IDJugador) {
@@ -379,15 +369,8 @@ async function CasillaLuxuryTax(IDpartida, IDJugador) {
     let cantidad = 200 + 50 * numPropiedades;
     let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
     await enviarDineroBote(IDpartida, IDJugador, dineroBote);
-    let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, -cantidad);
-    let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
+    await API.modificarDinero(IDpartida, IDJugador, -cantidad);
     escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos luxury");
-    if (!sigue) {
-        await API.jugadorAcabadoPartida(IDJugador, IDpartida);
-        await Tablero.enviarJugadorMuertoPartida(null, IDJugador, IDpartida);
-        escribirEnArchivo("El bot " + IDJugador + " ha sido eliminado de la partida");
-        sigueVivo = false;
-    }
 }
 
 async function CasillaTax(IDpartida, IDJugador) {
@@ -395,7 +378,10 @@ async function CasillaTax(IDpartida, IDJugador) {
     let cantidad = 50 + 30 * numPropiedades;
     let dineroBote = await API.sumarDineroBote(cantidad, IDpartida);
     await enviarDineroBote(IDpartida, IDJugador, dineroBote);
-    let nuevoDinero = await API.modificarDinero(IDpartida, IDJugador, -cantidad);
+    await API.modificarDinero(IDpartida, IDJugador, -cantidad);
+}
+
+async function EnviarJugadorMuertoPartida(IDJugador, IDpartida, nuevoDinero) {
     let sigue = Tablero.SigueEnPartida(IDJugador, IDpartida, nuevoDinero);
     escribirEnArchivo("El bot " + IDJugador + " ha caido en la casilla de impuestos");
     if (!sigue) {
