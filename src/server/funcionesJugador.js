@@ -55,14 +55,15 @@ async function IniciarSesion(socket, email, contrasenya) {
                 // TODO: Ver como devuelven los datos de la partida y mandárselos al cliente
                 //let datosPartida = await API.obtenerDatosPartida(id_partida);
                 // Mandar los datos de la partida para mostrarlos
-                let estadoPartida = await APIpartida.obtenerEstadoPartida(id_partida);
+                let estadoPartida = await APIpartida.obtenerEstadoPartida(id_partida, email);
                 socket.send(`INICIO_OK,${email},${gemas}`);
                 socket.send(`ESTADO_PARTIDA,${estadoPartida}`);
                 escribirEnArchivo("El jugador ya estaba en la partida " + id_partida + " y se le ha enviado el estado de la partida");
                 return;
+            } else {
+                socket.send(`INICIO_OK,${email},${gemas}`);
+                escribirEnArchivo("Inicio sesion correcto. Email: " + email + " Contraseña: " + contrasenya + " Gemas: " + gemas);
             }
-            socket.send(`INICIO_OK,${email},${gemas}`);
-            escribirEnArchivo("Inicio sesion correcto. Email: " + email + " Contraseña: " + contrasenya + " Gemas: " + gemas);
         } else {
             socket.send(`INICIO_NO_OK`);
             escribirEnArchivo("Inicio sesion incorrecto. Email: " + email + " Contraseña: " + contrasenya);
