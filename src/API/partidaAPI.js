@@ -4213,7 +4213,8 @@ function obtenerEstadoPartida(idPartida, idJugador) {
                                             results3[i].dineroInvertido + "," +
                                             results3[i].skin + "," +
                                             results3[i].skinTablero + "," +
-                                            results3[i].turno;
+                                            results3[i].turno + "," +
+                                            results3[i].nTurnosCarcel;
 
                                     } else {
 
@@ -4222,7 +4223,8 @@ function obtenerEstadoPartida(idPartida, idJugador) {
                                             results3[i].posicion + "," +
                                             results3[i].dinero + "," +
                                             results3[i].skin + "," +
-                                            results3[i].turno;
+                                            results3[i].turno + "," +
+                                            results3[i].nTurnosCarcel;
 
                                     }
                                 });
