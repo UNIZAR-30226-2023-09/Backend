@@ -365,3 +365,13 @@ function liberarPropiedadesJugador(idPartida, propiedades)
 //se le pone a 0 estaVivo y se le asigna la posicion en que ha quedado
 
 async function jugadorAcabadoPartida(idJugador, idPartida)
+
+// Funcion la cual devuelve true si la partida dada pertenece a un torneo.
+async function perteneceTorneo(ID_Partida);
+
+// TODO: HACER ESTAS FUNCIONES
+
+// Funcion que actualiza la posicion en la que quedan los jugadores ( o revisar la funcoon de eliminarJugadorPartida para que lo haga)
+
+// Funcion que me devuelva el numero de partidas que se han jugado dado el ID_Torneo
+

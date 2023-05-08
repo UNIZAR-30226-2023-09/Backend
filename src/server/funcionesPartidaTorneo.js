@@ -229,7 +229,7 @@ function mostrarJugadores(jugadores_struct, IDPartida) {
 function escribirEnArchivo(datos) {
     // Obtener la fecha y hora actual en la zona horaria de España
     const fechaActual = new Date();
-    fechaActual.toLocaleString('es-ES', {timeZone: 'Europe/Madrid'});
+    fechaActual.toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 
     // Añadir al archivo logs.txt el mensaje que se le pasa junto al día y la hora actual en España
     datos = fechaActual.toLocaleString() + datos + " " + "\n";
@@ -241,3 +241,11 @@ function escribirEnArchivo(datos) {
         }
     });
 }
+
+// Empieza una partida de un torneo
+async function EmpezarPartidaTorneo(socket, ID_Torneo, ID_jugador) {
+
+    let ID_Partida = APIpartida.crearPartidaTorneo(ID_jugador, ID_Torneo);
+    await EmpezarPartida(socket, ID_Partida, ID_jugador);
+}
+exports.EmpezarPartidaTorneo = EmpezarPartidaTorneo;

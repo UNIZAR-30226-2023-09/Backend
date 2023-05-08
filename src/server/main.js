@@ -16,7 +16,7 @@ const conexion = require('./conexiones');
 const PUERTO = 8080 // Puerto a elegir
 
 const WebSocket = require('ws');
-const server = new WebSocket.Server({port: PUERTO});
+const server = new WebSocket.Server({ port: PUERTO });
 
 // Cuando se lance el servidor que notifique que esta activo
 server.on('listening', () => {
@@ -164,7 +164,7 @@ server.on("connection", (socket) => {
 
         if (mensaje[0] == "empezarPartidaTorneo") {
             // socket, ID_Torneo, ID_Lider
-            funcionesPartidaTorneo.EmpezarTorneo(socket, mensaje[1], mensaje[2]);
+            funcionesPartidaTorneo.EmpezarPartidaTorneo(socket, mensaje[1], mensaje[2]);
         }
 
         if (mensaje[0] == "pagarLiberarseCarcel") {
