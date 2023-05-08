@@ -177,3 +177,30 @@ function verClasificacionTorneo(idTorneo) {
 
 
 exports.verClasificacionTorneo = verClasificacionTorneo;
+
+
+
+/*
+=================== OBTENER NUMERO DE PARTIDAS ASOCIADAS AL TORNEO =========================================================
+*/
+// / Funcion que me devuelva el numero de partidas que se han jugado dado el ID_Torneo
+function obtenerNumPartidasTorneo(idTorneo) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT COUNT(idPartida) AS cuenta FROM Partida WHERE perteneceTorneo = '${idTorneo}' AND enCurso = 0`;       // Para las que ya no estas en curso
+        //const query = `SELECT COUNT(idPartida) AS cuenta FROM Partida WHERE perteneceTorneo = '${idTorneo}'`;
+        con.query(query, (error, results) => {                // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else {                                            // Caso --  Existen Skins
+                con.end();
+                resolve(results[0].cuenta)
+            }
+        });
+    });
+}
+
+
+exports.obtenerNumPartidasTorneo = obtenerNumPartidasTorneo;
