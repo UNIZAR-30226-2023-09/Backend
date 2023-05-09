@@ -2439,7 +2439,7 @@ async function perteneceTorneo(ID_Partida) {
     try {
         var con = db.crearConexion();
         con.connect();
-        //actualizamos la partida para que pertenezca al torneo id_torneo.
+        //actualizamos la partida para que pertenezca al toirneo d_torneo.
         const query = `SELECT perteneceTorneo FROM Partida WHERE idPartida = ${ID_Partida}`;
         con.query(query, (error, results) => {
             if (error) {
@@ -2448,7 +2448,7 @@ async function perteneceTorneo(ID_Partida) {
             }
             else if (results.length === 0) {
                 con.end(); // Cerrar conexión
-                resolve(-1); // Si no existe jugador
+                resolve(false); // Si no existe jugador
             }
             else {
                 con.end(); // Cerrar conexión

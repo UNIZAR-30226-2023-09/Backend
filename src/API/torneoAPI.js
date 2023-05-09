@@ -132,7 +132,7 @@ exports.unirseTorneo = unirseTorneo;
 =================== OBTENER PUNTUACIONES TORNEO =========================================================
 */
 // Devuelve el listado de los jugadores y sus puntuaciones totales en el torneo (Menor es que ha quedado mas veces primero)
-// ejemplo=> jugador1 - puntuacion1 , jugador2 - puntuacion2
+// ejemplo=> jugador1 : puntuacion1 , jugador2 : puntuacion2
 // En caso de que no exista el torneo, o no tenga partidas acabadas para poder sacar datos, devuelve false
 function verClasificacionTorneo(idTorneo) {
     return new Promise((resolve, reject) => {
@@ -163,7 +163,7 @@ function verClasificacionTorneo(idTorneo) {
                             let aux = [];
                             aux[0] = row.email;
                             aux[1] = row.puntos;
-                            respuesta[i] = aux.join("-");
+                            respuesta[i] = aux.join(":");
                         });
                         let cadena = respuesta.join(",");
                         con.end();
@@ -204,3 +204,26 @@ function obtenerNumPartidasTorneo(idTorneo) {
 
 
 exports.obtenerNumPartidasTorneo = obtenerNumPartidasTorneo;
+
+// Dado el id de la partida, consulta en la base de datos a que torneo pertenece. 
+// Si pertenece a uno devuelve el ID_Torneo, si no devuelve -1
+function obtenerIDTorneoPartida(ID_Partida) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT perteneceTorneo FROM Partida WHERE idPartida = '${ID_Partida}'`;       // Para las que ya no estas en curso
+        con.query(query, (error, results) => {                // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } if (results[0].length === 0) {
+                con.end();
+                resolve(-1);
+            } else {                                            // Caso --  Existe el torneo
+                con.end();
+                resolve(results[0].perteneceTorneo)
+            }
+        });
+    });
+}
+exports.obtenerIDTorneoPartida = obtenerIDTorneoPartida;

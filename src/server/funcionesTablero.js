@@ -9,6 +9,7 @@
 
 const API = require('../API/partidaAPI');
 const APIJugador = require('../API/jugadorAPI');
+const APITorneo = require('../API/torneoAPI');
 const con = require('./conexiones');
 const fs = require('fs');
 
@@ -957,6 +958,38 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
 
     // Dar gemas en funcion de la posicion en la clasificacion
     let posicion = jugadores_struct.length + 1;
+    let gema = calcularGemas(posicion);
+    let esBot = await API.jugadorEsBot(ID_jugador, ID_partida);
+    if (!esBot) {
+        await notificarJugadorMuerto(ID_partida, socket, posicion, ID_jugador, gema, jugadores_struct);
+    }
+
+    // Comprobamos si es el ultimo jugador
+    if (jugadores_struct.length === 1) {
+        await ganadorPartida(jugadores_struct, ID_partida, ID_jugador);
+        await API.acabarPartida(ID_partida);
+        await acabarPartidaTorneo(ID_partida, jugadores_struct);
+        return false;
+    } else {
+        // Notificar a los jugadores de que un jugador ha muerto
+        num_bots = notificarJugadorMuerto(jugadores_struct, ID_jugador, num_bots);
+
+        if (num_bots === jugadores_struct.length) {
+            escribirEnArchivo("Solo quedan bots en la partida " + ID_partida + ".");
+            // Solo quedan bots en la partida
+            await API.acabarPartida(ID_partida);
+            await acabarPartidaTorneo(ID_partida, jugadores_struct);
+            return false;
+        }
+    }
+    return true;
+}
+
+exports.enviarJugadorMuertoPartida = enviarJugadorMuertoPartida;
+
+// Calcula el numero de gemas que gana el jugador en funcion de la posicion en 
+// la clasificacion
+function calcularGemas(posicion) {
     let gema = 0;
 
     if (posicion === 1) {
@@ -968,33 +1001,28 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
     } else {
         gema = 1;
     }
-    await API.modificarGemas(ID_jugador, gema);
-    let esBot = await API.jugadorEsBot(ID_jugador, ID_partida);
-    if (!esBot) {
+    return gema;
+}
+
+// Le envia al jugador que ha muerto su posicion y las gemas que ha recibido
+async function notificarJugadorMuerto(ID_partida, socket, posicion, ID_jugador, gema, jugadores_struct) {
+    if (await perteneceTorneo(ID_partida)) {
+        socket.send(`ELIMINADO_TORNEO,${posicion}`);
+        escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " +
+            ID_partida + " que pertenece a un torneo y ha recibido " + gema + " gemas.");
+    } else {
+        await API.modificarGemas(ID_jugador, gema);
         let info = await APIJugador.obtenerInformacionJugador(jugadores_struct[0].id);
         let aux = info.split(",");
         let gemas = parseInt(aux[1]);
         socket.send(`ELIMINADO,${posicion},${gemas}`);
-        escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " + ID_partida + " y ha recibido " + gema + " gemas.");
+        escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " +
+            ID_partida + " y ha recibido " + gema + " gemas.");
     }
+}
 
-    // Comprobamos si es el ultimo jugador
-    if (jugadores_struct.length === 1) {
-        await API.modificarGemas(ID_jugador, 5);
-        if (jugadores_struct[0].esBot === "0") {
-            let conexion = con.buscarUsuario(jugadores_struct[0].id);
-            let info = await APIJugador.obtenerInformacionJugador(jugadores_struct[0].id);
-            let aux = info.split(",");
-            let gemas = parseInt(aux[1]);
-            conexion.send(`GANADOR,${gemas}`);
-            escribirEnArchivo("El jugador " + jugadores_struct[0].id + " ha ganado la partida " + ID_partida + " y ha recibido 5 gemas.");
-        }
-
-        await API.acabarPartida(ID_partida);
-        escribirEnArchivo("La partida " + ID_partida + " ha acabado.");
-        return false;
-    }
-
+// Notificar a los jugadores de que un jugador ha muerto
+function notificarJugadorMuerto(jugadores_struct, ID_jugador, num_bots) {
     for (let i = 0; i < jugadores_struct.length; i++) {
         if (jugadores_struct[i].esBot === "0") {
             let conexion = con.buscarUsuario(jugadores_struct[i].id);
@@ -1005,17 +1033,62 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
         }
     }
     escribirEnArchivo("El jugador " + ID_jugador + " ha muerto y los jugadores restantes han sido notificados.");
-
-    if (num_bots === jugadores_struct.length) {
-        escribirEnArchivo("Solo quedan bots en la partida " + ID_partida + ".");
-        // Solo quedan bots en la partida
-        await API.acabarPartida(ID_partida);
-        return false;
-    }
-    return true;
+    return num_bots;
 }
 
-exports.enviarJugadorMuertoPartida = enviarJugadorMuertoPartida;
+// Envia al jugador que ha ganado la partida
+async function ganadorPartida(jugadores_struct, ID_partida, ID_jugador) {
+    if (jugadores_struct[0].esBot === "0") {
+        let conexion = con.buscarUsuario(jugadores_struct[0].id);
+        if (await perteneceTorneo(ID_partida)) {
+            conexion.send(`GANADOR_TORNEO`);
+            escribirEnArchivo("El jugador " + jugadores_struct[0].id + " ha ganado la partida " + ID_partida + " que pertenece a un torneo y ha recibido 5 gemas.");
+        } else {
+            await API.modificarGemas(ID_jugador, 5);
+            let info = await APIJugador.obtenerInformacionJugador(jugadores_struct[0].id);
+            let aux = info.split(",");
+            let gemas = parseInt(aux[1]);
+            conexion.send(`GANADOR,${gemas}`);
+            escribirEnArchivo("El jugador " + jugadores_struct[0].id + " ha ganado la partida " + ID_partida + " y ha recibido 5 gemas.");
+        }
+    }
+}
+
+// Gestiona el fin de una partida que pertenece a un torneo
+async function acabarPartidaTorneo(ID_partida, jugadores_struct) {
+    let ID_Torneo = await APITorneo.obtenerIDTorneoPartida(ID_partida);
+    if (ID_Torneo !== -1) {
+        let numPartidasTorneo = APITorneo.obtenerNumPartidasTorneo(ID_Torneo);
+        escribirEnArchivo("La partida " + ID_partida + " ha acabado y quedan " + 3 - numPartidasTorneo + " partidas del torneo " + ID_Torneo + ".");
+        let clasificacion = await APITorneo.verClasificacionTorneo(ID_Torneo);
+        // Descomponer la clasificacion en un array de strings
+        let jugadores = clasificacion.split(",");
+        // Descomponer cada string en un array de dos elementos: ID y clasificacion
+        for (let i = 0; i < jugadores.length; i++) {
+            let aux = jugadores[i].split(":");
+            let ID_jugador_actual = aux[0];
+            let clasificacion_actual = aux[1];
+            // Enviarle a todos los jugadores de la partida la clasificacion actualizada
+            for (let j = 0; j < jugadores_struct.length; j++) {
+                if (jugadores_struct[j].esBot === "0") {
+                    let conexion = con.buscarUsuario(jugadores_struct[j].id);
+                    conexion.send(`CLASIFICACION_TORNEO,${ID_jugador_actual},${clasificacion_actual}`);
+                }
+            }
+        }
+        if (numPartidasTorneo === 3) {
+            escribirEnArchivo("El torneo " + ID_Torneo + " ha acabado.");
+            // Enviarle a todos los jugadores del torneo que ha acabado el torneo
+            for (let j = 0; j < jugadores_struct.length; j++) {
+                if (jugadores_struct[j].esBot === "0") {
+                    let conexion = con.buscarUsuario(jugadores_struct[j].id);
+                    conexion.send(`TORNEO_FINALIZADO`);
+                }
+            }
+        }
+
+    }
+}
 
 // Funcion que acaba la partida 
 async function acabarPartida(ID_partida) {
