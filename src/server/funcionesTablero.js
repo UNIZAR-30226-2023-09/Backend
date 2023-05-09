@@ -961,7 +961,7 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
     let gema = calcularGemas(posicion);
     let esBot = await API.jugadorEsBot(ID_jugador, ID_partida);
     if (!esBot) {
-        await notificarJugadorMuerto(ID_partida, socket, posicion, ID_jugador, gema, jugadores_struct);
+        await notificarAlJugadorMuerto(ID_partida, socket, posicion, ID_jugador, gema, jugadores_struct);
     }
 
     // Comprobamos si es el ultimo jugador
@@ -1005,8 +1005,8 @@ function calcularGemas(posicion) {
 }
 
 // Le envia al jugador que ha muerto su posicion y las gemas que ha recibido
-async function notificarJugadorMuerto(ID_partida, socket, posicion, ID_jugador, gema, jugadores_struct) {
-    if (await perteneceTorneo(ID_partida)) {
+async function notificarAlJugadorMuerto(ID_partida, socket, posicion, ID_jugador, gema, jugadores_struct) {
+    if (await API.perteneceTorneo(ID_partida)) {
         socket.send(`ELIMINADO_TORNEO,${posicion}`);
         escribirEnArchivo("El jugador " + ID_jugador + " ha sido eliminado de la partida " +
             ID_partida + " que pertenece a un torneo y ha recibido " + gema + " gemas.");
@@ -1040,7 +1040,7 @@ function notificarJugadorMuerto(jugadores_struct, ID_jugador, num_bots) {
 async function ganadorPartida(jugadores_struct, ID_partida, ID_jugador) {
     if (jugadores_struct[0].esBot === "0") {
         let conexion = con.buscarUsuario(jugadores_struct[0].id);
-        if (await perteneceTorneo(ID_partida)) {
+        if (await API.perteneceTorneo(ID_partida)) {
             conexion.send(`GANADOR_TORNEO`);
             escribirEnArchivo("El jugador " + jugadores_struct[0].id + " ha ganado la partida " + ID_partida + " que pertenece a un torneo y ha recibido 5 gemas.");
         } else {
@@ -1057,7 +1057,7 @@ async function ganadorPartida(jugadores_struct, ID_partida, ID_jugador) {
 // Gestiona el fin de una partida que pertenece a un torneo
 async function acabarPartidaTorneo(ID_partida, jugadores_struct) {
     let ID_Torneo = await APITorneo.obtenerIDTorneoPartida(ID_partida);
-    if (ID_Torneo !== -1) {
+    if (ID_Torneo !== -1 && ID_Torneo !== null && ID_Torneo !== undefined && ID_Torneo !== "" && ID_Torneo !== false) {
         let numPartidasTorneo = APITorneo.obtenerNumPartidasTorneo(ID_Torneo);
         escribirEnArchivo("La partida " + ID_partida + " ha acabado y quedan " + 3 - numPartidasTorneo + " partidas del torneo " + ID_Torneo + ".");
         let clasificacion = await APITorneo.verClasificacionTorneo(ID_Torneo);
