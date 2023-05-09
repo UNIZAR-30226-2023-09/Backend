@@ -2399,73 +2399,75 @@ exports.venderPropiedadJugador = venderPropiedadJugador;
 //funcion la cual crea una partida y la enlaza con el torneo id_torneo.
 //El torneo tiene que existir y el jugador tambien.
 async function crearPartidaTorneo(id_jugador, id_torneo) {
+    let skinJugador = await obtenerSkinEquipada(id_jugador);
+    let skinTablero = await obtenerSkinTableroEquipada(id_jugador);
+    //llamamos a la funcion crearPartida.
+    let idPartidaCreada = await crearPartida(id_jugador, skinJugador, skinTablero);
+    return new Promise((resolve, reject) => {
+        try {
+            var con = db.crearConexion();
+            con.connect();
+            //actualizamos la partida para que pertenezca al torneo id_torneo.
+            const query = `UPDATE Partida SET perteneceTorneo = ${id_torneo} WHERE idPartida = ${idPartidaCreada}`;
+            con.query(query, (error, results) => {
+                if (error) {
+                    con.end(); // Cerrar conexión
+                    reject(error);
+                }
+                else if (results.length === 0) {
+                    con.end(); // Cerrar conexión
+                    resolve(-1); // Si no existe jugador
+                }
+                else {
+                    con.end(); // Cerrar conexión
+                    resolve(idPartidaCreada);
+                }
+            });
 
-    try {
-        let skinJugador = await obtenerSkinEquipada(id_jugador);
-        let skinTablero = await obtenerSkinTableroEquipada(id_jugador);
-        //llamamos a la funcion crearPartida.
-        let idPartidaCreada = await crearPartida(id_jugador, skinJugador, skinTablero);
-
-        var con = db.crearConexion();
-        con.connect();
-        //actualizamos la partida para que pertenezca al torneo id_torneo.
-        const query = `UPDATE Partida SET perteneceTorneo = ${id_torneo} WHERE idPartida = ${idPartidaCreada}`;
-        con.query(query, (error, results) => {
-            if (error) {
-                con.end(); // Cerrar conexión
-                reject(error);
-            }
-            else if (results.length === 0) {
-                con.end(); // Cerrar conexión
-                resolve(-1); // Si no existe jugador
-            }
-            else {
-                con.end(); // Cerrar conexión
-                resolve(idPartidaCreada);
-            }
-        });
-
-    } catch (error) {
-        // Si hay un error en la Promesa, devolvemos false.
-        console.error("Error en la Promesa: ", error);
-        return false;
-    }
+        } catch (error) {
+            // Si hay un error en la Promesa, devolvemos false.
+            console.error("Error en la Promesa: ", error);
+            return false;
+        }
+    });
 }
 
 exports.crearPartidaTorneo = crearPartidaTorneo;
 
 // Funcion la cual devuelve true si la partida dada pertenece a un torneo.
 async function perteneceTorneo(ID_Partida) {
-    try {
-        var con = db.crearConexion();
-        con.connect();
-        //actualizamos la partida para que pertenezca al toirneo d_torneo.
-        const query = `SELECT perteneceTorneo FROM Partida WHERE idPartida = ${ID_Partida}`;
-        con.query(query, (error, results) => {
-            if (error) {
-                con.end(); // Cerrar conexión
-                reject(error);
-            }
-            else if (results.length === 0) {
-                con.end(); // Cerrar conexión
-                resolve(false); // Si no existe jugador
-            }
-            else {
-                con.end(); // Cerrar conexión
-                if (results[0].perteneceTorneo == null || results[0].perteneceTorneo === 0) {
-                    resolve(false);
+    return new Promise((resolve, reject) => {
+        try {
+            var con = db.crearConexion();
+            con.connect();
+            //actualizamos la partida para que pertenezca al toirneo d_torneo.
+            const query = `SELECT perteneceTorneo FROM Partida WHERE idPartida = ${ID_Partida}`;
+            con.query(query, (error, results) => {
+                if (error) {
+                    con.end(); // Cerrar conexión
+                    reject(error);
+                }
+                else if (results.length === 0) {
+                    con.end(); // Cerrar conexión
+                    resolve(false); // Si no existe jugador
                 }
                 else {
-                    resolve(true);
+                    con.end(); // Cerrar conexión
+                    if (results[0].perteneceTorneo == null || results[0].perteneceTorneo === 0) {
+                        resolve(false);
+                    }
+                    else {
+                        resolve(true);
+                    }
                 }
-            }
-        });
+            });
 
-    } catch (error) {
-        // Si hay un error en la Promesa, devolvemos false.
-        console.error("Error en la Promesa: ", error);
-        return false;
-    }
+        } catch (error) {
+            // Si hay un error en la Promesa, devolvemos false.
+            console.error("Error en la Promesa: ", error);
+            return false;
+        }
+    });
 }
 
 exports.perteneceTorneo = perteneceTorneo;
