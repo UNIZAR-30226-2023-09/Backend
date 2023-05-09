@@ -25,7 +25,7 @@
 #   - MYSQL                                                                                               #
 #      · cmd: docker exec -it db_mysql_psoft mysql -h db -u root -p      (pass: psbackend1234)            #
 #   - NODE <-> MYSQL                                                                                      #
-#      · cmd: docker exec -it backend_node_psoft node src/baseDeDatos/administracion/exec_remote_sql.js 'SHOW TABLES'
+#      · cmd: docker exec -it backend_node_psoft node src/baseDeDatos/exec_remote_sql.js 'SHOW TABLES'    #
 #                                                                                                         #
 ###########################################################################################################
 
