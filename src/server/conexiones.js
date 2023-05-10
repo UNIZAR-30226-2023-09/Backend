@@ -8,7 +8,8 @@
 */
 
 const APIpartida = require('../API/partidaAPI');
-const TIMEOUT = 60000; // 1 minuto
+const jugador = require('./funcionesJugador');
+const TIMEOUT = 6000; // TODO: Ponerlo a 1 minuto no 10 segundos
 
 // Creamos un array vacío para almacenar las conexiones de los usuarios
 const connections = [];
@@ -29,7 +30,7 @@ function agregarUsuario(socket, nombreUsuario) {
     }
 
     // Creamos un objeto para almacenar la información del usuario
-    const usuario = {name: nombreUsuario, socket, timeoutId: null};
+    const usuario = { name: nombreUsuario, socket, timeoutId: null };
 
     // Agregamos la conexión del usuario al array de conexiones
     connections.push(usuario);
@@ -118,7 +119,8 @@ function desactivarTimer(IDusuario) {
 async function sustituirJugadorPorBot(IDusuario, IDPartida) {
     console.log('Sustituyendo a ', IDusuario, ' por un bot en la partida ', IDPartida);
     try {
-        APIpartida.sustituirJugadorPorBot(IDusuario, IDPartida);
+        await APIpartida.sustituirJugadorPorBot(IDusuario, IDPartida);
+        await jugador.FinTurno(IDusuario, IDPartida);
     } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);

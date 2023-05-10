@@ -216,7 +216,7 @@ server.on("connection", (socket) => {
     socket.on("close", () => {
         console.log("Cliente desconectado");
         // TODO: Gestionar desconexiones
-        //conexion.desconexionUsuario(socket);
+        conexion.desconexionUsuario(socket);
     });
 
 });
