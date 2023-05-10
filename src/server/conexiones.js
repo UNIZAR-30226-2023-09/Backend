@@ -8,7 +8,7 @@
 */
 
 const APIpartida = require('../API/partidaAPI');
-const jugador = require('./funcionesJugador');
+const jugadorFunc = require('./funcionesJugador');
 const TIMEOUT = 6000; // TODO: Ponerlo a 1 minuto no 10 segundos
 
 // Creamos un array vacío para almacenar las conexiones de los usuarios
@@ -39,6 +39,7 @@ function agregarUsuario(socket, nombreUsuario) {
     usuarios[nombreUsuario] = connections.indexOf(usuario);
 
 }
+exports.agregarUsuario = agregarUsuario;
 
 function eliminarUsuario(nombreUsuario) {
     console.log('Usuario desconectado:', nombreUsuario);
@@ -55,6 +56,7 @@ function eliminarUsuario(nombreUsuario) {
     // Eliminamos al usuario del diccionario de usuarios
     delete usuarios[nombreUsuario];
 }
+exports.eliminarUsuario = eliminarUsuario;
 
 
 // Devuelve la conexion asociada al usuario
@@ -66,6 +68,7 @@ function buscarUsuario(IDusuario) {
     console.log('No se ha encontrado al socket del usuario:', IDusuario);
     return null;
 }
+exports.buscarUsuario = buscarUsuario;
 
 // Devuelve el ID de usuario asociado a la conexión
 function buscarConexion(socket) {
@@ -76,6 +79,7 @@ function buscarConexion(socket) {
     console.log('Se ha encontrado al usuario asociado al socket');
     return null;
 }
+exports.buscarConexion = buscarConexion;
 
 // ***** Apartado que gestiona las desconexiones *****
 
@@ -105,6 +109,7 @@ async function desconexionUsuario(socket) {
         }
     }
 }
+exports.desconexionUsuario = desconexionUsuario;
 
 // Dado un usuario desactiva su timer de desconexion
 function desactivarTimer(IDusuario) {
@@ -120,7 +125,7 @@ async function sustituirJugadorPorBot(IDusuario, IDPartida) {
     console.log('Sustituyendo a ', IDusuario, ' por un bot en la partida ', IDPartida);
     try {
         await APIpartida.sustituirJugadorPorBot(IDusuario, IDPartida);
-        await jugador.FinTurno(IDusuario, IDPartida);
+        await jugadorFunc.FinTurno(IDusuario, IDPartida);
     } catch (error) {
         // Si hay un error en la Promesa, devolvemos false.
         console.error("Error en la Promesa: ", error);
@@ -135,17 +140,4 @@ function mostrarUsuarios() {
     }
 
 }
-
-
-// Creamos un objeto para almacenar todas las funciones que queremos exportar
-const funciones = {
-    agregarUsuario,
-    eliminarUsuario,
-    buscarUsuario,
-    buscarConexion,
-    desconexionUsuario,
-    mostrarUsuarios
-};
-
-// Exportamos el objeto que contiene las funciones
-module.exports = funciones;
+exports.mostrarUsuarios = mostrarUsuarios;

@@ -10,9 +10,9 @@
 // const con = require('../API/db');
 const API = require('../API/jugadorAPI');
 const APIpartida = require('../API/partidaAPI');
-const conexion = require('./conexiones');
 const bot = require('./bot');
 const con = require('./conexiones');
+const conexion = require('./conexiones');
 const fs = require('fs');
 
 
