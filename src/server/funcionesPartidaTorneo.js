@@ -245,7 +245,7 @@ function escribirEnArchivo(datos) {
 // Empieza una partida de un torneo
 async function EmpezarPartidaTorneo(socket, ID_Torneo, ID_jugador) {
 
-    let ID_Partida = APIpartida.crearPartidaTorneo(ID_jugador, ID_Torneo);
+    let ID_Partida = await APIpartida.crearPartidaTorneo(ID_jugador, ID_Torneo);
     await EmpezarPartida(socket, ID_Partida, ID_jugador);
 }
 exports.EmpezarPartidaTorneo = EmpezarPartidaTorneo;
