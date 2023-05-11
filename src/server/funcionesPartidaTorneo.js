@@ -246,6 +246,14 @@ function escribirEnArchivo(datos) {
 async function EmpezarPartidaTorneo(socket, ID_Torneo, ID_jugador) {
 
     let ID_Partida = await APIpartida.crearPartidaTorneo(ID_jugador, ID_Torneo);
+    let jugadores_Torneo = await APIpartida.obtenerJugadoresTorneo(ID_Torneo);
+    let aux = jugadores_Torneo.split(",");
+    // Para cada uno de los jugadores, añadirles a la partida
+    for (let i = 0; i < aux.length; i++) {
+        let skinJugador = await APIpartida.obtenerSkinEquipada(aux[i]);
+        let skinTablero = await APIpartida.obtenerSkinTableroEquipada(aux[i]);
+        await APIpartida.unirsePartida(aux[i], ID_Partida, skinJugador, skinTablero)
+    }
     await EmpezarPartida(socket, ID_Partida, ID_jugador);
 }
 exports.EmpezarPartidaTorneo = EmpezarPartidaTorneo;

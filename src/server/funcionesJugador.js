@@ -56,6 +56,7 @@ async function IniciarSesion(socket, email, contrasenya) {
                 //let datosPartida = await API.obtenerDatosPartida(id_partida);
                 // Mandar los datos de la partida para mostrarlos
                 let estadoPartida = await APIpartida.obtenerEstadoPartida(id_partida, email);
+                await APIpartida.sustituirBotPorJugador(email, id_partida);
                 socket.send(`INICIO_OK,${email},${gemas}`);
                 socket.send(`ESTADO_PARTIDA,${estadoPartida}`);
                 escribirEnArchivo("El jugador ya estaba en la partida " + id_partida + " y se le ha enviado el estado de la partida");
