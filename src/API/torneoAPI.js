@@ -205,6 +205,11 @@ function obtenerNumPartidasTorneo(idTorneo) {
 
 exports.obtenerNumPartidasTorneo = obtenerNumPartidasTorneo;
 
+
+
+/*
+=================== OBTENER ID TORNEO =========================================================
+*/
 // Dado el id de la partida, consulta en la base de datos a que torneo pertenece. 
 // Si pertenece a uno devuelve el ID_Torneo, si no devuelve -1
 function obtenerIDTorneoPartida(ID_Partida) {
@@ -227,3 +232,35 @@ function obtenerIDTorneoPartida(ID_Partida) {
     });
 }
 exports.obtenerIDTorneoPartida = obtenerIDTorneoPartida;
+
+
+/*
+=================== OBTENER JUGADORES TORNEO =========================================================
+*/
+function obtenerJugadoresTorneo(ID_Torneo) {
+    return new Promise((resolve, reject) => {
+      const con = db.crearConexion();
+      con.connect();
+      const query = `SELECT email FROM estaEnTorneo WHERE idTorneo = '${ID_Torneo}'`;      
+        con.query(query, (error, results) => {                
+            if (error) {
+                con.end();
+                reject(error);
+            } if (results[0].length === 0) {
+                con.end();
+                resolve(-1);
+            } else {                                            
+                con.end();
+                const respuesta = [];
+                results.forEach((row, i) => {
+                    let aux = [];
+                    aux[i] = row.email;
+                    respuesta[i] = aux.join(",");
+                });
+                resolve(respuesta);
+            }
+        });
+    });
+}
+exports.obtenerJugadoresTorneo = obtenerJugadoresTorneo;
+
