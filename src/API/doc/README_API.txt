@@ -373,3 +373,6 @@ async function perteneceTorneo(ID_Partida);
 
 // Funcion que me devuelva el numero de partidas que se han jugado dado el ID_Torneo
 
+//funcion la cual devuelve un string con los jugadores separados por una coma.
+function obtenerJugadoresTorneo(ID_Torneo);
+
