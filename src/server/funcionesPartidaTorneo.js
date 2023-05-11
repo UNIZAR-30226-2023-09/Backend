@@ -179,7 +179,7 @@ async function obtenerSkinsJugadores(jugadores_struct, ID_partida) {
 }
 
 async function obtenerJugadoresPartida(ID_partida) {
-    let jugadores = await API.obtenerJugadoresPartida(ID_partida);
+    let jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
     let jugadoresPartida = jugadores.split(",");
     let jugadores_struct = new Array(jugadoresPartida.length);
 
