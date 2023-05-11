@@ -179,20 +179,12 @@ async function obtenerSkinsJugadores(jugadores_struct, ID_partida) {
 }
 
 async function obtenerJugadoresPartida(ID_partida) {
-    let jugadores;
-    try {
-        jugadores = await APIpartida.obtenerJugadoresPartida(ID_partida);
-    } catch (error) {
-        // Si hay un error en la Promesa, devolvemos false.
-        console.error("Error en la Promesa: ", error);
-        return false;
-    }
-
+    let jugadores = await API.obtenerJugadoresPartida(ID_partida);
     let jugadoresPartida = jugadores.split(",");
-    let jugadores_struct = new Array(4);
-    let aux;
-    for (let i = 0; i < 4; i++) {
-        aux = jugadoresPartida[i].split(":");
+    let jugadores_struct = new Array(jugadoresPartida.length);
+
+    for (let i = 0; i < jugadoresPartida.length; i++) {
+        let aux = jugadoresPartida[i].split(":");
         jugadores_struct[i] = new Usuario(aux[0], aux[1]);
     }
     return jugadores_struct;
