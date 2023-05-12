@@ -238,7 +238,12 @@ function escribirEnArchivo(datos) {
 async function EmpezarPartidaTorneo(socket, ID_Torneo, ID_jugador) {
 
     let ID_Partida = await APIpartida.crearPartidaTorneo(ID_jugador, ID_Torneo);
+    if (ID_Partida === -1) {
+        escribirEnArchivo(`Error al crear la partida del torneo ${ID_Torneo} del jugador ${ID_jugador}\n`)
+        return;
+    }
     let jugadores_Torneo = await APItorneo.obtenerJugadoresTorneo(ID_Torneo);
+    console.log("Jugadores del torneo: ", jugadores_Torneo);
     let aux = jugadores_Torneo.split(",");
     // Para cada uno de los jugadores, añadirles a la partida
     for (let i = 0; i < aux.length; i++) {
