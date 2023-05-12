@@ -239,24 +239,25 @@ exports.obtenerIDTorneoPartida = obtenerIDTorneoPartida;
 */
 function obtenerJugadoresTorneo(ID_Torneo) {
     return new Promise((resolve, reject) => {
-      const con = db.crearConexion();
-      con.connect();
-      const query = `SELECT email FROM estaEnTorneo WHERE idTorneo = '${ID_Torneo}'`;      
-        con.query(query, (error, results) => {                
+        const con = db.crearConexion();
+        con.connect();
+        const query = `SELECT email FROM estaEnTorneo WHERE idTorneo = '${ID_Torneo}'`;
+        con.query(query, (error, results) => {
             if (error) {
                 con.end();
                 reject(error);
             } if (results[0].length === 0) {
                 con.end();
                 resolve(-1);
-            } else {                                            
+            } else {
                 con.end();
-                const respuesta = [];
+                const respuesta = "";
                 results.forEach((row, i) => {
                     let aux = [];
-                    aux[i] = row.email;
-                    respuesta[i] = aux.join(",");
+                    respuesta = row.email + ",";
                 });
+                // Quitar el ultimo caracter de respuesta
+                respuesta = respuesta.substring(0, respuesta.length - 1);
                 resolve(respuesta);
             }
         });
