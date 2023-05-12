@@ -251,7 +251,7 @@ function obtenerJugadoresTorneo(ID_Torneo) {
                 resolve(-1);
             } else {
                 con.end();
-                const respuesta = "";
+                let respuesta = "";
                 results.forEach((row, i) => {
                     let aux = [];
                     respuesta = row.email + ",";
