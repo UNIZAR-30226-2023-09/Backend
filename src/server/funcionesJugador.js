@@ -125,7 +125,7 @@ async function FinTurno(ID_jugador, ID_partida) {
             }
             let dinero = await APIpartida.obtenerDinero(ID_jugador, ID_partida);
             let casilla = await APIpartida.obtenerPosicion(ID_jugador, ID_partida);
-            let propiedades = await APIpartida.obtenerPropiedades(ID_partida, ID_jugador);
+            let propiedades = await APIpartida.obtenerPropiedadesEdificaciones(ID_jugador, ID_partida);
             conexionUsuario.send(`ACTUALIZAR_USUARIO,${ID_jugador},${dinero},${casilla},${propiedades}`);
         }
     }
