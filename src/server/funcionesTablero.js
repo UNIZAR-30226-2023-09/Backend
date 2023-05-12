@@ -114,7 +114,7 @@ async function moverJugador(ID_jugador, ID_partida) {
         // Movemos al jugador -> obtenemos su nueva posición
         posicionNueva = await API.moverJugador(ID_jugador, sumaDados, ID_partida);
     }
-    escribirEnArchivo("El bot " + ID_jugador + "en la partida " + ID_partida + " ha sacado " + dado1 + " y " + dado2 + " y se ha movido a la casilla " + posicionNueva + "\n");
+    escribirEnArchivo("El jugador " + ID_jugador + "en la partida " + ID_partida + " ha sacado " + dado1 + " y " + dado2 + " y se ha movido a la casilla " + posicionNueva + "\n");
     return { dado1, dado2, posicionNueva, estaCarcel, sumaDados };
 }
 
@@ -968,7 +968,7 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
     if (jugadores_struct.length === 1) {
         await ganadorPartida(jugadores_struct, ID_partida, ID_jugador);
         await API.acabarPartida(ID_partida);
-        await acabarPartidaTorneo(ID_partida, jugadores_struct);
+        await acabarPartidaTorneo(ID_partida);
         return false;
     } else {
         // Notificar a los jugadores de que un jugador ha muerto
@@ -978,7 +978,7 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
             escribirEnArchivo("Solo quedan bots en la partida " + ID_partida + ".");
             // Solo quedan bots en la partida
             await API.acabarPartida(ID_partida);
-            await acabarPartidaTorneo(ID_partida, jugadores_struct);
+            await acabarPartidaTorneo(ID_partida);
             return false;
         }
     }
@@ -1055,7 +1055,7 @@ async function ganadorPartida(jugadores_struct, ID_partida, ID_jugador) {
 }
 
 // Gestiona el fin de una partida que pertenece a un torneo
-async function acabarPartidaTorneo(ID_partida, jugadores_struct) {
+async function acabarPartidaTorneo(ID_partida) {
     let ID_Torneo = await APITorneo.obtenerIDTorneoPartida(ID_partida);
     if (ID_Torneo !== -1 && ID_Torneo !== null && ID_Torneo !== undefined && ID_Torneo !== "" && ID_Torneo !== false) {
         let numPartidasTorneo = APITorneo.obtenerNumPartidasTorneo(ID_Torneo);
@@ -1069,6 +1069,7 @@ async function acabarPartidaTorneo(ID_partida, jugadores_struct) {
             let ID_jugador_actual = aux[0];
             let clasificacion_actual = aux[1];
             // Enviarle a todos los jugadores de la partida la clasificacion actualizada
+            let jugadores_struct = await API.obtenerTodosJugadoresPartida(ID_partida);
             for (let j = 0; j < jugadores_struct.length; j++) {
                 if (jugadores_struct[j].esBot === "0") {
                     let conexion = con.buscarUsuario(jugadores_struct[j].id);
@@ -1079,6 +1080,7 @@ async function acabarPartidaTorneo(ID_partida, jugadores_struct) {
         if (numPartidasTorneo === 3) {
             escribirEnArchivo("El torneo " + ID_Torneo + " ha acabado.");
             // Enviarle a todos los jugadores del torneo que ha acabado el torneo
+            let jugadores_struct = await API.obtenerTodosJugadoresPartida(ID_partida);
             for (let j = 0; j < jugadores_struct.length; j++) {
                 if (jugadores_struct[j].esBot === "0") {
                     let conexion = con.buscarUsuario(jugadores_struct[j].id);
