@@ -1059,7 +1059,7 @@ async function acabarPartidaTorneo(ID_partida) {
     let ID_Torneo = await APITorneo.obtenerIDTorneoPartida(ID_partida);
     if (ID_Torneo !== -1 && ID_Torneo !== null && ID_Torneo !== undefined && ID_Torneo !== "" && ID_Torneo !== false) {
         let numPartidasTorneo = await APITorneo.obtenerNumPartidasTorneo(ID_Torneo);
-        escribirEnArchivo("La partida " + ID_partida + " ha acabado y quedan " + 3 - numPartidasTorneo + " partidas del torneo " + ID_Torneo + ".");
+        escribirEnArchivo("La partida " + ID_partida + " ha acabado y quedan " + (3 - numPartidasTorneo) + " partidas del torneo " + ID_Torneo + ".");
         let clasificacion = await APITorneo.verClasificacionTorneo(ID_Torneo);
         // Descomponer la clasificacion en un array de strings
         let jugadores = clasificacion.split(",");
