@@ -1433,6 +1433,8 @@ function obtenerTodosJugadoresPartida(idPartida) {
     });
 }
 
+exports.obtenerJugadoresPartida = obtenerJugadoresPartida;
+
 exports.obtenerTodosJugadoresPartida = obtenerTodosJugadoresPartida;
 
 

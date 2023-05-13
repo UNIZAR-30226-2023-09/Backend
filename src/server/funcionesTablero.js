@@ -1066,34 +1066,55 @@ async function acabarPartidaTorneo(ID_partida) {
         let jugadores = clasificacion.split(",");
         // Descomponer cada string en un array de dos elementos: ID y clasificacion
         escribirEnArchivo("La clasificacion del torneo " + ID_Torneo + " es: " + jugadores);
-        let jugadores_struct = await API.obtenerTodosJugadoresPartida(ID_partida);
-        for (let i = 0; i < jugadores.length; i++) {
-            let aux = jugadores[i].split(":");
-            let ID_jugador_actual = aux[0];
-            let clasificacion_actual = aux[1];
-            escribirEnArchivo("El jugador " + ID_jugador_actual + " ha quedado en la posicion " + clasificacion_actual + " en la partida " + ID_partida + ".");
-            // Enviarle a todos los jugadores de la partida la clasificacion actualizada
-            for (let j = 0; j < jugadores_struct.length; j++) {
-                console.log("ID_jugador_actual: " + ID_jugador_actual + " jugadores_struct[j].id: " + jugadores_struct[j].id);
-                if (jugadores_struct[j].esBot === "0") {
-                    let conexion = con.buscarUsuario(jugadores_struct[j].id);
-                    conexion.send(`CLASIFICACION_TORNEO,${ID_jugador_actual},${clasificacion_actual}`);
-                }
-            }
-        }
+        let jugadores_struct = await obtenerTodosJugadoresPartida(ID_partida);
+
+        enviarPosicionTorneo(jugadores, ID_partida, jugadores_struct);
+
         if (numPartidasTorneo === 3) {
-            escribirEnArchivo("El torneo " + ID_Torneo + " ha acabado.");
-            // Enviarle a todos los jugadores del torneo que ha acabado el torneo
-            let jugadores_struct = await API.obtenerTodosJugadoresPartida(ID_partida);
-            for (let j = 0; j < jugadores_struct.length; j++) {
-                if (jugadores_struct[j].esBot === "0") {
-                    let conexion = con.buscarUsuario(jugadores_struct[j].id);
-                    conexion.send(`TORNEO_FINALIZADO`);
-                }
-            }
+            finalizarTorneo(ID_Torneo, jugadores_struct);
         }
 
     }
+}
+
+function finalizarTorneo(ID_Torneo, jugadores_struct) {
+    escribirEnArchivo("El torneo " + ID_Torneo + " ha acabado.");
+    // Enviarle a todos los jugadores del torneo que ha acabado el torneo
+    for (let j = 0; j < jugadores_struct.length; j++) {
+        if (jugadores_struct[j].esBot === "0") {
+            let conexion = con.buscarUsuario(jugadores_struct[j].id);
+            conexion.send(`TORNEO_FINALIZADO`);
+        }
+    }
+}
+
+function enviarPosicionTorneo(jugadores, ID_partida, jugadores_struct) {
+    for (let i = 0; i < jugadores.length; i++) {
+        let aux = jugadores[i].split(":");
+        let ID_jugador_actual = aux[0];
+        let clasificacion_actual = aux[1];
+        escribirEnArchivo("El jugador " + ID_jugador_actual + " ha quedado en la posicion " + clasificacion_actual + " en la partida " + ID_partida + ".");
+        // Enviarle a todos los jugadores de la partida la clasificacion actualizada
+        for (let j = 0; j < jugadores_struct.length; j++) {
+            console.log("ID_jugador_actual: " + ID_jugador_actual + " jugadores_struct[j].id: " + jugadores_struct[j].id);
+            if (jugadores_struct[j].esBot === "0") {
+                let conexion = con.buscarUsuario(jugadores_struct[j].id);
+                conexion.send(`CLASIFICACION_TORNEO,${ID_jugador_actual},${clasificacion_actual}`);
+            }
+        }
+    }
+}
+
+async function obtenerTodosJugadoresPartida(ID_partida) {
+    let jug = await API.obtenerTodosJugadoresPartida(ID_partida);
+    let jugadoresPartida = jug.split(",");
+    let jugadores_struct = new Array(jugadoresPartida.length);
+
+    for (let i = 0; i < jugadoresPartida.length; i++) {
+        let aux = jugadoresPartida[i].split(":");
+        jugadores_struct[i] = new Usuario(aux[0], aux[1]);
+    }
+    return jugadores_struct;
 }
 
 // Funcion que acaba la partida 
