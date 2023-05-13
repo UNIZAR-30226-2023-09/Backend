@@ -3053,14 +3053,14 @@ function matarJugador(email, idPartida) {
             } else {
                 // Si se afectó una fila en la actualización, significa que el jugador está acabado en la partida
                 // Consultamos la posición más baja de los jugadores vivos en la partida
-                const queryPosicion = `SELECT COUNT(posicion) AS VIVOS FROM juega WHERE idPartida = '${idPartida}' AND jugadorVivo = true`;
+                const queryPosicion = `SELECT COUNT(puestoPartida) AS VIVOS FROM juega WHERE idPartida = '${idPartida}' AND jugadorVivo = true`;
                 con.query(queryPosicion, (errorPosicion, resultPosicion) => {
                     if (errorPosicion) {
                         con.end();
                         reject(errorPosicion);
                     } else {
                         let nuevaPosicion = resultPosicion[0].VIVOS + 1;
-                        const queryActualizarPosicion = `UPDATE juega SET posicion = ${nuevaPosicion} WHERE email = '${email}' AND idPartida = '${idPartida}'`;
+                        const queryActualizarPosicion = `UPDATE juega SET puestoPartida = ${nuevaPosicion} WHERE email = '${email}' AND idPartida = '${idPartida}'`;
                         con.query(queryActualizarPosicion, (errorActualizar, resultActualizar) => {
                             if (errorActualizar) {
                                 con.end();
@@ -3236,7 +3236,7 @@ function resultadoPartida(idPartida) {
         let resultado = ""; // Variable para guardar el resultado como un string
 
         // Consulta SQL para obtener el nombre del jugador y la posicion de cada jugador en la partida.
-        const query = `SELECT posicion, email FROM juega WHERE idPartida='${idPartida}'`;
+        const query = `SELECT puestoPartida, email FROM juega WHERE idPartida='${idPartida}'`;
         con.query(query, (error, result) => {
             if (error) {
                 con.end();
@@ -3248,7 +3248,7 @@ function resultadoPartida(idPartida) {
             } else {
                 // Concatenamos el nombre y la posición de cada jugador en la variable 'resultado'
                 result.forEach((row) => {
-                    resultado += row.email + ":" + row.posicion + ",";
+                    resultado += row.email + ":" + row.puestoPartida + ",";
                 });
                 // Quitamos la última coma que se agrega en el ciclo forEach
                 resultado = resultado.slice(0, -1);
