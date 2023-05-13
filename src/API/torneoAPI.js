@@ -147,7 +147,7 @@ function verClasificacionTorneo(idTorneo) {
                 con.end();
                 resolve(false);
             } else {                                                // Caso --  Existe el Torneo
-                const query2 = `SELECT email, sum(puestoPartida) AS puntos FROM (SELECT B.email, B.puestoPartida 
+                const query2 = `SELECT email, sum(posicion) AS puntos FROM (SELECT B.email, B.posicion 
           FROM juega B INNER JOIN Partida A ON A.idPartida = B.idPartida 
           WHERE A.perteneceTorneo = '${idTorneo}' AND A.enCurso = false) AS AUX1 GROUP BY email ORDER BY puntos ASC;`;
                 con.query(query2, (error, results2) => {                // Caso -- Error
