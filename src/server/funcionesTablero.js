@@ -1057,6 +1057,7 @@ async function ganadorPartida(jugadores_struct, ID_partida, ID_jugador) {
 // Gestiona el fin de una partida que pertenece a un torneo
 async function acabarPartidaTorneo(ID_partida) {
     let ID_Torneo = await APITorneo.obtenerIDTorneoPartida(ID_partida);
+    escribirEnArchivo("La partida " + ID_partida + " ha acabado y pertenece al torneo " + ID_Torneo + ".");
     if (ID_Torneo !== -1 && ID_Torneo !== null && ID_Torneo !== undefined && ID_Torneo !== "" && ID_Torneo !== false) {
         let numPartidasTorneo = await APITorneo.obtenerNumPartidasTorneo(ID_Torneo);
         escribirEnArchivo("La partida " + ID_partida + " ha acabado y quedan " + (3 - numPartidasTorneo) + " partidas del torneo " + ID_Torneo + ".");
@@ -1064,13 +1065,16 @@ async function acabarPartidaTorneo(ID_partida) {
         // Descomponer la clasificacion en un array de strings
         let jugadores = clasificacion.split(",");
         // Descomponer cada string en un array de dos elementos: ID y clasificacion
+        escribirEnArchivo("La clasificacion del torneo " + ID_Torneo + " es: " + jugadores);
+        let jugadores_struct = await API.obtenerTodosJugadoresPartida(ID_partida);
         for (let i = 0; i < jugadores.length; i++) {
             let aux = jugadores[i].split(":");
             let ID_jugador_actual = aux[0];
             let clasificacion_actual = aux[1];
+            escribirEnArchivo("El jugador " + ID_jugador_actual + " ha quedado en la posicion " + clasificacion_actual + " en la partida " + ID_partida + ".");
             // Enviarle a todos los jugadores de la partida la clasificacion actualizada
-            let jugadores_struct = await API.obtenerTodosJugadoresPartida(ID_partida);
             for (let j = 0; j < jugadores_struct.length; j++) {
+                console.log("ID_jugador_actual: " + ID_jugador_actual + " jugadores_struct[j].id: " + jugadores_struct[j].id);
                 if (jugadores_struct[j].esBot === "0") {
                     let conexion = con.buscarUsuario(jugadores_struct[j].id);
                     conexion.send(`CLASIFICACION_TORNEO,${ID_jugador_actual},${clasificacion_actual}`);
