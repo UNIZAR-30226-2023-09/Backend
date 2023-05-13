@@ -77,6 +77,11 @@ exports.CrearTorneo = CrearTorneo;
 // Unir al jugador dado al torneo solicitado
 async function UnirseTorneo(socket, ID_jugador, ID_Torneo) {
     try {
+        let numPartidasTorneo = await APItorneo.obtenerNumPartidasTorneo(ID_Torneo);
+        if (numPartidasTorneo > 0) {
+            socket.send(`UNIRSET_NO_OK,${ID_Torneo},${ID_jugador}`);
+            return;
+        }
         // Unimos al jugador al torneo 
         if (await APItorneo.unirseTorneo(ID_jugador, ID_Torneo)) {
             socket.send(`UNIRSET_OK,${ID_Torneo},${ID_jugador}`);

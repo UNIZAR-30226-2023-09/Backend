@@ -246,22 +246,21 @@ function obtenerJugadoresTorneo(ID_Torneo) {
             if (error) {
                 con.end();
                 reject(error);
-            } if (results[0].length === 0) {
+            } else if (results.length === 0) {
                 con.end();
                 resolve(-1);
             } else {
                 con.end();
                 let respuesta = "";
                 results.forEach((row, i) => {
-                    let aux = [];
-                    respuesta = row.email + ",";
+                    respuesta += row.email + ",";
                 });
-                // Quitar el ultimo caracter de respuesta
+                // Quitar la última coma de respuesta
                 respuesta = respuesta.substring(0, respuesta.length - 1);
                 resolve(respuesta);
             }
         });
     });
 }
-exports.obtenerJugadoresTorneo = obtenerJugadoresTorneo;
 
+exports.obtenerJugadoresTorneo = obtenerJugadoresTorneo;
