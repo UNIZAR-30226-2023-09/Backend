@@ -967,6 +967,7 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
     // Comprobamos si es el ultimo jugador
     if (jugadores_struct.length === 1) {
         await ganadorPartida(jugadores_struct, ID_partida, ID_jugador);
+        await API.jugadorAcabadoPartida(jugadores_struct[0].id, ID_partida);
         await API.acabarPartida(ID_partida);
         await acabarPartidaTorneo(ID_partida);
         return false;
@@ -976,6 +977,9 @@ async function enviarJugadorMuertoPartida(socket, ID_jugador, ID_partida) {
 
         if (num_bots === jugadores_struct.length) {
             escribirEnArchivo("Solo quedan bots en la partida " + ID_partida + ".");
+            for (let i = 0; i < jugadores_struct.length; i++) {
+                await API.jugadorAcabadoPartida(jugadores_struct[i].id, ID_partida);
+            }
             // Solo quedan bots en la partida
             await API.acabarPartida(ID_partida);
             await acabarPartidaTorneo(ID_partida);
