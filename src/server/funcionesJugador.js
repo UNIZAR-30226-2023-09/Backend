@@ -9,6 +9,7 @@
 
 // const con = require('../API/db');
 const API = require('../API/jugadorAPI');
+const APItorneo = require('../API/torneoAPI');
 const APIpartida = require('../API/partidaAPI');
 const bot = require('./bot');
 const con = require('./conexiones');
@@ -57,6 +58,18 @@ async function IniciarSesion(socket, email, contrasenya) {
                 // Mandar los datos de la partida para mostrarlos
                 let estadoPartida = await APIpartida.obtenerEstadoPartida(id_partida, email);
                 await APIpartida.sustituirBotPorJugador(email, id_partida);
+                let IDTorneo = await APItorneo.obtenerIDTorneoPartida(id_partida);
+                let esLiderTorneo;
+                if (IDTorneo != -1) {
+                    esLiderTorneo = await APItorneo.obtenerLiderTorneo(IDTorneo);
+                    if (esLiderTorneo == email) {
+                        // Concatenar al final de estadoPartida un |1
+                        estadoPartida = estadoPartida + "|1";
+                    } else {
+                        // Concatenar al final de estadoPartida un |0
+                        estadoPartida = estadoPartida + "|0";
+                    }
+                }
                 socket.send(`INICIO_OK,${email},${gemas}`);
                 socket.send(`ESTADO_PARTIDA,${estadoPartida}`);
                 escribirEnArchivo("El jugador ya estaba en la partida " + id_partida + " y se le ha enviado el estado de la partida");
