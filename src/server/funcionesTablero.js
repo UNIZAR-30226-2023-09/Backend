@@ -408,8 +408,8 @@ async function GestionTreasure(ID_partida, ID_jugador, socket) {
 }
 
 async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
-    let superPoder = Math.ceil(Math.random() * 12);
-    // let superPoder = 1;
+    // let superPoder = Math.ceil(Math.random() * 12);
+    let superPoder = 7;
     let nuevaPosicion;
     socket.send(`SUPERPODER,${superPoder}`);
     switch (superPoder) {
