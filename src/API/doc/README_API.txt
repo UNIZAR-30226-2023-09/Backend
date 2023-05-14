@@ -376,3 +376,7 @@ async function perteneceTorneo(ID_Partida);
 //funcion la cual devuelve un string con los jugadores separados por una coma.
 function obtenerJugadoresTorneo(ID_Torneo);
 
+
+// / Funcion que me devuelva el lider del torneo, y si no hay nadie asociado al torneo devuelve false
+function obtenerLiderTorneo(idTorneo)
+

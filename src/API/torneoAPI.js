@@ -38,7 +38,7 @@ function crearTorneo(idJugador, nPartidas) {
                         reject(error);
                     } else {                            // Caso -- Se creo el Torneo correctamente
                         let devolver = results2.insertId;
-                        const sql2 = `INSERT INTO estaEnTorneo (idTorneo, email) VALUES ('${devolver}', '${idJugador}');`;
+                        const sql2 = `INSERT INTO estaEnTorneo (idTorneo, email, esLider) VALUES ('${devolver}', '${idJugador}', true);`;
                         con.query(sql2, (error, results) => {
                             if (error) {                        // Caso -- ERROR
                                 con.end();
@@ -99,7 +99,7 @@ function unirseTorneo(idJugador, idTorneo) {
                                 reject(error);
                             } else if (results3.length === 0) {     // Caso -- No existe una entrada ya en estaEnTorneo -> SE AÑADE
 
-                                const sql = `INSERT INTO estaEnTorneo (idTorneo, email) VALUES ('${idTorneo}', '${idJugador}');`;
+                                const sql = `INSERT INTO estaEnTorneo (idTorneo, email, esLider) VALUES ('${idTorneo}', '${idJugador}', false);`;
                                 con.query(sql, (error, results) => {
                                     if (error) {                        // Caso -- ERROR
                                         con.end();
@@ -264,3 +264,33 @@ function obtenerJugadoresTorneo(ID_Torneo) {
 }
 
 exports.obtenerJugadoresTorneo = obtenerJugadoresTorneo;
+
+
+
+/*
+=================== OBTENER LIDER DEL TORNEO =========================================================
+*/
+// / Funcion que me devuelva el lider del torneo, y si no hay nadie asociado al torneo devuelve false
+function obtenerLiderTorneo(idTorneo) {
+    return new Promise((resolve, reject) => {
+        var con = db.crearConexion();
+        con.connect();
+        const query = `SELECT email FROM estaEnTorneo WHERE idTorneo = '${idTorneo}' AND esLider = true`;       // Para las que ya no estas en curso
+        //const query = `SELECT COUNT(idPartida) AS cuenta FROM Partida WHERE perteneceTorneo = '${idTorneo}'`;
+        con.query(query, (error, results) => {                // Caso -- Error
+            if (error) {
+                con.end();
+                reject(error);
+            } else if (results.length === 0) {                                            // Caso --  Existen Skins
+                con.end();
+                resolve(false);
+            } else {                                            // Caso --  Existen Skins
+                con.end();
+                resolve(results[0].email)
+            }
+        });
+    });
+}
+
+
+exports.obtenerLiderTorneo = obtenerLiderTorneo;

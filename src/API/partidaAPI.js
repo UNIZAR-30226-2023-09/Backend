@@ -4255,8 +4255,7 @@ function obtenerEstadoPartida(idPartida, idJugador) {
                                             results3[i].skin + "," +
                                             results3[i].skinTablero + "," +
                                             results3[i].turno + "," +
-                                            results3[i].nTurnosCarcel + "," +
-                                            results3[i].esBot;
+                                            results3[i].nTurnosCarcel;
 
                                     } else {
 
