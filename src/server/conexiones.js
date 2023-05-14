@@ -9,7 +9,7 @@
 
 const APIpartida = require('../API/partidaAPI');
 const jugadorFunc = require('./funcionesJugador');
-const TIMEOUT = 6000; // TODO: Ponerlo a 1 minuto no 10 segundos
+const TIMEOUT = 30000; // 30 segundos
 
 // Creamos un array vacío para almacenar las conexiones de los usuarios
 const connections = [];
