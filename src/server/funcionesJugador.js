@@ -64,10 +64,10 @@ async function IniciarSesion(socket, email, contrasenya) {
                     esLiderTorneo = await APItorneo.obtenerLiderTorneo(IDTorneo);
                     if (esLiderTorneo == email) {
                         // Concatenar al final de estadoPartida un |1
-                        estadoPartida = estadoPartida + "|1";
+                        estadoPartida = estadoPartida + "|1|" + IDTorneo;
                     } else {
                         // Concatenar al final de estadoPartida un |0
-                        estadoPartida = estadoPartida + "|0";
+                        estadoPartida = estadoPartida + "|0|0";
                     }
                 }
                 socket.send(`INICIO_OK,${email},${gemas}`);
