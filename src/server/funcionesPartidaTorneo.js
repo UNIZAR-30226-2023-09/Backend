@@ -256,11 +256,10 @@ async function EmpezarPartidaTorneo(socket, ID_Torneo, ID_jugador) {
             let idBot = await APIpartida.AnyadirBotTorneo(ID_Torneo);
             let skinJugador = await APIpartida.obtenerSkinEquipada(idBot);
             let skinTablero = await APIpartida.obtenerSkinTableroEquipada(idBot);
-            await APIpartida.sustituirJugadorPorBot(idBot, ID_Partida);
             await APIpartida.unirsePartida(idBot, ID_Partida, skinJugador, skinTablero);
+            await APIpartida.sustituirJugadorPorBot(idBot, ID_Partida);
         }
     }
-
     // Para cada uno de los jugadores, añadirles a la partida
     for (let i = 0; i < aux.length; i++) {
         let skinJugador = await APIpartida.obtenerSkinEquipada(aux[i]);
