@@ -4302,7 +4302,6 @@ async function AnyadirBotTorneo(ID_Torneo){
       let resCrearJugador = await Jugador.insertarUsuario(jugadorConcat);
       let res = Torneo.unirseTorneo(email,ID_Torneo);
       return email;
-  
     }
     catch (error) {
       // Si hay un error en la Promesa, devolvemos false.
