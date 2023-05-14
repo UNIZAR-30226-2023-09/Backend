@@ -245,6 +245,7 @@ CREATE TABLE juega (
 CREATE TABLE estaEnTorneo (
     idTorneo        INT,
     email           VARCHAR(255),
+    esLider         BOOLEAN NOT NULL,
     PRIMARY KEY (email, idTorneo),
     FOREIGN KEY (idTorneo) REFERENCES Torneo(idTorneo),
     FOREIGN KEY (email) REFERENCES Jugador(email)
