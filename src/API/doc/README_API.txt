@@ -378,5 +378,8 @@ function obtenerJugadoresTorneo(ID_Torneo);
 
 
 // / Funcion que me devuelva el lider del torneo, y si no hay nadie asociado al torneo devuelve false
-function obtenerLiderTorneo(idTorneo)
+function obtenerLiderTorneo(idTorneo);
+
+//Añadimos bot al torneo
+async function AnyadirBotTorneo(ID_Torneo);
 

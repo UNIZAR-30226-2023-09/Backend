@@ -4286,3 +4286,27 @@ function obtenerEstadoPartida(idPartida, idJugador) {
 
 
 exports.obtenerEstadoPartida = obtenerEstadoPartida;
+
+
+/*
+=================== AÑADIR BOT TORNEO =========================================================
+*/
+//Añadimos bot al torneo
+async function AnyadirBotTorneo(ID_Torneo){
+    try{
+      let randomNumber = Math.floor(Math.random() * 10000) + 1;
+      let email = `bot@bot${randomNumber}.com`;
+      let jugadorConcat = `bot${randomNumber}.com` +`,`+ 1234 +`,`+ email +`,`+ 0;
+      console.log(jugadorConcat);
+      let resCrearJugador = await insertarUsuario(jugadorConcat);
+      let res = unirseTorneo(email,ID_Torneo);
+      return res;
+  
+    }
+    catch (error) {
+      // Si hay un error en la Promesa, devolvemos false.
+      console.error("Error en la Promesa: ", error);
+      return false;
+    }
+  }
+  exports.AnyadirBotTorneo = AnyadirBotTorneo;

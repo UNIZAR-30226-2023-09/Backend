@@ -1323,6 +1323,26 @@ async function obtenerResultadoObtenerJugadoresTorneo(idTorneo) {
   }
 }
 
+
+//FUNCIONA OKEY.
+async function obtenerResultadoAnyadirBotTorneo(idTorneo) {
+  try {
+    // Hacemos la llamada a la función que devuelve una Promesa.
+    let resultado;
+    resultado = await test.AnyadirBotTorneo(idTorneo);
+    console.log("El resultado obtenido de añadir bot al Torneo:", resultado);
+
+    return resultado;
+
+  } catch (error) {
+    // Si hay un error en la Promesa, devolvemos false.
+    console.error("Error en la Promesa: ", error);
+    return false;
+  }
+}
+
+// obtenerResultadoAnyadirBotTorneo(1);
+
 // obtenerResultadoObtenerJugadoresTorneo(2);
 
 // obtenerResultadoObtenerNumTurnosActivos(1);
