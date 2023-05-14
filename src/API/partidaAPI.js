@@ -10,6 +10,7 @@
 
 const db = require('./db');
 const Jugador = require('./jugadorAPI');
+const Torneo = require('./torneoAPI');
 
 const POSICION_CARCEL = 11;
 const POSICION_BOTE = 21;
@@ -4298,8 +4299,8 @@ async function AnyadirBotTorneo(ID_Torneo){
       let email = `bot@bot${randomNumber}.com`;
       let jugadorConcat = `bot${randomNumber}.com` +`,`+ 1234 +`,`+ email +`,`+ 0;
       console.log(jugadorConcat);
-      let resCrearJugador = await insertarUsuario(jugadorConcat);
-      let res = unirseTorneo(email,ID_Torneo);
+      let resCrearJugador = await Jugador.insertarUsuario(jugadorConcat);
+      let res = Torneo.unirseTorneo(email,ID_Torneo);
       return res;
   
     }
