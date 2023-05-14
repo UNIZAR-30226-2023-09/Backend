@@ -459,8 +459,8 @@ async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
             break;
         case 7:
             // Ir a la carcel
-            await GestionIrCarcel(ID_jugador, ID_partida, socket);
             socket.send(`DESPLAZAR_JUGADOR,${11}`);
+            await GestionIrCarcel(ID_jugador, ID_partida, socket);
             break;
         case 8:
             // Ir al bote
