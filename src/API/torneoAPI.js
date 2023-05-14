@@ -237,6 +237,8 @@ exports.obtenerIDTorneoPartida = obtenerIDTorneoPartida;
 /*
 =================== OBTENER JUGADORES TORNEO =========================================================
 */
+// Funcion que devuelve los 4 jugadores que pertenecen al torneo. Si no hay 4 jugadores
+// mete en la partida bots para que se pueda jugar siendo 4 jugadores
 function obtenerJugadoresTorneo(ID_Torneo) {
     return new Promise((resolve, reject) => {
         const con = db.crearConexion();

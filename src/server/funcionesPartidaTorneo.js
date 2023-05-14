@@ -250,6 +250,15 @@ async function EmpezarPartidaTorneo(socket, ID_Torneo, ID_jugador) {
     let jugadores_Torneo = await APItorneo.obtenerJugadoresTorneo(ID_Torneo);
     console.log("Jugadores del torneo: ", jugadores_Torneo);
     let aux = jugadores_Torneo.split(",");
+    // Si hay menos de 4 jugadores, meter los restantes bots en el torneo
+    if (aux.length < 4) {
+        for (let i = aux.length; i < 4; i++) {
+            await APIpartida.AnyadirBotTorneo(ID_Torneo);
+        }
+    }
+
+    jugadores_Torneo = await APItorneo.obtenerJugadoresTorneo(ID_Torneo);
+    aux = jugadores_Torneo.split(",");
     // Para cada uno de los jugadores, añadirles a la partida
     for (let i = 0; i < aux.length; i++) {
         let skinJugador = await APIpartida.obtenerSkinEquipada(aux[i]);
