@@ -265,6 +265,10 @@ async function EmpezarPartidaTorneo(socket, ID_Torneo, ID_jugador) {
         let skinJugador = await APIpartida.obtenerSkinEquipada(aux[i]);
         let skinTablero = await APIpartida.obtenerSkinTableroEquipada(aux[i]);
         await APIpartida.unirsePartida(aux[i], ID_Partida, skinJugador, skinTablero);
+        // Si contiene como inicio de nombre bot@bot sustituirlo por un bot
+        if (aux[i].includes("bot@bot")) {
+            await APIpartida.sustituirJugadorPorBot(aux[i], ID_Partida);
+        }
     }
     await EmpezarPartida(socket, ID_Partida, ID_jugador);
 }

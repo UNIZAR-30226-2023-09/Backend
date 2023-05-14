@@ -460,6 +460,7 @@ async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
         case 7:
             // Ir a la carcel
             await GestionIrCarcel(ID_jugador, ID_partida, socket);
+            socket.send(`DESPLAZAR_JUGADOR,${11}`);
             break;
         case 8:
             // Ir al bote
@@ -480,6 +481,7 @@ async function GestionSuperPoder(socket, ID_jugador, ID_partida, posicion) {
             await GestionPropiedad(nuevaPosicion, ID_partida, socket, ID_jugador);
         case 10:
             // Easter egg: Zarazaga nos pone un 10
+            socket.send(`NADA`);
             break;
         case 11:
             // Ir a la casilla de tokyo
